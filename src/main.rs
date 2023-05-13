@@ -1,26 +1,29 @@
+use std::println;
+
 use serde::{Serialize, Deserialize};
 use clap::Parser;
 
 #[derive(Parser, Debug, Serialize, Deserialize)]
-struct MyConfig {
-    /// Optional name to operate on
+#[command(author, version, about, long_about = None)]
+struct CliAndConfig {
+    /// Sets a custom drive
     #[arg(short, long)]
     drive: Option<String>,
 
-    /// Sets a custom config file
+    /// Sets a custom directory
     #[arg(short, long)]
     location: Option<String>,
 
-    /// Required PN if not defined it will be pulled from config
+    /// PN if not defined it will be pulled from config
     pn:Option<String>,
 
-    /// Required SN if not defined it will be pulled from config
+    /// SN if not defined it will be pulled from config
     sn:Option<String>,
 }
 
 
-/// `MyConfig` implements `Default`
-impl ::std::default::Default for MyConfig {
+/// `CliAndConfig` implements `Default`
+impl ::std::default::Default for CliAndConfig {
     fn default() -> Self { Self { 
         drive: Some("k".to_string()), 
         location: Some("k".to_string()),
@@ -29,8 +32,24 @@ impl ::std::default::Default for MyConfig {
     } }
 }
 
-fn main() -> Result<(), confy::ConfyError> {
-    let cfg: MyConfig = confy::load("my-app-name", None)?;
-    dbg!(cfg);
+
+fn handle_settings(app_name:&str) -> Result<(), confy::ConfyError> {
+    let cfg: CliAndConfig = confy::load(app_name, None)?;
+
+    // dbg!(cfg);
     Ok(())
+}
+
+fn main(){
+
+    let app_name: &str = "find_testlog";
+    let cli_parse = CliAndConfig::parse();
+
+    //Why can't I check if there are no arguments in clap?!?!
+    if std::env::args().len() == 1 {
+        let file = confy::get_configuration_file_path("confy_simple_app", None).unwrap();
+        println!("The configuration file path is: {:#?}", file);
+    }
+    
+    handle_settings(&app_name).unwrap();
 }
