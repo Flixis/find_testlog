@@ -7,7 +7,7 @@ use colored::*;
 
 find_testlog <SN> <PN>
 
-returns: list of 5 latest testresults
+returns: opens latest logfile
 
  */
 
@@ -47,6 +47,7 @@ fn handle_settings(app_name:&str) -> Result<(), confy::ConfyError> {
 }
 
 
+
 fn main(){
 
     let app_name: &str = "find_testlog";
@@ -58,14 +59,30 @@ fn main(){
         println!("{} {:#?}", "Configuration file is located at:".red().bold(), file);
         
     }
-    
+
     handle_settings(&app_name).unwrap();
 
-    if let Some(pn) = _cli_parse.pn.as_deref() {
-        println!("Value for PN: {pn}");
+    //load settings into program
+    let current_cfg: CliAndConfig = confy::load(app_name, None).unwrap();
+    
+    
+    
+    match _cli_parse.pn.as_deref() {
+        Some(pn) => {
+            println!("{} {}", "Value for PN:".purple(),pn);
+        }
+        None => {
+            println!("{} {:?}", "Using last known PN:".purple(),current_cfg.pn);
+        }
     }
-
-    if let Some(sn) = _cli_parse.sn.as_deref() {
-        println!("Value for SN: {sn}");
+    
+    match _cli_parse.sn.as_deref() {
+        Some(sn) => {
+            println!("{} {}", "Value for SN:".purple(), sn);
+        }
+        None => {
+            println!("{} {:?}", "Using last known SN:".purple(), current_cfg.sn);
+        }
     }
+    
 }
