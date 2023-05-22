@@ -47,7 +47,6 @@ fn handle_settings(app_name:&str) -> Result<(), confy::ConfyError> {
 }
 
 
-
 fn main(){
 
     let app_name: &str = "find_testlog";
@@ -63,26 +62,30 @@ fn main(){
     handle_settings(&app_name).unwrap();
 
     //load settings into program
-    let current_cfg: CliAndConfig = confy::load(app_name, None).unwrap();
+    let mut current_cfg: CliAndConfig = confy::load(app_name, None).unwrap();
     
     
     
-    match _cli_parse.pn.as_deref() {
+    match &_cli_parse.pn {
         Some(pn) => {
             println!("{} {}", "Value for PN:".purple(),pn);
+            current_cfg.pn = _cli_parse.pn;
         }
         None => {
             println!("{} {:?}", "Using last known PN:".purple(),current_cfg.pn);
         }
     }
     
-    match _cli_parse.sn.as_deref() {
+    match &_cli_parse.sn {
         Some(sn) => {
             println!("{} {}", "Value for SN:".purple(), sn);
+            current_cfg.sn = _cli_parse.sn;
         }
         None => {
             println!("{} {:?}", "Using last known SN:".purple(), current_cfg.sn);
         }
     }
-    
+
+    //update config file with new values
+    confy::store(app_name, None, current_cfg).unwrap();
 }
