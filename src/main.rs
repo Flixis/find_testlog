@@ -41,10 +41,7 @@ impl Default for CliAndConfig {
 }
 
 
-fn handle_settings(app_name:&str) -> Result<(), confy::ConfyError> {
-    let _cfg: CliAndConfig = confy::load(app_name, None)?;
-    Ok(())
-}
+
 
 
 fn main(){
@@ -111,6 +108,30 @@ fn main(){
     //update config file with new values
     confy::store(app_name, None, current_cfg).unwrap();
 
+    match_cli_parser(object, current_cfg, cli_parse);
 
 
+}
+
+
+fn handle_settings(app_name:&str) -> Result<(), confy::ConfyError> {
+    let _cfg: CliAndConfig = confy::load(app_name, None)?;
+    Ok(())
+}
+
+
+/// Parses Cli commands and automatically updates config file
+// Note: this is over-engineered
+// however I wanted to prove to myself that I have a decent understanding of rust-lang at this point.
+fn match_cli_parser<T>(object: &T , mut current_cfg:CliAndConfig , _cli_parse:CliAndConfig){
+    match &_cli_parse.drive {
+        Some(drive) => {
+            println!("{} {}", "Value for Drive:".purple(), drive);
+            current_cfg.drive = _cli_parse.drive;
+        }
+        None => {
+            println!("{} {:?}", "Using last known Drive:".purple(), current_cfg.drive);
+        }
+    }
+    todo!()
 }
