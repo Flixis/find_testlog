@@ -54,7 +54,7 @@ fn main(){
 
     //Why can't I check if there are no arguments in clap?!?!
     if std::env::args().len() <= 1 {
-        let file = confy::get_configuration_file_path("confy_simple_app", None).unwrap();
+        let file = confy::get_configuration_file_path(app_name, None).unwrap();
         println!("{} {:#?}", "Configuration file is located at:".red().bold(), file);
         
     }
