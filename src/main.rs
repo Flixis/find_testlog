@@ -65,7 +65,26 @@ fn main(){
     let mut current_cfg: CliAndConfig = confy::load(app_name, None).unwrap();
     
     
+    match &_cli_parse.drive {
+        Some(drive) => {
+            println!("{} {}", "Value for Drive:".purple(), drive);
+            current_cfg.drive = _cli_parse.drive;
+        }
+        None => {
+            println!("{} {:?}", "Using last known Drive:".purple(), current_cfg.drive);
+        }
+    }
     
+    match &_cli_parse.location {
+        Some(location) => {
+            println!("{} {}", "Value for Location:".purple(), location);
+            current_cfg.location = _cli_parse.location;
+        }
+        None => {
+            println!("{} {:?}", "Using last known Location:".purple(), current_cfg.location);
+        }
+    }
+
     match &_cli_parse.pn {
         Some(pn) => {
             println!("{} {}", "Value for PN:".purple(),pn);
@@ -86,6 +105,12 @@ fn main(){
         }
     }
 
+
+    
+
     //update config file with new values
     confy::store(app_name, None, current_cfg).unwrap();
+
+
+
 }
