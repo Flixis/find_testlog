@@ -9,6 +9,9 @@ find_testlog <SN> <PN>
 
 returns: opens latest logfile
 
+
+Q:\TestLogs\6107-2100-6301\2023-W20\PTF\20230515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
+
  */
 
 #[derive(Parser, Debug, Serialize, Deserialize)]
@@ -33,14 +36,12 @@ pub struct CliAndConfig {
 /// `CliAndConfig` implements `Default`
 impl Default for CliAndConfig {
     fn default() -> Self { Self { 
-        drive: Some("d:".to_string()), //TODO: set correct drive letter
-        location: Some("testlogs".to_string()), //TODO: set correct default folder
+        drive: Some("Q:".to_string()), //TODO: set correct drive letter
+        location: Some("TestLogs".to_string()), //TODO: set correct default folder
         pn: Some("".to_string()),
         sn: Some("".to_string()),
     } }
 }
-
-
 
 
 
@@ -56,7 +57,7 @@ fn main(){
         
     }
 
-    handle_settings(&app_name).unwrap();
+    load_settings_return_object(&app_name).unwrap();
 
     //load settings into program
     let mut current_cfg: CliAndConfig = confy::load(app_name, None).unwrap();
@@ -102,36 +103,41 @@ fn main(){
         }
     }
 
-
-    
-
     //update config file with new values
-    confy::store(app_name, None, current_cfg).unwrap();
-
-    match_cli_parser(object, current_cfg, cli_parse);
-
+    confy::store(app_name, None, &current_cfg).unwrap();
+    find_file_with_params(&current_cfg).unwrap();
 
 }
 
 
-fn handle_settings(app_name:&str) -> Result<(), confy::ConfyError> {
-    let _cfg: CliAndConfig = confy::load(app_name, None)?;
+fn load_settings_return_object(app_name:&str) -> Result<CliAndConfig, confy::ConfyError> {
+    let cfg: CliAndConfig = confy::load(app_name, None)?;
+    return Ok(cfg);
+}
+
+///Returns the latest testlog for given pn an sn
+fn find_file_with_params(load_settings:&CliAndConfig) -> Result<(),()> {
+    //We don't have ownership of the struct so we get the reference, then we unwrap so we don't print "Some("Q:")"
+    //When there is the option of returning something else other Rust will default to Some(). We can handle this by unwrapping.
+    println!("{:?} {:?} {:?} {:?}", load_settings.drive.as_ref().unwrap(), load_settings.location.as_ref().unwrap(), load_settings.pn.as_ref().unwrap(), load_settings.sn.as_ref().unwrap());
+    
     Ok(())
 }
 
-
+/* 
 /// Parses Cli commands and automatically updates config file
 // Note: this is over-engineered
 // however I wanted to prove to myself that I have a decent understanding of rust-lang at this point.
 fn match_cli_parser<T>(object: &T , mut current_cfg:CliAndConfig , _cli_parse:CliAndConfig){
-    match &_cli_parse.drive {
-        Some(drive) => {
-            println!("{} {}", "Value for Drive:".purple(), drive);
-            current_cfg.drive = _cli_parse.drive;
+    match &_cli_parse.object {
+        Some(object) => {
+            println!("{} {} {}", "Value for".purple(), object, object);
+            current_cfg.object = _cli_parse.object;
         }
         None => {
-            println!("{} {:?}", "Using last known Drive:".purple(), current_cfg.drive);
+            println!("{} {:?}", "Using last known:".purple(), current_cfg.drive);
         }
     }
     todo!()
 }
+*/
