@@ -1,4 +1,4 @@
-use std::{println};
+use std::{println, vec};
 use serde::{Serialize, Deserialize};
 use clap::Parser;
 use colored::*;
@@ -105,7 +105,7 @@ fn main(){
 
     //update config file with new values
     confy::store(app_name, None, &current_cfg).unwrap();
-    find_file_with_params(&current_cfg).unwrap();
+    find_file_with_params(current_cfg).unwrap();
 
 }
 
@@ -116,11 +116,15 @@ fn load_settings_return_object(app_name:&str) -> Result<CliAndConfig, confy::Con
 }
 
 ///Returns the latest testlog for given pn an sn
-fn find_file_with_params(load_settings:&CliAndConfig) -> Result<(),()> {
+fn find_file_with_params(load_settings:CliAndConfig) -> Result<(),()> {
     //We don't have ownership of the struct so we get the reference, then we unwrap so we don't print "Some("Q:")"
     //When there is the option of returning something else other Rust will default to Some(). We can handle this by unwrapping.
-    println!("{:?} {:?} {:?} {:?}", load_settings.drive.as_ref().unwrap(), load_settings.location.as_ref().unwrap(), load_settings.pn.as_ref().unwrap(), load_settings.sn.as_ref().unwrap());
+    //println!("{:?} {:?} {:?} {:?}", load_settings.drive.as_ref().unwrap(), load_settings.location.as_ref().unwrap(), load_settings.pn.as_ref().unwrap(), load_settings.sn.as_ref().unwrap());
     
+    let vec_of_params: Vec<String> = vec![load_settings.drive.unwrap(), load_settings.location.unwrap(), load_settings.pn.unwrap(), load_settings.sn.unwrap(), ];
+
+    // println!("{:?} {:?} {:?} {:?}", load_settings.drive.as_ref().unwrap(), load_settings.location.as_ref().unwrap(), load_settings.pn.as_ref().unwrap(), load_settings.sn.as_ref().unwrap());
+    println!("{:?}", vec_of_params);
     Ok(())
 }
 
