@@ -137,21 +137,27 @@ fn find_file_with_params(load_settings:&CliAndConfig) -> Result<(),()> {
         }
     }
     
-    dbg!("Latest Week Year Folder: {}", latest_week_year_folder);
+    // dbg!("Latest Week Year Folder: {}", latest_week_year_folder);
     
-    
-
-
-    let full_path_to_latest_week: Vec<&str> = vec![
-        load_settings.drive.as_ref().unwrap(),
-        load_settings.location.as_ref().unwrap(),
-        load_settings.pn.as_ref().unwrap(),
+    let create_full_path_to_latest_week: Vec<&str> = vec![
+        &latest_week_year_folder,
         load_settings.test_env.as_ref().unwrap(),
-        "weekyear",
-        load_settings.sn.as_ref().unwrap(),
     ];
-    let _concatenated_string = full_path_to_latest_week.join("\\");
-    // println!("{}", concatenated_string);
+    // dbg!("{}", full_path_to_latest_week_to_ptf);
+    let paths = fs::read_dir(create_full_path_to_latest_week.join("\\")).unwrap();
+
+    for path in paths {
+        if let Some(entry) = path.ok() {
+            let latest_week_year_folder = entry.path().to_string_lossy().to_string();
+            // Use latest_week_year_folder as needed within this scope
+            println!("Files inside folder: {}", latest_week_year_folder);
+            // ...
+        }
+    }
+
+    
+    
+    
     Ok(())
 }
 
