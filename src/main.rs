@@ -2,6 +2,7 @@ use std::{println, vec, fs};
 use serde::{Serialize, Deserialize};
 use clap::Parser;
 use colored::*;
+use chrono::prelude::*;
 
 /*
 
@@ -55,6 +56,9 @@ fn main(){
 
     let app_name: &str = "find_testlog";
     let _cli_parse = CliAndConfig::parse();
+    let date_as_string = Utc::now().to_string();
+    println!("{date_as_string}");
+
 
     //Why can't I check if there are no arguments in clap?!?!
     if std::env::args().len() <= 1 {
@@ -67,7 +71,7 @@ fn main(){
     let mut current_cfg: CliAndConfig = confy::load(app_name, None).unwrap();
     
     match &_cli_parse.drive {
-        Some(drive) => {
+        Some(_drive) => {
             // println!("{} {}", "Value for Drive:".purple(), drive);
             current_cfg.drive = _cli_parse.drive;
         }
@@ -77,7 +81,7 @@ fn main(){
     }
     
     match &_cli_parse.location {
-        Some(location) => {
+        Some(_location) => {
             // println!("{} {}", "Value for Location:".purple(), location);
             current_cfg.location = _cli_parse.location;
         }
@@ -87,7 +91,7 @@ fn main(){
     }
 
     match &_cli_parse.pn {
-        Some(pn) => {
+        Some(_pn) => {
             // println!("{} {}", "Value for PN:".purple(),pn);
             current_cfg.pn = _cli_parse.pn;
         }
@@ -97,7 +101,7 @@ fn main(){
     }
     
     match &_cli_parse.sn {
-        Some(sn) => {
+        Some(_sn) => {
             // println!("{} {}", "Value for SN:".purple(), sn);
             current_cfg.sn = _cli_parse.sn;
         }
@@ -118,13 +122,27 @@ fn find_file_with_params(load_settings:&CliAndConfig) -> Result<(),()> {
     //We don't have ownership of the struct so we get the reference, then we unwrap so we don't print "Some("Q:")"
     //When there is the option of returning something else , Rust will default to Some(). We can handle this by unwrapping.
 
-    let paths = fs::read_dir("D:/TestLogs/6107-2100-6301/PTF").unwrap();
+    let path_to_find_latest_folder: Vec<&str> = vec![
+        load_settings.drive.as_ref().unwrap(),
+        load_settings.location.as_ref().unwrap(),
+        load_settings.pn.as_ref().unwrap()
+    ];
+
+    let paths = fs::read_dir(path_to_find_latest_folder.join("\\")).unwrap();
+    let mut latest_week_year_folder = String::new();
 
     for path in paths {
-        println!("Name: {}", path.unwrap().path().display())
+        if let Some(entry) = path.ok() {
+            latest_week_year_folder = entry.path().to_string_lossy().to_string();
+        }
     }
+    
+    dbg!("Latest Week Year Folder: {}", latest_week_year_folder);
+    
+    
 
-    let vec_of_params: Vec<&str> = vec![
+
+    let full_path_to_latest_week: Vec<&str> = vec![
         load_settings.drive.as_ref().unwrap(),
         load_settings.location.as_ref().unwrap(),
         load_settings.pn.as_ref().unwrap(),
@@ -132,8 +150,8 @@ fn find_file_with_params(load_settings:&CliAndConfig) -> Result<(),()> {
         "weekyear",
         load_settings.sn.as_ref().unwrap(),
     ];
-    let concatenated_string = vec_of_params.join("\\");
-    println!("{}", concatenated_string);
+    let _concatenated_string = full_path_to_latest_week.join("\\");
+    // println!("{}", concatenated_string);
     Ok(())
 }
 
