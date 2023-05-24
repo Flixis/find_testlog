@@ -147,7 +147,9 @@ fn find_file_with_params(load_settings:&CliAndConfig) -> Result<(),()> {
 
     let files = fs::read_dir(&folder_path_with_backslash).unwrap();
     dbg!("{}", &files);
-
+    let printthis = files.filter_map(Result::ok).filter(|f| f.path().ends_with(".log")).for_each(|f| ());
+    dbg!("{}", load_settings.sn.as_ref().unwrap());
+    dbg!("{}", printthis);
     Ok(())
 }
 
