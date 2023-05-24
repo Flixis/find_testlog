@@ -148,9 +148,9 @@ fn find_file_with_params(load_settings:&CliAndConfig) -> Result<(),()> {
 
     for path in paths {
         if let Some(entry) = path.ok() {
-            let latest_week_year_folder = entry.path().to_string_lossy().to_string();
+            let files_inside = entry.path().to_string_lossy().to_string();
             // Use latest_week_year_folder as needed within this scope
-            println!("Files inside folder: {}", latest_week_year_folder);
+            println!("Files inside folder: {}", files_inside);
             // ...
         }
     }
