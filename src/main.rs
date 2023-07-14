@@ -41,19 +41,19 @@ impl AppConfig {
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    #[clap(short, long, default_value_fn = AppConfig::default_values)]
+    #[clap(short, long, default_value = AppConfig::default_values)]
     drive_letter: String,
 
-    #[clap(short, long, default_value_fn = AppConfig::default_values)]
+    #[clap(short, long, default_value = AppConfig::default_values)]
     folder_location: String,
 
-    #[clap(short, long, default_value_fn = AppConfig::default_values)]
+    #[clap(short, long, default_value = AppConfig::default_values)]
     pn: String,
 
     #[clap(short, long, required = true)]
     week_year: String,
 
-    #[clap(short, long, default_value_fn = AppConfig::default_values)]
+    #[clap(short, long, default_value = AppConfig::default_values)]
     test_env: String,
 
     #[clap(short, long, required = true)]
