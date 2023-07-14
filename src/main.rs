@@ -2,6 +2,7 @@ use clap::Parser;
 use walkdir::WalkDir;
 use confy::ConfyError;
 use colored::*;
+use std::fs;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct AppConfig {
@@ -71,12 +72,22 @@ fn main() {
         return;
     }
 
+
     let drive_letter = args.drive_letter.unwrap_or_else(|| default_app_config.drive_letter);
     let folder_location = args.folder_location.unwrap_or_else(|| default_app_config.folder_location);
     let pn = args.pn.unwrap_or_else(|| default_app_config.pn);
     let test_env = args.test_env.unwrap_or_else(|| default_app_config.test_env);
-    let week_year = args.week_year.unwrap_or_else(|| String::from("2023-W51")); // Provide a default value
-    let sn = args.sn.unwrap_or_else(|| String::from("22-39-A2Y-15I")); // Provide a default value
+
+    // Build the folder path for the default latest search
+    let folder_path = format!(
+        "{}\\{}\\{}\\",
+        drive_letter, folder_location, pn
+    );
+        
+    let latest_week_year = get_most_recent_folder_name(&folder_path);
+
+    let week_year = args.week_year.unwrap_or_else(|| latest_week_year); // Provide a default value
+    let sn = args.sn.unwrap_or_else(|| String::from("22-39-A2Y-16A")); // Provide a default value
 
     // Build the folder path
     let folder_path = format!(
@@ -107,4 +118,35 @@ fn main() {
             }
         }
     }
+}
+
+
+fn get_most_recent_folder_name(path: &str) -> String {
+    let folder_names = fs::read_dir(path)
+        .ok()
+        .unwrap_or_else(|| {
+            eprintln!("Failed to read directory: {}", path);
+            std::fs::read_dir(".").unwrap() // Empty ReadDir iterator
+        })
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            let file_name = entry.file_name();
+            let folder_name = file_name.to_string_lossy().to_string();
+            Some(folder_name)
+        })
+        .filter(|folder_name| {
+            folder_name.len() >= 7 && folder_name[..4].parse::<i32>().is_ok()
+        })
+        .collect::<Vec<String>>();
+
+    let most_recent_folder = folder_names.into_iter().max_by_key(|folder| {
+        let year = folder[..4].parse::<i32>().unwrap();
+        let week = folder[6..].parse::<i32>().unwrap();
+        (year, week)
+    });
+
+    most_recent_folder.unwrap_or_else(|| {
+        eprintln!("No matching folders found.");
+        String::new()
+    })
 }
