@@ -12,7 +12,5 @@ repository = "https://github.com/Flixis/find_testlog"
 serde = { version="1.0.163", features=["serde_derive"] }
 clap = { version = "4.3.0", features = ["derive"] }
 confy = "0.5.1"
-colored = "2"
-chrono = "0.4.24"
-regex = "1.4.5"
-walkdir = "2.3.2"
+colored = "2.0.4"
+walkdir = "2.3.3"
