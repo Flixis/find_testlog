@@ -1,9 +1,7 @@
-//cargo run -- D: TestLogs 6107-2100-6301 2023-W51 PTF 22-39-A2Y-15I
-use clap::{Parser};
-use colored::*;
+use clap::Parser;
 use walkdir::WalkDir;
 use confy::ConfyError;
-
+use colored::*;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct AppConfig {
@@ -26,11 +24,11 @@ impl Default for AppConfig {
 
 impl AppConfig {
     fn load() -> Result<Self, ConfyError> {
-        confy::load("app_name", None)
+        confy::load("find_testlog", None)
     }
 
     fn save(&self) -> Result<(), ConfyError> {
-        confy::store("app_name", None, self)
+        confy::store("find_testlog", None, self)
     }
 
     fn default_values() -> AppConfig {
@@ -41,46 +39,44 @@ impl AppConfig {
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    #[clap(short, long, default_value = AppConfig::default_values)]
-    drive_letter: String,
+    #[clap(short, long)]
+    drive_letter: Option<String>,
 
-    #[clap(short, long, default_value = AppConfig::default_values)]
-    folder_location: String,
+    #[clap(short, long)]
+    folder_location: Option<String>,
 
-    #[clap(short, long, default_value = AppConfig::default_values)]
-    pn: String,
+    #[clap(short, long)]
+    pn: Option<String>,
 
-    #[clap(short, long, required = true)]
-    week_year: String,
+    #[clap(short, long)]
+    week_year: Option<String>,
 
-    #[clap(short, long, default_value = AppConfig::default_values)]
-    test_env: String,
+    #[clap(short, long)]
+    test_env: Option<String>,
 
-    #[clap(short, long, required = true)]
-    sn: String,
+    #[clap(short, long)]
+    sn: Option<String>,
+
+    #[clap(short, long)]
+    get_config_location: bool,
 }
 
-
-
-
-
 fn main() {
+    let default_app_config = AppConfig::default_values();
+    let args = Cli::parse();
 
-    //Why can't I check if there are no arguments in clap?!?!
-    if std::env::args().len() <= 1 {
-        let file = confy::get_configuration_file_path("app_name", None).unwrap();
+    if args.get_config_location {
+        let file = confy::get_configuration_file_path("find_testlog", None).unwrap();
         println!("{} {:#?}", "Configuration file is located at:".red().bold(), file);
-        
+        return;
     }
 
-    let default_app_config = AppConfig::default();
-    let args = Cli::parse();
-    let drive_letter = args.drive_letter.clone();
-    let folder_location = args.folder_location.clone();
-    let pn = args.pn.clone();
-    let week_year = args.week_year.clone();
-    let test_env = args.test_env.clone();
-    let sn = args.sn.clone();
+    let drive_letter = args.drive_letter.unwrap_or_else(|| default_app_config.drive_letter);
+    let folder_location = args.folder_location.unwrap_or_else(|| default_app_config.folder_location);
+    let pn = args.pn.unwrap_or_else(|| default_app_config.pn);
+    let test_env = args.test_env.unwrap_or_else(|| default_app_config.test_env);
+    let week_year = args.week_year.unwrap_or_else(|| String::from("2023-W51")); // Provide a default value
+    let sn = args.sn.unwrap_or_else(|| String::from("22-39-A2Y-15I")); // Provide a default value
 
     // Build the folder path
     let folder_path = format!(
