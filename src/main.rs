@@ -26,7 +26,7 @@ pub struct AppConfig {
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
-            drive_letter: String::from("D:"),
+            drive_letter: String::from("Q:"),
             folder_location: String::from("TestLogs"),
             pn: String::from(""),
             test_env: String::from("PTF"),
