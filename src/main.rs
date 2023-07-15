@@ -44,27 +44,35 @@ impl AppConfig {
 #[command(author, version, about, long_about = None)]
 struct Cli {
     #[clap(short, long)]
+    ///Drive letter, Example: D:.
     drive_letter: Option<String>,
 
     #[clap(short, long)]
+    ///Folder location, Example: TestLogs.
     folder_location: Option<String>,
 
     #[clap(short, long)]
+    ///Product Number, Example: 6107-2100-6301.
     pn: Option<String>,
 
     #[clap(short, long)]
+    ///Year Week, Example: 2023-W51, defaults to latest year-week.
     year_week: Option<String>,
 
     #[clap(short, long)]
+    ///Test environment, Example: PTF
     test_env: Option<String>,
 
     #[clap(short, long)]
+    ///Serial Number, Example: 22-39-A2Y-15I
     sn: Option<String>,
 
     #[clap(short, long)]
+    ///If passed, Returns config location
     get_config_location: bool,
     
     #[clap(short, long)]
+    ///Will automatically open the resulting log files, WARNING OPENS ALL OF THEM.
     open_log: bool,
 }
 
