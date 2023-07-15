@@ -3,7 +3,7 @@ name = "find_testlog"
 version = "0.1.0"
 edition = "2021"
 authors = ["Tariq Dinmohamed <github.com/flixis>"]
-description = "Quickly find and open testlogs for Prodrive products, not passing arguments prints config details"
+description = "Quickly find and open testlogs for Prodrive products, not passing args uses the last query"
 repository = "https://github.com/Flixis/find_testlog"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

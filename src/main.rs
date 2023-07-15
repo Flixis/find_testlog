@@ -125,6 +125,8 @@ fn main() {
             if file_name.contains(&sn_lower) {
                 println!("{}", entry.path().display());
             }
+        }else {
+            eprintln!("{}","Something went wrong (Folder likely doesn't exist)".red().bold());
         }
     }
 }
