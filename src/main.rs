@@ -19,7 +19,7 @@ impl Default for AppConfig {
         Self {
             drive_letter: String::from("D:"),
             folder_location: String::from("TestLogs"),
-            pn: String::from("6107-2100-6301"),
+            pn: String::from(""),
             test_env: String::from("PTF"),
             sn: String::from(""),
         }
@@ -53,7 +53,7 @@ struct Cli {
     pn: Option<String>,
 
     #[clap(short, long)]
-    week_year: Option<String>,
+    year_week: Option<String>,
 
     #[clap(short, long)]
     test_env: Option<String>,
@@ -63,6 +63,9 @@ struct Cli {
 
     #[clap(short, long)]
     get_config_location: bool,
+    
+    #[clap(short, long)]
+    open_log: bool,
 }
 
 fn main() {
@@ -86,8 +89,8 @@ fn main() {
         "{}\\{}\\{}\\",
         drive_letter, folder_location, pn
     );
-    let latest_week_year = get_most_recent_folder_name(&folder_path);
-    let week_year = args.week_year.unwrap_or_else(|| latest_week_year);
+    let latest_year_week = get_most_recent_folder_name(&folder_path);
+    let year_week = args.year_week.unwrap_or_else(|| latest_year_week);
 
     let sn = args.sn.clone().unwrap_or_else(|| default_app_config.sn);
     
@@ -99,7 +102,7 @@ fn main() {
     // Build the folder path, this time with all of its values to parse for finding the log file.
     let folder_path = format!(
         "{}\\{}\\{}\\{}\\{}",
-        drive_letter, folder_location, pn, week_year, test_env
+        drive_letter, folder_location, pn, year_week, test_env
     );
 
     let sn_clone = sn.clone(); //This workaround is so dumb, but I couldn't think of a better way to get around the borrow checking.
