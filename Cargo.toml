@@ -14,3 +14,4 @@ clap = { version = "4.3.0", features = ["derive"] }
 confy = "0.5.1"
 colored = "2.0.4"
 walkdir = "2.3.3"
+open = "5.0.0"

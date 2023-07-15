@@ -136,6 +136,12 @@ fn main() {
             if file_name.contains(&sn_lower) {
                 println!("{}", entry.path().display());
             }
+            if file_name.contains(&sn_lower) && args.open_log{
+                match open::that(entry.path()) {
+                    Ok(()) => println!("{} {}", "Opening Succefully.".green().bold(), entry.path().display()),
+                    Err(err) => panic!("{} {} {}", "An error occurred when opening".red().bold(), entry.path().display(),err),
+                }
+            }
         }else {
             eprintln!("{}","Something went wrong (Folder likely doesn't exist)".red().bold());
         }
