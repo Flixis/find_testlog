@@ -1,15 +1,17 @@
 [package]
 name = "find_testlog"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 authors = ["Tariq Dinmohamed <github.com/flixis>"]
-description = "Quickly find and open testlogs for Prodrive products, not passing arguments prints config location"
+description = "Quickly find and open testlogs for Prodrive products, not passing args uses the last query"
 repository = "https://github.com/Flixis/find_testlog"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 serde = { version="1.0.163", features=["serde_derive"] }
-clap = { version = "4.2.7", features = ["derive"] }
+clap = { version = "4.3.0", features = ["derive"] }
 confy = "0.5.1"
-colored = "2"
+colored = "2.0.4"
+walkdir = "2.3.3"
+open = "5.0.0"
