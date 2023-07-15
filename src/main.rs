@@ -3,6 +3,7 @@ use walkdir::WalkDir;
 use confy::ConfyError;
 use colored::*;
 use std::fs;
+use std::process;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct AppConfig {
@@ -10,6 +11,7 @@ pub struct AppConfig {
     pub folder_location: String,
     pub pn: String,
     pub test_env: String,
+    pub sn: String,
 }
 
 impl Default for AppConfig {
@@ -19,6 +21,7 @@ impl Default for AppConfig {
             folder_location: String::from("TestLogs"),
             pn: String::from("6107-2100-6301"),
             test_env: String::from("PTF"),
+            sn: String::from(""),
         }
     }
 }
@@ -66,42 +69,48 @@ fn main() {
     let default_app_config = AppConfig::default_values();
     let args = Cli::parse();
 
+    //Returns the config location
     if args.get_config_location {
         let file = confy::get_configuration_file_path("find_testlog", None).unwrap();
         println!("{} {:#?}", "Configuration file is located at:".red().bold(), file);
         return;
     }
 
-
     let drive_letter = args.drive_letter.unwrap_or_else(|| default_app_config.drive_letter);
     let folder_location = args.folder_location.unwrap_or_else(|| default_app_config.folder_location);
     let pn = args.pn.unwrap_or_else(|| default_app_config.pn);
     let test_env = args.test_env.unwrap_or_else(|| default_app_config.test_env);
 
-    // Build the folder path for the default latest search
+    // Build the folder path, used for get_most_recent_folder_name
     let folder_path = format!(
         "{}\\{}\\{}\\",
         drive_letter, folder_location, pn
     );
-        
     let latest_week_year = get_most_recent_folder_name(&folder_path);
+    let week_year = args.week_year.unwrap_or_else(|| latest_week_year);
 
-    let week_year = args.week_year.unwrap_or_else(|| latest_week_year); // Provide a default value
-    let sn = args.sn.unwrap_or_else(|| String::from("22-39-A2Y-16A")); // Provide a default value
+    let sn = args.sn.clone().unwrap_or_else(|| default_app_config.sn);
+    
+    if sn.is_empty(){
+        eprintln!("{}", "SN cannot be empty".red().bold());
+        process::exit(1);
+    }
 
-    // Build the folder path
+    // Build the folder path, this time with all of its values to parse for finding the log file.
     let folder_path = format!(
         "{}\\{}\\{}\\{}\\{}",
         drive_letter, folder_location, pn, week_year, test_env
     );
 
-    // Save the configuration
+    let sn_clone = sn.clone(); //This workaround is so dumb, but I couldn't think of a better way to get around the borrow checking.
     let app_config = AppConfig {
         drive_letter,
         folder_location,
         pn,
         test_env,
+        sn: sn_clone,
     };
+    
     if let Err(err) = app_config.save() {
         eprintln!("Failed to save configuration: {}", err);
     }
