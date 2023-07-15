@@ -48,7 +48,42 @@ Now you can run the utility (from the project root):
 ./target/release/find-testlog -d "D:" -f "TestLogs" -p "6107-2100-6301" -y "2023-W51" -t "PTF" -s "22-39-A2Y-15I"
 ```
 
+Details
+### Configuration and Persistent Parameters
 
+Once find-testlog has been run once, it will save the provided parameters into a configuration file. The next time the application is run, if no arguments are provided, find-testlog will pull parameters from this configuration file, allowing for quicker and more convenient usage.
+
+Here's how it works:
+
+1. Run the find-testlog application with your desired parameters. For example:
+```bash
+./target/release/find-testlog -d "D:" -f "TestLogs" -p "6107-2100-6301" -y "2023-W51" -t "PTF" -s "22-39-A2Y-15I"
+```
+The application will now save these parameters into the configuration file.
+
+2. The next time you need to search for log files with the same parameters, you can simply run:
+
+```bash
+./target/release/find-testlog
+```    
+The application will automatically pull the parameters from the configuration file and use them for the search.
+
+If you wish to override some or all parameters stored in the configuration file, simply provide the new values as command-line arguments. For example:
+
+```bash
+./target/release/find-testlog -p "6107-2100-6302"
+```
+In this case, find-testlog will use the new product number but will pull all other parameters from the configuration file.
+
+To see where your configuration file is located, run:
+
+```bash
+./target/release/find-testlog --get-config-location
+```
+
+The configuration file can be edited manually if needed. However, it is recommended to change parameters using the command-line arguments, as this ensures that the configuration file remains in a valid state.
+
+Remember, the use of the configuration file can streamline your workflow, particularly when frequently searching for log files with the same parameters.
 
 ### Contribution
 
