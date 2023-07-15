@@ -122,26 +122,28 @@ fn main() {
 
 
 fn get_most_recent_folder_name(path: &str) -> String {
+    //Start by reading all the folders inside the given path
     let folder_names = fs::read_dir(path)
         .ok()
         .unwrap_or_else(|| {
             eprintln!("Failed to read directory: {}", path);
             std::fs::read_dir(".").unwrap() // Empty ReadDir iterator
         })
-        .filter_map(|entry| {
+        .filter_map(|entry| { //build the filter for finding the folders
             let entry = entry.ok()?;
             let file_name = entry.file_name();
             let folder_name = file_name.to_string_lossy().to_string();
             Some(folder_name)
         })
-        .filter(|folder_name| {
-            folder_name.len() >= 7 && folder_name[..4].parse::<i32>().is_ok()
+        .filter(|folder_name| { //now check if the foldername has atleast 7chars or more, if not, its not relevant.
+            folder_name.len() >= 7 && folder_name[..4].parse::<i32>().is_ok() //convert the first 4 into a INT32, because YYYY format.
         })
         .collect::<Vec<String>>();
 
+    //Now we filter again, but this time we return the highest value folder.
     let most_recent_folder = folder_names.into_iter().max_by_key(|folder| {
-        let year = folder[..4].parse::<i32>().unwrap();
-        let week = folder[6..].parse::<i32>().unwrap();
+        let year = folder[..4].parse::<i32>().unwrap(); //Check the YYYY
+        let week = folder[6..].parse::<i32>().unwrap(); //Chcek the WW
         (year, week)
     });
 
