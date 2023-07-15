@@ -5,6 +5,15 @@ use colored::*;
 use std::fs;
 use std::process;
 
+/*
+Written 15/07/2023
+Tariq Dinmohamed
+
+I hated searching for logfiles, So I challenged myself to make something to help with that.
+Documentation and code comes as is.
+
+*/
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct AppConfig {
     pub drive_letter: String,
