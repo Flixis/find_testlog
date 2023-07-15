@@ -1,6 +1,6 @@
 [package]
 name = "find_testlog"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["Tariq Dinmohamed <github.com/flixis>"]
 description = "Quickly find and open testlogs for Prodrive products, not passing args uses the last query"
