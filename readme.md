@@ -58,6 +58,10 @@ Here's how it works:
 1. Run the find-testlog application with your desired parameters. For example:
 ```bash
 ./target/release/find-testlog -d "D:" -f "TestLogs" -p "6107-2100-6301" -y "2023-W51" -t "PTF" -s "22-39-A2Y-15I"
+
+output:
+D:\TestLogs\6107-2100-6301\2023-W51\PTF\20230515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
+D:\TestLogs\6107-2100-6301\2023-W51\PTF\20240515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
 ```
 The application will now save these parameters into the configuration file.
 
@@ -65,6 +69,10 @@ The application will now save these parameters into the configuration file.
 
 ```bash
 ./target/release/find-testlog
+
+output:
+D:\TestLogs\6107-2100-6301\2023-W51\PTF\20230515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
+D:\TestLogs\6107-2100-6301\2023-W51\PTF\20240515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
 ```    
 The application will automatically pull the parameters from the configuration file and use them for the search.
 
@@ -90,4 +98,4 @@ Remember, the use of the configuration file can streamline your workflow, partic
 Contributions are welcome! Please feel free to submit a Pull Request.
 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GNU General Public License v3.0 License - see the LICENSE file for details.
