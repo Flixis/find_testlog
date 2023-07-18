@@ -58,10 +58,10 @@ fn main() {
         eprintln!("Failed to save configuration: {}", err);
     }
 
-    itter_find_log(folder_path, args.clone())
+    itter_find_log(folder_path, args.clone());
 }
 
-fn itter_find_log(folder_path: String, cli_parse: structs::Cli) {
+fn itter_find_log(folder_path: String, cli_parse: structs::Cli){
     // Iterate over the files in the folder path  
     for entry in WalkDir::new(folder_path) {
         if let Ok(entry) = entry {
@@ -107,8 +107,8 @@ fn get_most_recent_folder_name(path: &str) -> String {
 
     // Now we filter again, but this time we return the highest value folder.
     let most_recent_folder = folder_names.into_iter().max_by_key(|folder| {
-        let year = folder[..4].parse::<i32>().unwrap(); // Check the YYYY
-        let week = folder[6..].parse::<i32>().unwrap(); // Check the WW
+        let year = folder[..4].parse::<i32>().unwrap_or(0); // Check the YYYY
+        let week = folder[6..].parse::<i32>().unwrap_or(0); // Check the WW
         (year, week)
     });
 
