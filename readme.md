@@ -48,7 +48,6 @@ Now you can run the utility (from the project root):
 ./target/release/find-testlog -d "D:" -f "TestLogs" -p "6107-2100-6301" -y "2023-W51" -t "PTF" -s "22-39-A2Y-15I"
 ```
 
-Details
 ### Configuration and Persistent Parameters
 
 Once find-testlog has been run once, it will save the provided parameters into a configuration file. The next time the application is run, if no arguments are provided, find-testlog will pull parameters from this configuration file, allowing for quicker and more convenient usage.
