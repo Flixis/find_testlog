@@ -66,7 +66,7 @@ pub fn get_most_recent_folder_name(path: &str) -> String {
     });
 
     most_recent_folder.unwrap_or_else(|| {
-        eprintln!("No matching folders found.");
+        eprintln!("{}", "No matching folders found.".red().bold());
         String::new()
     })
 }

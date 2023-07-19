@@ -1,6 +1,5 @@
 use clap::Parser;
 use colored::*;
-use std::process;
 
 mod functions;
 mod structs;
@@ -20,7 +19,7 @@ fn main() {
     // Returns the config location
     if args.get_config_location {
         let file = confy::get_configuration_file_path("find_testlog", None).unwrap();
-        println!("{} {:#?}", "Configuration file is located at:".red().bold(), file);
+        eprintln!("{} {:#?}", "Configuration file is located at:".green().bold(), file);
         return;
     }
 
@@ -39,7 +38,7 @@ fn main() {
     
     if sn.is_empty() {
         eprintln!("{}", "SN cannot be empty".red().bold());
-        process::exit(1); // Exit the app;
+        return; // Exit the app;
     }
 
     // Build the folder path, this time with all of its values to parse for finding the log file.
@@ -51,7 +50,7 @@ fn main() {
         folder_path = format!("{}\\{}\\{}\\{}\\{}", drive_letter, folder_location, pn, year_week, test_env);
     }
 
-    let app_config = structs::AppConfig {
+    let app_config = structs::AppConfig { //save current params to cfg file
         drive_letter,
         folder_location,
         pn,
