@@ -46,35 +46,37 @@ impl AppConfig {
 #[derive(Parser, Clone)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-    #[clap(short, long)]
-    ///Drive letter, Example: D:.
-    pub drive_letter: Option<String>,
-
-    #[clap(short, long)]
-    ///Folder location, Example: TestLogs.
-    pub folder_location: Option<String>,
 
     #[clap(short, long)]
     ///Product Number, Example: 6107-2100-6301.
     pub pn: Option<String>,
 
     #[clap(short, long)]
-    ///Year Week, Example: 2023-W51, defaults to latest year-week.
-    pub year_week: Option<String>,
-
-    #[clap(short, long)]
-    ///Test environment, Example: PTF
-    pub test_env: Option<String>,
-
-    #[clap(short, long)]
     ///Serial Number, Example: 22-39-A2Y-15I
     pub sn: Option<String>,
 
     #[clap(short, long)]
-    ///If passed, Returns config location
-    pub get_config_location: bool,
-    
+    ///Year Week, Example: 2023-W51, Defaults: to latest year-week.
+    pub year_week: Option<String>,
+
+    #[clap(short, long)]
+    ///Test environment, Default: PTF
+    pub test_env: Option<String>,
+
     #[clap(short, long)]
     ///Will automatically open the resulting log files, WARNING OPENS ALL OF THEM.
     pub open_log: bool,
+
+    #[clap(short, long)]
+    ///Drive letter, Default Q:
+    pub drive_letter: Option<String>,
+
+    #[clap(short, long)]
+    ///Folder location, Default: TestLogs.
+    pub folder_location: Option<String>,
+
+    #[clap(short, long)]
+    ///If passed, Returns config location
+    pub get_config_location: bool,
+
 }
