@@ -31,7 +31,7 @@ fn main() {
     let test_env = args.test_env.as_ref().unwrap_or(&default_app_config.test_env).to_string();
 
     // Build the folder path, used for get_most_recent_folder_name
-    let folder_path = format!("{}\\{}\\{}\\", drive_letter, folder_location, pn);
+    let mut folder_path = format!("{}\\{}\\{}\\", drive_letter, folder_location, pn);
     let latest_year_week = functions::get_most_recent_folder_name(&folder_path);
     let year_week = args.year_week.as_ref().unwrap_or(&latest_year_week);
 
@@ -43,7 +43,15 @@ fn main() {
     }
 
     // Build the folder path, this time with all of its values to parse for finding the log file.
-    let folder_path = format!("{}\\{}\\{}\\{}\\{}", drive_letter, folder_location, pn, year_week, test_env);
+    if args.year_week.is_none(){
+        //if no year-week is passed we just pass the normal folder_path
+        println!("{}", "Year-week not specified, searching all folders.".green().bold());
+    }else {
+        println!("{}{}", "Searching inside: ".green().bold(), year_week);
+        folder_path = format!("{}\\{}\\{}\\{}\\{}", drive_letter, folder_location, pn, year_week, test_env);
+    }
+
+;
 
     let app_config = structs::AppConfig {
         drive_letter,
