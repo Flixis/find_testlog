@@ -39,7 +39,7 @@ cd find-testlog
 cargo build --release
 ```
 
-
+[Or You can download the latest version from the releases page.](https://github.com/Flixis/find_testlog/releases)
 
 
 Now you can run the utility (from the project root):
