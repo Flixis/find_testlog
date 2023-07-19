@@ -56,7 +56,7 @@ pub struct Cli {
     pub sn: Option<String>,
 
     #[clap(short, long)]
-    ///Year Week, Example: 2023-W51, Defaults: to latest year-week.
+    ///Year Week, Example: 2023-W51, Defaults: Searches all year-week folders.
     pub year_week: Option<String>,
 
     #[clap(short, long)]

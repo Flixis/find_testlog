@@ -36,7 +36,7 @@ pub fn itter_find_log(folder_path: String, cli_parse: crate::structs::Cli) -> Re
     }
 }
 
-
+#[allow(dead_code)]/*Code is unused but still usefull for later use */
 pub fn get_most_recent_folder_name(path: &str) -> String {
     // Start by reading all the folders inside the given path
     let min_char_length_folder_name: usize = 7;

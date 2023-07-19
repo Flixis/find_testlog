@@ -31,8 +31,7 @@ fn main() {
 
     // Build the folder path, used for get_most_recent_folder_name
     let mut folder_path = format!("{}\\{}\\{}\\", drive_letter, folder_location, pn);
-    let latest_year_week = functions::get_most_recent_folder_name(&folder_path);
-    let year_week = args.year_week.as_deref().unwrap_or(&latest_year_week);
+    let year_week = args.year_week.as_deref().unwrap_or("");
 
     let sn = args.sn.clone().unwrap_or(default_app_config.sn);
     
