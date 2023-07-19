@@ -39,7 +39,7 @@ fn main() {
     
     if sn.is_empty() {
         eprintln!("{}", "SN cannot be empty".red().bold());
-        process::exit(1);
+        process::exit(1); //exit the app;
     }
 
     // Build the folder path, this time with all of its values to parse for finding the log file.
@@ -50,8 +50,6 @@ fn main() {
         println!("{}{}", "Searching inside: ".green().bold(), year_week);
         folder_path = format!("{}\\{}\\{}\\{}\\{}", drive_letter, folder_location, pn, year_week, test_env);
     }
-
-;
 
     let app_config = structs::AppConfig {
         drive_letter,
@@ -65,6 +63,20 @@ fn main() {
         eprintln!("Failed to save configuration: {}", err);
     }
 
-    functions::itter_find_log(folder_path, args.clone());
+    let get_log_file_path = functions::itter_find_log(folder_path, args.clone());
+    match get_log_file_path {
+        Ok(paths) => {
+            if paths.is_empty() {
+                println!("{}","No matches found".red().bold());
+            } else {
+                println!("{}", "Matched log file paths:".green().bold());
+                for path in paths {
+                    println!("{}", path);
+                }
+            }
+        }
+        Err(err) => eprintln!("{} {}" , "Error:".red().bold(), err),
+    }
+    
 }
 

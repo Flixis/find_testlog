@@ -1,29 +1,41 @@
 use std::fs;
+use std::io;
 use colored::Colorize;
 use walkdir::WalkDir;
 
-pub fn itter_find_log(folder_path: String, cli_parse: crate::structs::Cli){
+pub fn itter_find_log(folder_path: String, cli_parse: crate::structs::Cli) -> Result<Vec<String>, io::Error> {
+    // Keep track of whether a match is found
+    let mut found_match: bool = false;
+    let mut log_file_paths: Vec<String> = Vec::new();
+
     // Iterate over the files in the folder path  
     for entry in WalkDir::new(folder_path) {
         if let Ok(entry) = entry {
-            let file_name = entry.file_name().to_string_lossy().to_lowercase();
+            let file_name: String = entry.file_name().to_string_lossy().to_lowercase();
             let sn_lower: String = cli_parse.sn.clone().unwrap_or_default().to_string().to_ascii_lowercase();
 
             // Check if the file name contains the serial number
             if file_name.contains(&sn_lower) {
-                println!("{}", entry.path().display());
+                found_match = true;
+                // dbg!("{}", entry.path().display());
                 if cli_parse.open_log {
                     match open::that(entry.path()) {
-                        Ok(()) => println!("{} {}", "Opening Succefully.".green().bold(), entry.path().display()),
-                        Err(err) => panic!("{} {} {}", "An error occurred when opening".red().bold(), entry.path().display(),err),
+                        Ok(()) => println!("{} {}", "Opening Successfully.".green().bold(), entry.path().display()),
+                        Err(err) => return Err(io::Error::new(io::ErrorKind::Other, format!("An error occurred when opening {}: {}", entry.path().display(), err))),
                     }
                 }
+                log_file_paths.push(entry.path().display().to_string());
             }
-        } else {
-            eprintln!("{}","Something went wrong (Folder likely doesn't exist)".red().bold());
         }
     }
+    if found_match{
+        return Ok(log_file_paths)
+    }else {
+        // If no match is found, return an error
+        Err(io::Error::new(io::ErrorKind::NotFound, "No matches found"))
+    }
 }
+
 
 pub fn get_most_recent_folder_name(path: &str) -> String {
     // Start by reading all the folders inside the given path
