@@ -183,7 +183,7 @@ dependencies = [
 
 [[package]]
 name = "find_testlog"
-version = "1.0.1"
+version = "1.1.0"
 dependencies = [
  "clap",
  "colored",
