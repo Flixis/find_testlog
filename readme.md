@@ -48,27 +48,27 @@ cargo build --release
 ### Quickstart
 Now you can run the utility (from the project root):
 ```bash
-./target/release/find-testlog -d "D:" -f "TestLogs" -p "6107-2100-6301" -y "2023-W51" -t "PTF" -s "22-39-A2Y-15I"
+./target/release/find-testlog -d "D:" -f "TestLogs" -p "REPLACE_PRODUCT_NUMBER" -y "2023-W51" -t "PTF" -s "REPLACE_SERIAL_NUMBER"
 
 output:
 Searching inside: 2023-W51
 Matched log file paths:
-D:\TestLogs\6107-2100-6301\2023-W51\PTF\20230515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
-D:\TestLogs\6107-2100-6301\2023-W51\PTF\20240515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
 ```
 
 Only passing the ``SN`` will make the CLI tool search all folders.
 
 ```bash
-./target/release/find-testlog -s "22-39-A2Y-15I"
+./target/release/find-testlog -s "REPLACE_SERIAL_NUMBER"
 
 output:
 Year-week not specified, searching all folders.
 Matched log file paths:
-D:\TestLogs\6107-2100-6301\2023-W20\PTF\20230515_105021_CLNT4408_group_0_22-39-A2Y-15I - Copy.log
-D:\TestLogs\6107-2100-6301\2023-W20\PTF\20230515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
-D:\TestLogs\6107-2100-6301\2023-W51\PTF\20230515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
-D:\TestLogs\6107-2100-6301\2023-W51\PTF\20240515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER - Copy.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
 ```
 
 
@@ -80,13 +80,13 @@ Here's how it works:
 
 1. Run the find-testlog application with your desired parameters. For example:
 ```bash
-./target/release/find-testlog -d "D:" -f "TestLogs" -p "6107-2100-6301" -y "2023-W51" -t "PTF" -s "22-39-A2Y-15I"
+./target/release/find-testlog -d "D:" -f "TestLogs" -p "REPLACE_PRODUCT_NUMBER" -y "2023-W51" -t "PTF" -s "REPLACE_SERIAL_NUMBER"
 
 output:
 Searching inside: 2023-W51
 Matched log file paths:
-D:\TestLogs\6107-2100-6301\2023-W51\PTF\20230515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
-D:\TestLogs\6107-2100-6301\2023-W51\PTF\20240515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20230515_105021_CLNT4408_group_0_REPLACE_SERIAL_NUMBER.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNT4408_group_0_REPLACE_SERIAL_NUMBER.log
 ```
 The application will now save these parameters into the configuration file.
 
@@ -98,20 +98,20 @@ Note: When running with no params the program will search all folders.
 .\find_testlog.exe
 Year-week not specified, searching all folders.
 Matched log file paths:
-D:\TestLogs\6107-2100-6301\
-D:\TestLogs\6107-2100-6301\2021-W19
-D:\TestLogs\6107-2100-6301\2022-W43
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2021-W19
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2022-W43
 ......
-D:\TestLogs\6107-2100-6301\2023-W20
-D:\TestLogs\6107-2100-6301\2023-W20\PTF
-D:\TestLogs\6107-2100-6301\2023-W51\PTF\20240515_105021_CLNT4408_group_0_22-39-A2Y-15I.log
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20\PTF
+D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNT4408_group_0_REPLACE_SERIAL_NUMBER.log
 ```    
 The application will automatically pull the parameters from the configuration file and use them for the search.
 
 If you wish to override some or all parameters stored in the configuration file, simply provide the new values as command-line arguments. For example:
 
 ```bash
-./target/release/find-testlog -p "6107-2100-6302"
+./target/release/find-testlog -p "REPLACE_PRODUCT_NUMBER"
 ```
 In this case, find-testlog will use the new product number but will pull all other parameters from the configuration file.
 
