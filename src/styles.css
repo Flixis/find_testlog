@@ -78,8 +78,12 @@ input[type="text"], input[type="checkbox"] {
   margin: 0rem;
 }
 
+.input-group-locked{
+  pointer-events: none;
+}
+
 /* Style the footer */
-#footer {
+footer {
   background-color: var(--color-primary);
   color: #fff;
   padding: 1rem;
