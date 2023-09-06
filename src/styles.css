@@ -85,3 +85,54 @@ input[type="text"], input[type="checkbox"] {
   bottom: 0rem;
   width: 100%;
 }
+
+
+
+/* Style the results box */
+.results-box {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Style the table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+}
+
+/* Style table headers */
+thead th {
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  padding: 10px;
+}
+
+/* Style table rows */
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Style table data cells */
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+/* Style the open button */
+.open-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.open-button:hover {
+  background-color: #0056b3;
+}

@@ -57,9 +57,36 @@
     </div>
   
 
-    <div id="result-box">
-      <h2 id="result-box-heading">Seach results:</h2>
-      
+    <div id="results-box">
+      <h2 id="results-box-heading">Seach results:</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>SN</th>
+            <th></th> <!-- Empty header cell for the button -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Sample result rows, you can add more as needed -->
+          <tr>
+            <td>2023-09-06</td>
+            <td>10:30 AM</td>
+            <td>/path/to/file1.txt</td>
+            <td>SN123456</td>
+            <td><button class="open-button">Open</button></td>
+          </tr>
+          <tr>
+            <td>2023-09-06</td>
+            <td>11:15 AM</td>
+            <td>/path/to/file2.txt</td>
+            <td>SN789012</td>
+            <td><button class="open-button">Open</button></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
 
