@@ -13,6 +13,9 @@
   --color-dark-variant: #677483;
   --color-background: #f6f6f9;
 
+  --color-button-default: #007db3;
+  --color-hover: #0056b3;
+
   --card-border-radius: 2rem;
   --border-radius-1: 0.4rem;
   --border-radius-2: 1.2rem;
@@ -88,42 +91,37 @@ input[type="text"], input[type="checkbox"] {
 
 
 
-/* Style the results box */
-.results-box {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
 /* Style the table */
 table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid #ccc;
+  border: 1px none;
 }
 
 /* Style table headers */
 thead th {
-  background-color: #333;
-  color: #fff;
-  text-align: left;
-  padding: 10px;
+  background-color: var(--color-dark);
+  color: var(--color-white);
+  text-align: center;
+  padding: 0.25rem;
 }
 
 /* Style table rows */
 tbody tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: var(--color-light);
 }
 
 /* Style table data cells */
 th, td {
-  border: 1px solid #ccc;
-  padding: 8px;
+  text-align: center;
+  border: 1px solid var(--color-white);
+  padding: 0.5rem;
+  max-width: 1rem;
 }
 
 /* Style the open button */
-.open-button {
-  background-color: #007bff;
+button {
+  background-color: var(--color-button-default);
   color: #fff;
   border: none;
   padding: 5px 10px;
@@ -133,6 +131,6 @@ th, td {
   transition: background-color 0.3s ease;
 }
 
-.open-button:hover {
-  background-color: #0056b3;
+button:hover {
+  background-color: var(--color-hover);
 }

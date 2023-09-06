@@ -6,12 +6,20 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Find TestLogs</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>  
     <script type="module" src="/main.js" defer></script>
+    <script src="/sortable.js"></script>
   </head>
 
   <body>
     <header>
       <div id="logo">Find TestLogs</div>
+      
+      <div class="settings-header">
+        <button type="button" id="get_config_location">Open Config file</button> 
+      </div>
+    
     </header>
   
     <div id="input-container">
@@ -44,29 +52,26 @@
         <label for="drive_letter">Drive Letter:</label>
         <input type="text" id="drive_letter" name="drive_letter" value="Q:" placeholder="Q:">
       </div>
-
-      <div class="input-group">
-        <label for="open_log">Open Log Files:</label>
-        <input type="checkbox" id="open_log" name="open_log">
-      </div>
-  
-      <div class="input-group">
-        <label for="get_config_location">Get Config Location:</label>
-        <input type="checkbox" id="get_config_location" name="get_config_location">
-      </div>
     </div>
   
 
     <div id="results-box">
       <h2 id="results-box-heading">Seach results:</h2>
-      <table>
+      <table id="sortable-table">
         <thead>
           <tr>
+          
             <th>Date</th>
             <th>Time</th>
             <th>Location</th>
             <th>SN</th>
-            <th></th> <!-- Empty header cell for the button -->
+            <th>
+              <div class="settings-resultsbox">
+              <label for="open_log">Automatically open logfiles</label>
+              <input type="checkbox" id="open_log" name="open_log">
+            </div>
+          </th> <!-- Empty header cell for the button -->
+
           </tr>
         </thead>
         <tbody>
@@ -83,7 +88,7 @@
             <td>11:15 AM</td>
             <td>/path/to/file2.txt</td>
             <td>SN789012</td>
-            <td><button class="open-button">Open</button></td>
+            <td><button class="button">Open</button></td>
           </tr>
         </tbody>
       </table>
