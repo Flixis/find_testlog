@@ -131,6 +131,7 @@ button:hover {
 
 /* Style the search button container */
 #search-button {
+  margin-right: 0.1rem;
   float: right; /* Float the button to the right */
 }
 /* Style the footer */

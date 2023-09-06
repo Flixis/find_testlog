@@ -7,10 +7,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Find TestLogs</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script type="module" src="/main.js" defer></script>
-  <script src="/sortable.js"></script>
 </head>
 
 <body>
@@ -26,24 +23,24 @@
   <div id="input-container">
     <div class="input-group">
       <label for="pn">Product Number (PN):</label>
-      <input type="text" id="pn" name="pn" placeholder="Example: 9999-1234-5678">
+      <input type="text" id="pn" placeholder="Example: 9999-1234-5678">
     </div>
 
     <div class="input-group">
       <label for="sn">Serial Number (SN):</label>
-      <input type="text" id="sn" name="sn" placeholder="Example: xx-xx-yyy-000">
+      <input type="text" id="sn" placeholder="Example: xx-xx-yyy-000">
     </div>
 
     <div class="input-group">
       <label for="year_week">Year Week:</label>
-      <input type="text" id="year_week" name="year_week" placeholder="Example: 2023-W51">
-    </div>
+      <input type="text" id="year_week" placeholder="Example: 2023-W51">
+    </div>    
 
     <div class="input-group">
       <label for="test_env">Test Environment:</label>
-      <select id="test_env" name="test_env">
-        <option value="dog">PTF</option>
-        <option value="dog">AET</option>
+      <select id="test_env">
+        <option value="PTF">PTF</option>
+        <option value="AET">AET</option>
       </select>
     </div>
   </div>
@@ -51,7 +48,9 @@
 
 
   <div id="results-box">
-    <button id="search-button">Search</button>
+    <form id="year-week-form">
+      <button type="submit" id="search-button">Search</button>
+    </form>
     <h2 id="results-box-heading">Search results:</h2>
     <table id="sortable-table">
       <thead>
@@ -89,21 +88,19 @@
     </table>
   </div>
 
-
-
   <footer id="footer">
     <div id="footer-content">&copy; Find_testlog</div>
     <a id="footer-content" href="https://github.com/Flixis/find_testlog/tree/main">Tariq Dinmohamed(Github)</a>
   </footer>
 
-  <!-- <p>Click on the Tauri logo to learn more about the framework</p>
 
+  <!-- testing area for js to rust connection -->
       <form class="row" id="greet-form">
         <input id="greet-input" placeholder="Enter a name..." />
         <button type="submit">Greet</button>
       </form>
 
-      <p id="greet-msg"></p> -->
+      <p id="greet-msg"></p>
   </div>
 </body>
 
