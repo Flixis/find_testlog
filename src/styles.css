@@ -85,24 +85,6 @@ select {
 }
 
 
-.input-group-locked{
-  pointer-events: none;
-}
-
-/* Style the footer */
-footer {
-  background-color: var(--color-primary);
-  color: #fff;
-  padding: 1rem;
-  text-align: center;
-  position: absolute;
-  bottom: 0rem;
-  width: 100%;
-  
-}
-
-
-
 /* Style the table */
 table {
   width: 100%;
@@ -145,4 +127,20 @@ button {
 
 button:hover {
   background-color: var(--color-hover);
+}
+
+/* Style the search button container */
+#search-button {
+  float: right; /* Float the button to the right */
+}
+/* Style the footer */
+footer {
+  background-color: var(--color-primary);
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  position: absolute;
+  bottom: 0rem;
+  width: 100%;
+  
 }
