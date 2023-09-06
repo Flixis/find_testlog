@@ -78,6 +78,13 @@ input[type="text"], input[type="checkbox"] {
   margin: 0rem;
 }
 
+select {
+  width: calc(100% + 20px); /* for some reason if you just specify 100% it doesn't align */
+  padding: 0.5rem;
+  text-align: center;
+}
+
+
 .input-group-locked{
   pointer-events: none;
 }
