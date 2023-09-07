@@ -52,7 +52,7 @@ fn main() {
         .expect("error while running tauri application");
 
 
-        let default_app_config = structs::AppConfig::default_values();
+    let default_app_config = structs::AppConfig::default_values();
     let args = structs::Cli::parse();
 
     // Returns the config location
