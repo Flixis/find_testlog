@@ -3,6 +3,7 @@
 
 use clap::Parser;
 use colored::*;
+use std::env;
 
 mod functions;
 mod structs;
@@ -46,10 +47,17 @@ fn rust_parse_search_data(pn: String , sn: String, year_week: String, test_env: 
 }
 
 fn main() {
-    tauri::Builder::default()
+
+    /* This part is just so we can keep support for the old CLI features
+    We check if there are no arguments, if there are none we launch GUI. */
+    let argumentation: Vec<String> = env::args().collect();
+
+    if argumentation.len() < 2{
+        tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![rust_parse_search_data])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    }
 
 
     let default_app_config = structs::AppConfig::default_values();
