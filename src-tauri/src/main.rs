@@ -15,8 +15,8 @@ pub struct SearchInfo {
 
 
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+fn greet(pn: &str , sn: &str, yearWeek: &str, testEnv: &str) -> String {
+    format!("data:, {pn} {sn} {yearWeek} {testEnv} from Rust!")
 }
 
 // // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command

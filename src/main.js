@@ -4,10 +4,10 @@ let greetMsgEl;
 
 async function getvaluefromtextbox(pn, sn, yearWeek, testEnv) {
   greetMsgEl = document.querySelector("#greet-msg");
-  greetMsgEl.textContent = await invoke("greet", { name: pn });
-  greetMsgEl.textContent = await invoke("greet", { name: sn });
-  greetMsgEl.textContent = await invoke("greet", { name: yearWeek });
-  greetMsgEl.textContent = await invoke("greet", { name: testEnv });
+  greetMsgEl.textContent = await invoke("greet", { pn: pn, 
+                                                  sn: sn, 
+                                                  yearWeek: yearWeek, 
+                                                  testEnv: testEnv });
 }
 
 window.addEventListener("DOMContentLoaded", () => {
