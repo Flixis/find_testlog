@@ -1,30 +1,42 @@
 const { invoke } = window.__TAURI__.tauri;
 
-let greetInputEl;
-let yearWeekEl;
 let greetMsgEl;
 
-async function greet() {
-  greetMsgEl.textContent = await invoke("greet", { name: greetInputEl.value });
-}
-
 async function getvaluefromtextbox() {
-  greetMsgEl.textContent = await invoke("greet", { name: yearWeekEl.value });
+  greetMsgEl = document.querySelector("#greet-msg");
+  greetMsgEl.textContent = await invoke("greet", { name: pn.value });
+  greetMsgEl.textContent = await invoke("greet", { name: sn.value });
+  greetMsgEl.textContent = await invoke("greet", { name: yearWeek.value });
+  greetMsgEl.textContent = await invoke("greet", { name: testEnv.value });
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  yearWeekEl = document.querySelector("#year_week");
-  greetMsgEl = document.querySelector("#greet-msg");
+  const form = document.querySelector("#search-button-form");
 
-  document.querySelector("#greet-form").addEventListener("submit", (e) => {
+  form.addEventListener("submit", (e) => {
+    // Prevent the default form submission behavior
     e.preventDefault();
-    greet();
-  });
 
-  // Assuming you have a form with id="year-week-form"
-  document.querySelector("#search-button-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    getvaluefromtextbox();
+    // Collect the input values
+    const pn = document.getElementById("pn").value;
+    const sn = document.getElementById("sn").value;
+    const yearWeek = document.getElementById("year_week").value;
+    const testEnv = document.getElementById("test_env").value;
+
+    // Create an object with the collected data
+    const searchData = {
+      pn: pn,
+      sn: sn,
+      yearWeek: yearWeek,
+      testEnv: testEnv,
+    };
+
+    // Now you can do something with the searchData object, such as sending it to the server or performing a search operation.
+    getvaluefromtextbox()
+
+    
+    // For example, if you want to log the data to the console:
+    console.log(searchData);
   });
 });
+
