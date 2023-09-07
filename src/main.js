@@ -2,18 +2,18 @@ const { invoke } = window.__TAURI__.tauri;
 
 let greetMsgEl;
 
-async function getvaluefromtextbox() {
+async function getvaluefromtextbox(pn, sn, yearWeek, testEnv) {
   greetMsgEl = document.querySelector("#greet-msg");
-  greetMsgEl.textContent = await invoke("greet", { name: pn.value });
-  greetMsgEl.textContent = await invoke("greet", { name: sn.value });
-  greetMsgEl.textContent = await invoke("greet", { name: yearWeek.value });
-  greetMsgEl.textContent = await invoke("greet", { name: testEnv.value });
+  greetMsgEl.textContent = await invoke("greet", { name: pn });
+  greetMsgEl.textContent = await invoke("greet", { name: sn });
+  greetMsgEl.textContent = await invoke("greet", { name: yearWeek });
+  greetMsgEl.textContent = await invoke("greet", { name: testEnv });
 }
 
 window.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("#search-button-form");
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     // Prevent the default form submission behavior
     e.preventDefault();
 
@@ -32,11 +32,11 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     // Now you can do something with the searchData object, such as sending it to the server or performing a search operation.
-    getvaluefromtextbox()
-
     
+    // Call the function with the collected values
+    await getvaluefromtextbox(pn, sn, yearWeek, testEnv);
+
     // For example, if you want to log the data to the console:
     console.log(searchData);
   });
 });
-
