@@ -9,7 +9,7 @@ mod functions;
 mod structs;
 
 /*
-Written 15/07/2023
+Written 07/09/2023
 Tariq Dinmohamed
 
 I hated searching for logfiles, So I challenged myself to make something to help with that.
