@@ -1,10 +1,9 @@
 [package]
 name = "find_testlog_tauri"
-version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+version = "2.0.0"
+description = "Quickly find and open testlogs for Company products"
+authors = ["Tariq Dinmohamed <github.com/flixis>"]
+repository = "https://github.com/Flixis/find_testlog"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -16,6 +15,13 @@ tauri-build = { version = "1.4", features = [] }
 tauri = { version = "1.4", features = [ "window-all", "shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+
+clap = { version = "4.3.0", features = ["derive"] }
+confy = "0.5.1"
+colored = "2.0.4"
+walkdir = "2.3.3"
+open = "5.0.0"
+
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

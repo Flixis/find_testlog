@@ -4,10 +4,10 @@ let greetMsgEl;
 
 async function getvaluefromtextbox(pn, sn, yearWeek, testEnv) {
   greetMsgEl = document.querySelector("#greet-msg");
-  greetMsgEl.textContent = await invoke("parse_search_data", { pn: pn, 
-                                                  sn: sn, 
-                                                  yearWeek: yearWeek, 
-                                                  testEnv: testEnv });
+  greetMsgEl.textContent = await invoke("rust_parse_search_data", { pn: pn, 
+                                                                    sn: sn, 
+                                                                    yearWeek: yearWeek, 
+                                                                    testEnv: testEnv });
 }
 
 window.addEventListener("DOMContentLoaded", () => {
