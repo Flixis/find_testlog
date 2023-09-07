@@ -23,7 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // Assuming you have a form with id="year-week-form"
-  document.querySelector("#year-week-form").addEventListener("submit", (e) => {
+  document.querySelector("#search-button-form").addEventListener("submit", (e) => {
     e.preventDefault();
     getvaluefromtextbox();
   });
