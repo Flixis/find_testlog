@@ -1,9 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+//#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use clap::Parser;
-use colored::*;
-use std::env;
+use log::{error, info, LevelFilter, debug, warn};
+use tauri::api::cli::ArgData;
+// use clap::Parser;
+// use colored::*;
+// use std::env;
 
 mod functions;
 mod structs;
@@ -31,7 +33,7 @@ pub mod estructs{
 }
 
 
-#[tauri::command]
+#[tauri::command] //tauri handler
 fn rust_parse_search_data(pn: String , sn: String, year_week: String, test_env: String) -> String {
     
     let data = estructs::SearchInfo {
@@ -48,78 +50,74 @@ fn rust_parse_search_data(pn: String , sn: String, year_week: String, test_env: 
 
 fn main() {
 
-    /* This part is just so we can keep support for the old CLI features
-    We check if there are no arguments, if there are none we launch GUI. */
-    let argumentation: Vec<String> = env::args().collect();
+    // tauri::Builder::default()
+    // .invoke_handler(tauri::generate_handler![rust_parse_search_data])
+    // .run(tauri::generate_context!())
+    // .expect("error while running tauri application");
 
-    if argumentation.len() < 2{
+        // Builds the Tauri connection
         tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![rust_parse_search_data])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-    }
-
-
-    let default_app_config = structs::AppConfig::default_values();
-    let args = structs::Cli::parse();
-
-    // Returns the config location
-    if args.get_config_location {
-        let file = confy::get_configuration_file_path("find_testlog", None).unwrap();
-        eprintln!("{} {:#?}", "Configuration file is located at:".green().bold(), file);
-        return;
-    }
-
-    // Extract arguments or use default values
-    let drive_letter = args.drive_letter.as_deref().unwrap_or(&default_app_config.drive_letter).to_string();
-    let folder_location = args.folder_location.as_deref().unwrap_or(&default_app_config.folder_location).to_string();
-    let pn = args.pn.as_deref().unwrap_or(&default_app_config.pn).to_string();
-    let test_env = args.test_env.as_deref().unwrap_or(&default_app_config.test_env).to_string();
-
-    // Build the folder path, used for get_most_recent_folder_name
-    let mut folder_path = format!("{}\\{}\\{}\\", drive_letter, folder_location, pn);
-    let year_week = args.year_week.as_deref().unwrap_or("");
-
-    let sn = args.sn.clone().unwrap_or(default_app_config.sn);
-    
-    if sn.is_empty() {
-        eprintln!("{}", "SN cannot be empty".red().bold());
-        return; // Exit the app;
-    }
-
-    // Build the folder path, this time with all of its values to parse for finding the log file.
-    if args.year_week.is_none() {
-        // If no year-week is passed, we just pass the normal folder_path
-        println!("{}", "Year-week not specified, searching all folders.".green().bold());
-    } else {
-        println!("{}{}", "Searching inside: ".green().bold(), year_week);
-        folder_path = format!("{}\\{}\\{}\\{}\\{}", drive_letter, folder_location, pn, year_week, test_env);
-    }
-
-    let app_config = structs::AppConfig { //save current params to cfg file
-        drive_letter,
-        folder_location,
-        pn,
-        test_env,
-        sn: sn.clone(),
-    };
-    
-    if let Err(err) = app_config.save() {
-        eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
-    }
-
-    let get_log_file_path = functions::itter_find_log(folder_path, args.clone());
-    match get_log_file_path {
-        Ok(paths) => {
-            if paths.is_empty() {
-                println!("{}","No matches found".red().bold());
-            } else {
-                println!("{}", "Matched log file paths:".green().bold());
-                for path in paths {
-                    println!("{}", path);
+        .setup(|app| {
+          // Default to GUI if the app was opened with no CLI args.
+          if std::env::args_os().count() <= 1 {
+            cli_gui(app.handle())?;
+          }
+          // Else, we start in CLI mode and parse the given parameters
+          let matches = match app.get_cli_matches() {
+            Ok(matches) => matches,
+            Err(err) => {
+                error!("{}", err);
+                app.handle().exit(1);
+                return Ok(());
+            }
+        };
+        // Iterate over each key and execute functions based on them
+        for (key, data) in matches.args {
+            if data.occurrences > 0 || key.as_str() == "help" || key.as_str() == "version" {
+                // Define all CLI commands/arguments here and in the tauri.conf.json file
+                // WARNING: If the commmand is not defined in the tauri.conf.json file, it can't be used here
+                match key.as_str() {
+                    "gui" => {
+                        if let Err(err) = cli_gui(app.handle()) {
+                            error!("GUI Error: {}", err);
+                        }
+                    }
+                    "pn" => testing_cli_pn(app.handle(), data),
+                     _ => not_done(app.handle()),
                 }
             }
-        }
-        Err(err) => eprintln!("{} {}", "Error:".red().bold(), err),
-    }
+        }    
+        Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![
+            /*TODO: add handlers here */
+            rust_parse_search_data
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}    
+
+
+fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
+    debug!("showing gui");
+    // #[cfg(all(not(debug_assertions), windows))]
+    // remove_windows_console();
+    tauri::WindowBuilder::new(&app, "FindTestlog", tauri::WindowUrl::App("index.html".into()))
+      .title("Find Testlog")
+      .inner_size(800., 480.)
+      .resizable(true)
+      .build()?;
+    debug!("this won't show on Windows release builds");
+    Ok(())
+  }
+
+fn testing_cli_pn(app: tauri::AppHandle, data: ArgData){
+    println!("hello");
+    dbg!("here");
+    app.exit(2);
+}
+
+fn not_done(app: tauri::AppHandle) {
+    warn!("Function not implemented yet");
+    app.exit(2);
 }

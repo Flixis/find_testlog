@@ -12,45 +12,15 @@
   },
   "tauri": {
     "allowlist": {
-      "window": {
-        "all": true,
-        "create": true,
-        "center": true,
-        "requestUserAttention": false,
-        "setResizable": true,
-        "setMaximizable": true,
-        "setMinimizable": true,
-        "setClosable": true,
-        "setTitle": true,
-        "maximize": false,
-        "unmaximize": false,
-        "minimize": true,
-        "unminimize": true,
-        "show": true,
-        "hide": true,
-        "close": true,
-        "setDecorations": true,
-        "setAlwaysOnTop": false,
-        "setContentProtected": false,
-        "setSize": true,
-        "setMinSize": true,
-        "setMaxSize": true,
-        "setPosition": true,
-        "setFullscreen": false,
-        "setFocus": true,
-        "setIcon": true,
-        "setSkipTaskbar": true,
-        "setCursorGrab": true,
-        "setCursorVisible": true,
-        "setCursorIcon": true,
-        "setCursorPosition": true,
-        "setIgnoreCursorEvents": true,
-        "startDragging": true,
-        "print": true
-      },
       "all": false,
       "shell": {
         "all": false,
+        "execute": false,
+        "open": true,
+        "scope": [],
+        "sidecar": false
+      },
+      "dialog": {
         "open": true
       }
     },
@@ -69,14 +39,57 @@
     "security": {
       "csp": null
     },
-    "windows": [
-      {
-        "fullscreen": false,
-        "resizable": true,
-        "title": "find_testlog_tauri",
-        "width": 800,
-        "height": 600
-      }
-    ]
+    "updater": {
+      "active": false
+    },
+    "cli": {
+      "description": "Find TestLog, a utility to assist in finding and opening log files",
+      "longDescription": "Find TestLog navigates a complex directory structure to help you quickly find and optionally open log files. It uses a configuration file to save and reuse settings for a more streamlined user experience.",
+      "beforeHelp": "FIND TESTLOG HELP PAGE", 
+      "afterHelp": "Thank you for using Find TestLog!", 
+      "args": [
+        {
+          "name": "pn",
+          "short": "p",
+          "takesValue": true
+        },
+        {
+          "name": "sn",
+          "short": "s",
+          "takesValue": true
+        },
+        {
+          "name": "year_week",
+          "short": "y",
+          "takesValue": true
+        },
+        {
+          "name": "test_env",
+          "short": "t",
+          "takesValue": true
+        },
+        {
+          "name": "open_log",
+          "short": "o",
+          "takesValue": false
+        },
+        {
+          "name": "drive_letter",
+          "short": "d",
+          "takesValue": true
+        },
+        {
+          "name": "folder_location",
+          "short": "f",
+          "takesValue": true
+        },
+        {
+          "name": "get_config_location",
+          "short": "g",
+          "takesValue": false
+        }
+      ],
+      "subcommands": {}
+    }
   }
 }
