@@ -63,19 +63,23 @@ fn main() {
                     match key.as_str() {
                         "pn" => {
                             // Create a new SearchInfo struct with only the pn field set
-                            structinformation.pn = data.value.clone().to_string();
+                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            structinformation.pn = saved_to_struct;
                         },
                         "sn" => {
                             // Create a new SearchInfo struct with only the sn field set
-                            structinformation.sn = data.value.clone().to_string();
+                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            structinformation.sn = saved_to_struct;
                         },
                         "year_week" => {
                             // Create a new SearchInfo struct with only the year_week field set
-                            structinformation.year_week = data.value.clone().to_string();
+                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            structinformation.year_week = saved_to_struct;
                         },
                         "test_env" => {
                             // Create a new SearchInfo struct with only the test_env field set
-                            structinformation.test_env = data.value.clone().to_string();
+                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            structinformation.test_env = saved_to_struct;
                         },
                         "open_log" => {
                             // Set the open_log flag to true
@@ -84,11 +88,13 @@ fn main() {
                         },
                         "drive_letter" => {
                             // Set the drive_letter field
-                            structinformation.drive_letter = data.value.clone().to_string();
+                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            structinformation.drive_letter = saved_to_struct;
                         },
                         "folder_location" => {
                             // Set the folder_location field
-                            structinformation.folder_location = data.value.clone().to_string();
+                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            structinformation.folder_location = saved_to_struct;
                         },
                         "get_config_file" => {
                             // Set the get_config_location flag to true

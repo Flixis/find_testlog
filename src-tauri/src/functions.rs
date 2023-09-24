@@ -1,7 +1,18 @@
 use colored::Colorize;
+use tauri::api::cli::ArgData;
 use std::fs;
 use std::io;
 use walkdir::WalkDir;
+
+
+
+pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String{
+    if let Some(unescaped_string) = unescaped_string.value.as_str(){
+        unescaped_string.replace("\\n", "\n").replace("\\t", "\t")
+    }else {
+        return "".to_string();
+    }
+}
 
 pub fn itter_find_log(
     folder_path: String,
