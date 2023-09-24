@@ -1,5 +1,5 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+//#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::process::exit;
 
@@ -39,6 +39,12 @@ fn rust_parse_search_data(pn: String , sn: String, year_week: String, test_env: 
 }
 
 fn main() {
+
+    // tauri::Builder::default()
+    // .invoke_handler(tauri::generate_handler![rust_parse_search_data])
+    // .run(tauri::generate_context!())
+    // .expect("error while running tauri application");
+
         // Builds the Tauri connection
         tauri::Builder::default()
         .setup(|app| {
@@ -79,7 +85,7 @@ fn main() {
             }
         }
         // Print the struct at the end
-        // println!("{:?}", structinformation);
+        println!("{:?}", structinformation);
         Ok(())
         })
         .invoke_handler(tauri::generate_handler![rust_parse_search_data])
