@@ -53,11 +53,7 @@ fn main() {
                 }
             }; 
             
-            if search_info.sn.is_empty() {
-                eprintln!("{}", "SN cannot be empty".red().bold());
-                exit(2);
-            }
-            
+           
             // Iterate over each key and execute functions based on them
             for (key, data) in matches.args {
                 if data.occurrences > 0 || key.as_str() == "help" || key.as_str() == "version" {
@@ -100,7 +96,9 @@ fn main() {
                         "get_config_file" => {
                             // Set the get_config_location flag to true
                             //TODO: implement structinformation.get_config_location = true;
-                            not_done(app.handle())
+                            let file = confy::get_configuration_file_path("find_testlog", None).unwrap();
+                            println!("{} {:#?}", "Configuration file is located at:".green().bold(), file);
+                            exit(2);
                         },
                         _ => not_done(app.handle()),
                     }
@@ -113,7 +111,15 @@ fn main() {
             }
             
             // Print the struct at the end
-            dbg!("{:?}", search_info);
+            dbg!("{:?}", &search_info);
+
+
+            if search_info.sn.is_empty() {
+                eprintln!("{}", "SN cannot be empty".red().bold());
+                exit(2);
+            }
+            
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![rust_parse_search_data])
