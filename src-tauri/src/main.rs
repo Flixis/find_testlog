@@ -1,8 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
-//#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+use std::process::exit;
 
 use log::{error, info, LevelFilter, debug, warn};
 use tauri::api::cli::ArgData;
+use tauri::api::cli::get_matches;
 // use clap::Parser;
 // use colored::*;
 // use std::env;
@@ -18,43 +21,24 @@ I hated searching for logfiles, So I challenged myself to make something to help
 Documentation and code comes as is.
 */
 
-pub mod estructs{
-    use serde::*;
-
-    #[derive(Debug, Clone, Serialize, Deserialize)]
-    pub struct SearchInfo {
-        pub drive_letter: String,
-        pub folder_location: String,
-        pub pn: String,
-        pub test_env: String,
-        pub sn: String,
-        pub year_week: String,
-    }
-}
-
-
 #[tauri::command] //tauri handler
 fn rust_parse_search_data(pn: String , sn: String, year_week: String, test_env: String) -> String {
     
-    let data = estructs::SearchInfo {
-        drive_letter: "".to_string(),
-        folder_location: "".to_string(),
-        pn : pn,
-        test_env: test_env,
-        sn: sn,
-        year_week: year_week,
-    };
+    // let data = structs::AppConfig {
+    //     drive_letter: "".to_string(),
+    //     folder_location: "".to_string(),
+    //     pn : pn,
+    //     test_env: test_env,
+    //     sn: sn,
+    //     year_week: year_week,
+    // };
     
-    format!("data:, {:?} from Rust!", data)
+    // format!("data:, {:?} from Rust!", data)
+    
+    exit(2)
 }
 
 fn main() {
-
-    // tauri::Builder::default()
-    // .invoke_handler(tauri::generate_handler![rust_parse_search_data])
-    // .run(tauri::generate_context!())
-    // .expect("error while running tauri application");
-
         // Builds the Tauri connection
         tauri::Builder::default()
         .setup(|app| {
@@ -70,33 +54,38 @@ fn main() {
                 app.handle().exit(1);
                 return Ok(());
             }
+        };        // Iterate over each key and execute functions based on them
+        let mut structinformation = structs::AppConfig {
+            drive_letter: "".to_string(),
+            folder_location: "".to_string(),
+            pn: "".to_string(),
+            test_env: "".to_string(),
+            sn: "".to_string(),
+            year_week: "".to_string(),
         };
-        // Iterate over each key and execute functions based on them
         for (key, data) in matches.args {
             if data.occurrences > 0 || key.as_str() == "help" || key.as_str() == "version" {
-                // Define all CLI commands/arguments here and in the tauri.conf.json file
-                // WARNING: If the commmand is not defined in the tauri.conf.json file, it can't be used here
                 match key.as_str() {
-                    "gui" => {
-                        if let Err(err) = cli_gui(app.handle()) {
-                            error!("GUI Error: {}", err);
-                        }
+                    "pn" => {    
+                        // Create a new SearchInfo struct with only the pn field set
+                        structinformation.pn = data.value.clone().to_string();
                     }
-                    "pn" => testing_cli_pn(app.handle(), data),
-                     _ => not_done(app.handle()),
+                    "sn" => {    
+                        // Create a new SearchInfo struct with only the sn field set
+                        structinformation.sn = data.value.clone().to_string();
+                    }
+                    _ => not_done(app.handle()),
                 }
             }
-        }    
+        }
+        // Print the struct at the end
+        // println!("{:?}", structinformation);
         Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            /*TODO: add handlers here */
-            rust_parse_search_data
-        ])
+        .invoke_handler(tauri::generate_handler![rust_parse_search_data])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}    
-
+        .expect("error while running tauri application")
+} 
 
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("showing gui");
@@ -111,11 +100,6 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     Ok(())
   }
 
-fn testing_cli_pn(app: tauri::AppHandle, data: ArgData){
-    println!("hello");
-    dbg!("here");
-    app.exit(2);
-}
 
 fn not_done(app: tauri::AppHandle) {
     warn!("Function not implemented yet");

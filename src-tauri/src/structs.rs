@@ -4,22 +4,24 @@ use confy::ConfyError;
 // Struct for application configuration
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct AppConfig {
+    pub pn: String,
+    pub sn: String,
+    pub year_week: String,
     pub drive_letter: String,
     pub folder_location: String,
-    pub pn: String,
     pub test_env: String,
-    pub sn: String,
 }
 
 // Default values for AppConfig
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
+            pn: String::from(""),
+            sn: String::from(""),
+            year_week: String::from(""),
             drive_letter: String::from("Q:"),
             folder_location: String::from("TestLogs"),
-            pn: String::from(""),
             test_env: String::from("PTF"),
-            sn: String::from(""),
         }
     }
 }
