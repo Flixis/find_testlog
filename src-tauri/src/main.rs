@@ -64,15 +64,42 @@ fn main() {
                         "pn" => {
                             // Create a new SearchInfo struct with only the pn field set
                             structinformation.pn = data.value.clone().to_string();
-                        }
+                        },
                         "sn" => {
                             // Create a new SearchInfo struct with only the sn field set
                             structinformation.sn = data.value.clone().to_string();
-                        }
+                        },
+                        "year_week" => {
+                            // Create a new SearchInfo struct with only the year_week field set
+                            structinformation.year_week = data.value.clone().to_string();
+                        },
+                        "test_env" => {
+                            // Create a new SearchInfo struct with only the test_env field set
+                            structinformation.test_env = data.value.clone().to_string();
+                        },
+                        "open_log" => {
+                            // Set the open_log flag to true
+                            // TODO implement structinformation.open_log = true;
+                            not_done(app.handle())
+                        },
+                        "drive_letter" => {
+                            // Set the drive_letter field
+                            structinformation.drive_letter = data.value.clone().to_string();
+                        },
+                        "folder_location" => {
+                            // Set the folder_location field
+                            structinformation.folder_location = data.value.clone().to_string();
+                        },
+                        "get_config_file" => {
+                            // Set the get_config_location flag to true
+                            //TODO: implement structinformation.get_config_location = true;
+                            not_done(app.handle())
+                        },
                         _ => not_done(app.handle()),
                     }
                 }
             }
+            
             // Print the struct at the end
             println!("{:?}", structinformation);
             Ok(())
@@ -100,5 +127,6 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
 
 fn not_done(app: tauri::AppHandle) {
     warn!("Function not implemented yet");
+    println!("Function not implemented yet");
     app.exit(2);
 }

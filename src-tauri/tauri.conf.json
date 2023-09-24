@@ -84,7 +84,7 @@
           "takesValue": true
         },
         {
-          "name": "get_config_location",
+          "name": "get_config_file",
           "short": "g",
           "takesValue": false
         }
