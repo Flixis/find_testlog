@@ -96,8 +96,15 @@ fn main() {
                         "get_config_file" => {
                             // Set the get_config_location flag to true
                             //TODO: implement structinformation.get_config_location = true;
-                            let file = confy::get_configuration_file_path("find_testlog", None).unwrap();
-                            println!("{} {:#?}", "Configuration file is located at:".green().bold(), file);
+                            match confy::get_configuration_file_path("find_testlog", None) {
+                                Ok(file) => {
+                                    println!("{} {:#?}", "Configuration file is located at:".green().bold(), file);
+                                },
+                                Err(err) => {
+                                    eprintln!("Failed to get configuration file path: {}", err);
+                                }
+                                _ => exit(2)
+                            };
                             exit(2);
                         },
                         _ => not_done(app.handle()),
