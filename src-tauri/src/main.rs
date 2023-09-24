@@ -3,9 +3,7 @@
 
 use std::process::exit;
 
-use log::{debug, error, info, warn, LevelFilter};
-use tauri::api::cli::get_matches;
-use tauri::api::cli::ArgData;
+use log::{debug, error, warn};
 
 mod functions;
 mod structs;
