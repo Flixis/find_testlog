@@ -2,7 +2,7 @@
 //#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::process::exit;
-
+use colored::*;
 use log::{debug, error, warn};
 
 mod functions;
@@ -49,37 +49,32 @@ fn main() {
                     app.handle().exit(1);
                     return Ok(());
                 }
-            }; // Iterate over each key and execute functions based on them
-            let mut structinformation = structs::AppConfig {
-                pn: "".to_string(),
-                sn: "".to_string(),
-                year_week: "".to_string(),
-                drive_letter: "".to_string(),
-                folder_location: "".to_string(),
-                test_env: "".to_string(),
-            };
+            }; 
+            //Load current config, if nothing is availible just load defaults.
+            let mut search_info = structs::AppConfig::default_values();
+            // Iterate over each key and execute functions based on them
             for (key, data) in matches.args {
                 if data.occurrences > 0 || key.as_str() == "help" || key.as_str() == "version" {
                     match key.as_str() {
                         "pn" => {
                             // Create a new SearchInfo struct with only the pn field set
                             let saved_to_struct = functions::strip_string_of_garbage(data);
-                            structinformation.pn = saved_to_struct;
+                            search_info.pn = saved_to_struct;
                         },
                         "sn" => {
                             // Create a new SearchInfo struct with only the sn field set
                             let saved_to_struct = functions::strip_string_of_garbage(data);
-                            structinformation.sn = saved_to_struct;
+                            search_info.sn = saved_to_struct;
                         },
                         "year_week" => {
                             // Create a new SearchInfo struct with only the year_week field set
                             let saved_to_struct = functions::strip_string_of_garbage(data);
-                            structinformation.year_week = saved_to_struct;
+                            search_info.year_week = saved_to_struct;
                         },
                         "test_env" => {
                             // Create a new SearchInfo struct with only the test_env field set
                             let saved_to_struct = functions::strip_string_of_garbage(data);
-                            structinformation.test_env = saved_to_struct;
+                            search_info.test_env = saved_to_struct;
                         },
                         "open_log" => {
                             // Set the open_log flag to true
@@ -89,12 +84,12 @@ fn main() {
                         "drive_letter" => {
                             // Set the drive_letter field
                             let saved_to_struct = functions::strip_string_of_garbage(data);
-                            structinformation.drive_letter = saved_to_struct;
+                            search_info.drive_letter = saved_to_struct;
                         },
                         "folder_location" => {
                             // Set the folder_location field
                             let saved_to_struct = functions::strip_string_of_garbage(data);
-                            structinformation.folder_location = saved_to_struct;
+                            search_info.folder_location = saved_to_struct;
                         },
                         "get_config_file" => {
                             // Set the get_config_location flag to true
@@ -106,8 +101,12 @@ fn main() {
                 }
             }
             
+            if let Err(err) = search_info.save() {
+                eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
+            }
+            
             // Print the struct at the end
-            println!("{:?}", structinformation);
+            println!("{:?}", search_info);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![rust_parse_search_data])
