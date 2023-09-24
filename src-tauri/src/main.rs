@@ -37,6 +37,8 @@ fn main() {
     // Builds the Tauri connection
     tauri::Builder::default()
         .setup(|app| {
+            //Load current config, if nothing is availible just load defaults.
+            let mut search_info = structs::AppConfig::default_values();
             // Default to GUI if the app was opened with no CLI args.
             if std::env::args_os().count() <= 1 {
                 cli_gui(app.handle())?;
@@ -50,8 +52,12 @@ fn main() {
                     return Ok(());
                 }
             }; 
-            //Load current config, if nothing is availible just load defaults.
-            let mut search_info = structs::AppConfig::default_values();
+            
+            if search_info.sn.is_empty() {
+                eprintln!("{}", "SN cannot be empty".red().bold());
+                exit(2);
+            }
+            
             // Iterate over each key and execute functions based on them
             for (key, data) in matches.args {
                 if data.occurrences > 0 || key.as_str() == "help" || key.as_str() == "version" {
@@ -101,12 +107,13 @@ fn main() {
                 }
             }
             
+            //Make sure to save after we've written new data
             if let Err(err) = search_info.save() {
                 eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
             }
             
             // Print the struct at the end
-            println!("{:?}", search_info);
+            dbg!("{:?}", search_info);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![rust_parse_search_data])
