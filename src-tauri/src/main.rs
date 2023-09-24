@@ -51,12 +51,12 @@ fn main() {
                 }
             }; // Iterate over each key and execute functions based on them
             let mut structinformation = structs::AppConfig {
-                drive_letter: "".to_string(),
-                folder_location: "".to_string(),
                 pn: "".to_string(),
-                test_env: "".to_string(),
                 sn: "".to_string(),
                 year_week: "".to_string(),
+                drive_letter: "".to_string(),
+                folder_location: "".to_string(),
+                test_env: "".to_string(),
             };
             for (key, data) in matches.args {
                 if data.occurrences > 0 || key.as_str() == "help" || key.as_str() == "version" {
