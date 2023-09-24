@@ -48,7 +48,6 @@ impl AppConfig {
 #[derive(Parser, Clone)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-
     #[clap(short, long)]
     ///Product Number, Example: 6107-2100-6301.
     pub pn: Option<String>,
@@ -80,5 +79,4 @@ pub struct Cli {
     #[clap(short, long)]
     ///If passed, Returns config location
     pub get_config_location: bool,
-
 }
