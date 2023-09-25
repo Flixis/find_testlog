@@ -1,20 +1,22 @@
 use colored::Colorize;
+use tauri::api::cli::ArgData;
 use std::fs;
 use std::io;
-use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
 
-pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String {
-    if let Some(unescaped_string) = unescaped_string.value.as_str() {
+
+
+pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String{
+    if let Some(unescaped_string) = unescaped_string.value.as_str(){
         unescaped_string.replace("\\n", "\n").replace("\\t", "\t")
-    } else {
+    }else {
         return "".to_string();
     }
 }
 
 pub fn itter_find_log(
     folder_path: String,
-    cli_parse: crate::structs::AppConfig,
+    cli_parse: crate::structs::Cli,
 ) -> Result<Vec<String>, io::Error> {
     // Keep track of whether a match is found
     let mut found_match: bool = false;
@@ -27,6 +29,7 @@ pub fn itter_find_log(
             let sn_lower: String = cli_parse
                 .sn
                 .clone()
+                .unwrap_or_default()
                 .to_string()
                 .to_ascii_lowercase();
 
