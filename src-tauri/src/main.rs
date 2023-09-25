@@ -105,7 +105,6 @@ fn main() {
                                 Err(err) => {
                                     eprintln!("Failed to get configuration file path: {}", err);
                                 }
-                                _ => exit(2),
                             };
                             exit(2);
                         }
@@ -169,7 +168,7 @@ fn main() {
 
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("showing gui");
-    #[cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+    functions::remove_windows_console();
     tauri::WindowBuilder::new(
         &app,
         "FindTestlog",

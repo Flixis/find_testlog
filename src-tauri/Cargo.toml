@@ -22,6 +22,7 @@ colored = "2.0.4"
 walkdir = "2.3.3"
 open = "5.0.0"
 log = "0.4.20"
+windows-sys = "0.48.0"
 
 
 [features]

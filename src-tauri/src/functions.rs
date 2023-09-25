@@ -4,6 +4,12 @@ use std::io;
 use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
 
+pub fn remove_windows_console() {
+    unsafe {
+        windows_sys::Win32::System::Console::FreeConsole();
+    }  
+}
+
 pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String {
     if let Some(unescaped_string) = unescaped_string.value.as_str() {
         unescaped_string.replace("\\n", "\n").replace("\\t", "\t")
@@ -102,3 +108,4 @@ pub fn get_most_recent_folder_name(path: &str) -> String {
         String::new()
     })
 }
+
