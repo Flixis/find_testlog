@@ -7,6 +7,7 @@ use log::warn;
 
 
 pub fn not_done(app: tauri::AppHandle) {
+    println!("{:?}", app.package_info());
     warn!("Function not implemented yet");
     println!("Function not implemented yet");
     app.exit(127);

@@ -54,7 +54,7 @@ fn main() {
             };
             // Iterate over each key and execute functions based on them
             for (key, data) in matches.args {
-                if data.occurrences > 0 {
+                if data.occurrences > 0 || key.as_str() == "help" {
                     cli_enabled = true;
                     match key.as_str() {
                         "pn" => {
