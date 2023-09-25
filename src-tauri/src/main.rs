@@ -2,8 +2,9 @@
 //#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use colored::*;
-use log::{debug, error, warn};
+use log::{debug, error};
 use std::process::exit;
+use std::io::{stdin, stdout};
 
 
 mod functions;
@@ -157,7 +158,7 @@ fn main() {
             // Print the struct at the end
             dbg!("{:?}", &search_info);
 
-            Ok(())
+            exit(0);
         })
         .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())

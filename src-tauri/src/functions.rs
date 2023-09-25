@@ -10,7 +10,7 @@ use log::warn;
 pub fn not_done(app: tauri::AppHandle) {
     warn!("Function not implemented yet");
     println!("Function not implemented yet");
-    app.exit(2);
+    app.exit(127);
 }
 
 pub fn remove_windows_console() {
