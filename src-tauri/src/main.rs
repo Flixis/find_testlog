@@ -4,8 +4,6 @@
 use colored::*;
 use log::{debug, error};
 use std::process::exit;
-use std::io::{stdin, stdout};
-
 
 mod functions;
 mod structs;
@@ -38,9 +36,11 @@ fn main() {
         .setup(|app| {
             //Load current config, if nothing is availible just load defaults.
             let mut search_info = structs::AppConfig::default_values();
+            let mut cli_enabled = false;
             search_info.open_log = false; //by default make sure the log is not opened.
             // Default to GUI if the app was opened with no CLI args.
             if std::env::args_os().count() <= 1 {
+                cli_enabled = false;
                 cli_gui(app.handle())?;
             }
             // Else, we start in CLI mode and parse the given parameters
@@ -52,10 +52,10 @@ fn main() {
                     return Ok(());
                 }
             };
-
             // Iterate over each key and execute functions based on them
             for (key, data) in matches.args {
                 if data.occurrences > 0 {
+                    cli_enabled = true;
                     match key.as_str() {
                         "pn" => {
                             // Create a new SearchInfo struct with only the pn field set
@@ -158,7 +158,11 @@ fn main() {
             // Print the struct at the end
             dbg!("{:?}", &search_info);
 
-            exit(0);
+            if cli_enabled{    
+                exit(0);
+            }
+
+            Ok(())
         })
         .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())

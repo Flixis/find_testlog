@@ -1,6 +1,5 @@
 use colored::Colorize;
-use std::fs;
-use std::io;
+use std::{fs, io};
 use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
 use log::warn;
