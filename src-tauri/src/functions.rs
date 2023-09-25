@@ -3,11 +3,20 @@ use std::fs;
 use std::io;
 use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
+use log::warn;
+
+
+
+pub fn not_done(app: tauri::AppHandle) {
+    warn!("Function not implemented yet");
+    println!("Function not implemented yet");
+    app.exit(2);
+}
 
 pub fn remove_windows_console() {
     unsafe {
         windows_sys::Win32::System::Console::FreeConsole();
-    }  
+    }
 }
 
 pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String {
@@ -17,6 +26,8 @@ pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String {
         return "".to_string();
     }
 }
+
+
 
 pub fn itter_find_log(
     folder_path: String,
@@ -30,11 +41,7 @@ pub fn itter_find_log(
     for entry in WalkDir::new(folder_path) {
         if let Ok(entry) = entry {
             let file_name: String = entry.file_name().to_string_lossy().to_lowercase();
-            let sn_lower: String = cli_parse
-                .sn
-                .clone()
-                .to_string()
-                .to_ascii_lowercase();
+            let sn_lower: String = cli_parse.sn.clone().to_string().to_ascii_lowercase();
 
             // Check if the file name contains the serial number
             if file_name.contains(&sn_lower) {
@@ -108,4 +115,3 @@ pub fn get_most_recent_folder_name(path: &str) -> String {
         String::new()
     })
 }
-

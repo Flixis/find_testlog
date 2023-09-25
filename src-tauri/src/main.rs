@@ -5,6 +5,7 @@ use colored::*;
 use log::{debug, error, warn};
 use std::process::exit;
 
+
 mod functions;
 mod structs;
 
@@ -16,21 +17,19 @@ I hated searching for logfiles, So I challenged myself to make something to help
 Documentation and code comes as is.
 */
 
-#[tauri::command] //tauri handler
-fn rust_parse_search_data(pn: String, sn: String, year_week: String, test_env: String) -> String {
-    // let data = structs::AppConfig {
-    //     drive_letter: "".to_string(),
-    //     folder_location: "".to_string(),
-    //     pn : pn,
-    //     test_env: test_env,
-    //     sn: sn,
-    //     year_week: year_week,
-    // };
+// #[tauri::command] //tauri handler
+// fn rust_parse_search_data(pn: String, sn: String, year_week: String, test_env: String) -> String {
+//     // let data = structs::AppConfig {
+//     //     drive_letter: "".to_string(),
+//     //     folder_location: "".to_string(),
+//     //     pn : pn,
+//     //     test_env: test_env,
+//     //     sn: sn,
+//     //     year_week: year_week,
+//     // };
 
-    // format!("data:, {:?} from Rust!", data) <-- this gets parsed to the frontend
-
-    exit(2)
-}
+//     // format!("data:, {:?} from Rust!", data) <-- this gets parsed to the frontend
+// }
 
 fn main() {
     // Builds the Tauri connection
@@ -38,6 +37,7 @@ fn main() {
         .setup(|app| {
             //Load current config, if nothing is availible just load defaults.
             let mut search_info = structs::AppConfig::default_values();
+            search_info.open_log = false; //by default make sure the log is not opened.
             // Default to GUI if the app was opened with no CLI args.
             if std::env::args_os().count() <= 1 {
                 cli_gui(app.handle())?;
@@ -54,7 +54,7 @@ fn main() {
 
             // Iterate over each key and execute functions based on them
             for (key, data) in matches.args {
-                if data.occurrences > 0 || key.as_str() == "help" || key.as_str() == "version" {
+                if data.occurrences > 0 {
                     match key.as_str() {
                         "pn" => {
                             // Create a new SearchInfo struct with only the pn field set
@@ -77,9 +77,7 @@ fn main() {
                             search_info.test_env = saved_to_struct;
                         }
                         "open_log" => {
-                            // Set the open_log flag to true
-                            // TODO implement structinformation.open_log = true;
-                            not_done(app.handle())
+                            search_info.open_log = data.value.is_boolean();
                         }
                         "drive_letter" => {
                             // Set the drive_letter field
@@ -108,7 +106,7 @@ fn main() {
                             };
                             exit(2);
                         }
-                        _ => not_done(app.handle()),
+                        _ => functions::not_done(app.handle()),
                     }
                 }
             }
@@ -161,7 +159,7 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![rust_parse_search_data])
+        .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
 }
@@ -182,8 +180,5 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     Ok(())
 }
 
-fn not_done(app: tauri::AppHandle) {
-    warn!("Function not implemented yet");
-    println!("Function not implemented yet");
-    app.exit(2);
-}
+
+
