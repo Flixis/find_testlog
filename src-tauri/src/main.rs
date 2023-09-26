@@ -135,7 +135,7 @@ fn main() {
                 eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
             }
 
-            if search_info.sn.is_empty() {
+            if search_info.sn.is_empty() && cli_enabled{
                 eprintln!("{}", "SN cannot be empty".red().bold());
                 exit(2);
             }
