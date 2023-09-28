@@ -1,10 +1,8 @@
 use colored::Colorize;
+use log::warn;
 use std::{fs, io};
 use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
-use log::warn;
-
-
 
 pub fn not_done(app: tauri::AppHandle) {
     println!("{:?}", app.package_info());
@@ -25,6 +23,20 @@ pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String {
     } else {
         return "".to_string();
     }
+}
+
+pub fn extract_date_and_time(log_file_name: &str) -> (String, String) {
+    // Split the log file name on the underscore character.
+    let parts: Vec<&str> = log_file_name.split("_").collect();
+
+    // The date is the first five parts of the split string.
+    let date = parts[0..5].join("-");
+
+    // The time is the next six parts of the split string.
+    let time = parts[5..11].join(":");
+
+    // Return the date and time as a tuple.
+    (date, time)
 }
 
 pub fn itter_find_log(

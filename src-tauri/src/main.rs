@@ -3,6 +3,7 @@
 
 use colored::*;
 use log::{debug, error};
+use serde_json::json;
 use std::process::exit;
 
 mod functions;
@@ -16,67 +17,92 @@ I hated searching for logfiles, So I challenged myself to make something to help
 Documentation and code comes as is.
 */
 
+/*
+
+
+IN from JS:
+PN SN Year_week test_env
+
+OUT to JS:
+
+Date
+Time
+Location
+SN
+
+How:
+Lets search using query string with get_log_file_path() function.
+Then we strip the date and time from the path.
+Then we encode data as JSON string.
+
+*/
+
 #[tauri::command]
-fn data_to_frontend(pn: Option<String>, sn: Option<String>, year_week: Option<String>, test_env: Option<String>) -> Result<String, String> {
+fn data_to_frontend(
+    pn: Option<String>,
+    sn: Option<String>,
+    year_week: Option<String>,
+    test_env: Option<String>
+) -> Result<String, String> {
+    let mut search_info = structs::AppConfig::default_values().clone();
 
-  let mut search_info = structs::AppConfig::default_values();
+    search_info.sn = sn.unwrap();
+    search_info.pn = pn.unwrap();
+    search_info.year_week = year_week.unwrap();
+    search_info.test_env = test_env.unwrap();
 
-  let folder_path;
+    let folder_path;
+    let mut json_data: String;
+    let mut json_data_list: Vec<String> = Vec::new();
 
-  if search_info.year_week.is_empty() {
-    folder_path = format!(
-      "{}\\{}\\{}",
-      search_info.drive_letter, search_info.folder_location, search_info.pn
-    )
-  } else {
-    folder_path = format!(
-      "{}\\{}\\{}\\{}\\{}",
-      search_info.drive_letter,
-      search_info.folder_location,
-      search_info.pn,
-      search_info.year_week,
-      search_info.test_env
-    )
-  }
 
-  //Make sure to save after we've written new data
-  if let Err(err) = search_info.save() {
-    eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
-  }
 
-  // if search_info.sn.is_empty() && cli_enabled{
-  //     eprintln!("{}", "SN cannot be empty".red().bold());
-  //     exit(2);
-  // }
-
-  let mut json_data;
-
-  let get_log_file_path = functions::itter_find_log(folder_path, search_info.clone());
-  match get_log_file_path {
-    Ok(paths) => {
-      if paths.is_empty() {
-        // println!("{}", "No matches found".red().bold()); //implement error for JS
-      } else {
-        let mut json_data_list: Vec<String> = Vec::new();
-        for path in paths {
-          json_data = serde_json::to_string(&path).unwrap();
-          json_data_list.push(json_data);
-        }
-
-        // Make sure the list is not empty before returning it.
-        if !json_data_list.is_empty() {
-          let json_data_string = serde_json::to_string(&json_data_list).unwrap();
-          return Ok(json_data_string);
-        }
-      }
+    if search_info.year_week.is_empty() {
+        folder_path = format!(
+            "{}\\{}\\{}",
+            search_info.drive_letter, search_info.folder_location, search_info.pn
+        )
+    } else {
+        folder_path = format!(
+            "{}\\{}\\{}\\{}\\{}",
+            search_info.drive_letter,
+            search_info.folder_location,
+            search_info.pn,
+            search_info.year_week,
+            search_info.test_env
+        )
     }
-    Err(err) => eprintln!("{} {}", "Error:".red().bold(), err),
-  }
 
-  // If we reach here, there was an error.
-  Err("Error getting log file paths".to_string())
+    let get_log_file_path = functions::itter_find_log(folder_path, search_info.clone());
+    match get_log_file_path {
+        Ok(paths) => {
+            if paths.is_empty() {
+                // println!("{}", "No matches found".red().bold());
+            } else {
+                println!("{}", "Matched log file paths:".green().bold());
+                for path in paths {
+                    let (date, time) = functions::extract_date_and_time(path.as_str());
+
+                    let json_data = json!({
+                        "date": date,
+                        "time": time,
+                        "Location": path,
+                        "sn": search_info.sn,
+                    }).to_string();
+
+                    json_data_list.push(json_data);
+
+                }
+            } // Make sure the list is not empty before returning it.
+            if !json_data_list.is_empty() {
+                let json_data_string = serde_json::to_string(&json_data_list).unwrap();
+                return Ok(json_data_string);
+            }
+        }
+        Err(err) => eprintln!("{} {}", "Error:".red().bold(), err),
+    }
+    Err("Error getting log file paths".to_string())
 }
-
 
 fn main() {
     // Builds the Tauri connection
@@ -86,9 +112,8 @@ fn main() {
             let mut search_info = structs::AppConfig::default_values();
             let mut cli_enabled = false;
             search_info.open_log = false; //by default make sure the log is not opened.
-            // Default to GUI if the app was opened with no CLI args.
-            if std::env::args_os().count() <= 1 {
-                cli_enabled = false;
+                                          // Default to GUI if the app was opened with no CLI args.
+            if std::env::args_os().count() <= 1 && cli_enabled == false {
                 cli_gui(app.handle())?;
             }
             // Else, we start in CLI mode and parse the given parameters
@@ -183,7 +208,7 @@ fn main() {
                 eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
             }
 
-            if search_info.sn.is_empty() && cli_enabled{
+            if search_info.sn.is_empty() && cli_enabled {
                 eprintln!("{}", "SN cannot be empty".red().bold());
                 exit(2);
             }
@@ -206,7 +231,7 @@ fn main() {
             // Print the struct at the end
             dbg!("{:?}", &search_info);
 
-            if cli_enabled{    
+            if cli_enabled {
                 exit(0);
             }
 
@@ -232,5 +257,3 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("this won't show on Windows release builds");
     Ok(())
 }
-
-
