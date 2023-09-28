@@ -27,8 +27,6 @@ pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String {
     }
 }
 
-
-
 pub fn itter_find_log(
     folder_path: String,
     cli_parse: crate::structs::AppConfig,

@@ -1,33 +1,46 @@
-const jsonData = `{
-  "logs": [
-    {
-      "Date": "2023-09-01",
-      "Time": "09:00 AM",
-      "Location": "C:/path/to/log1",
-      "SN": "SN123456",
-      "Test Environment": "PTF",
-      "Open Log": true
-    },
-    {
-      "Date": "2023-09-02",
-      "Time": "10:00 AM",
-      "Location": "C:/path/to/log2",
-      "SN": "SN789012",
-      "Test Environment": "PTF",
-      "Open Log": true
-    }
-  ]
-}`;
+const { invoke } = window.__TAURI__.tauri;
 
-const data = JSON.parse(jsonData);
-
-function updateTable() {
+async function loadDataAndUpdateTable() {
+  // Get the form values
   const pn = $('#pn').val();
   const sn = $('#sn').val();
   const yearWeek = $('#year_week').val();
   const testEnv = $('#test_env').val();
 
+  // Send the form values to Rust and receive the JSON data back
+  const jsonData = await invoke('data_to_frontend', {
+    pn,
+    sn,
+    yearWeek,
+    testEnv,
+  });
+
+  // Error handling
+  if (jsonData === null || typeof jsonData !== 'string') {
+    alert('Error getting log file paths.');
+    return;
+  }
+
+  // Parse the JSON data
+  const data = JSON.parse(jsonData);
+
+  // Check data structure
+  if (!data || !Array.isArray(data.logs)) {
+    console.log(data);  // Debugging line to inspect data structure
+    alert('Error: Unexpected data structure.');
+    return;
+  }
+
+  updateTable(data);
+}
+
+function updateTable(data) {
+  // Filter the logs based on the form values
   const filteredLogs = data.logs.filter(log => {
+    const pn = $('#pn').val();
+    const sn = $('#sn').val();
+    const yearWeek = $('#year_week').val();
+    const testEnv = $('#test_env').val();
     return (
       (!pn || log.SN.includes(pn)) &&
       (!sn || log.SN.includes(sn)) &&
@@ -36,9 +49,10 @@ function updateTable() {
     );
   });
 
+  // Update the table with the filtered logs
   const tableBody = $('#table-body');
   tableBody.empty();
-
+  
   filteredLogs.forEach(log => {
     tableBody.append(`
       <tr>
@@ -46,14 +60,13 @@ function updateTable() {
         <td>${log.Time}</td>
         <td>${log.Location}</td>
         <td>${log.SN}</td>
-        <td>${log['Test Environment']}</td>
         <td><button class="open-log-button" data-location="${log.Location}">Open Log</button></td>
       </tr>
     `);
   });
 }
 
-$('#search-button').click(updateTable);
+$('#search-button').click(loadDataAndUpdateTable);
 
 // Add event listener to open log buttons
 $('#table-body').on('click', '.open-log-button', function() {
@@ -63,4 +76,4 @@ $('#table-body').on('click', '.open-log-button', function() {
 });
 
 // Initial table load
-updateTable();
+loadDataAndUpdateTable();

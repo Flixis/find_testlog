@@ -16,19 +16,67 @@ I hated searching for logfiles, So I challenged myself to make something to help
 Documentation and code comes as is.
 */
 
-// #[tauri::command] //tauri handler
-// fn rust_parse_search_data(pn: String, sn: String, year_week: String, test_env: String) -> String {
-//     // let data = structs::AppConfig {
-//     //     drive_letter: "".to_string(),
-//     //     folder_location: "".to_string(),
-//     //     pn : pn,
-//     //     test_env: test_env,
-//     //     sn: sn,
-//     //     year_week: year_week,
-//     // };
+#[tauri::command]
+fn data_to_frontend(pn: Option<String>, sn: Option<String>, year_week: Option<String>, test_env: Option<String>) -> Result<String, String> {
 
-//     // format!("data:, {:?} from Rust!", data) <-- this gets parsed to the frontend
-// }
+  let mut search_info = structs::AppConfig::default_values();
+
+  let folder_path;
+
+  if search_info.year_week.is_empty() {
+    folder_path = format!(
+      "{}\\{}\\{}",
+      search_info.drive_letter, search_info.folder_location, search_info.pn
+    )
+  } else {
+    folder_path = format!(
+      "{}\\{}\\{}\\{}\\{}",
+      search_info.drive_letter,
+      search_info.folder_location,
+      search_info.pn,
+      search_info.year_week,
+      search_info.test_env
+    )
+  }
+
+  //Make sure to save after we've written new data
+  if let Err(err) = search_info.save() {
+    eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
+  }
+
+  // if search_info.sn.is_empty() && cli_enabled{
+  //     eprintln!("{}", "SN cannot be empty".red().bold());
+  //     exit(2);
+  // }
+
+  let mut json_data;
+
+  let get_log_file_path = functions::itter_find_log(folder_path, search_info.clone());
+  match get_log_file_path {
+    Ok(paths) => {
+      if paths.is_empty() {
+        // println!("{}", "No matches found".red().bold()); //implement error for JS
+      } else {
+        let mut json_data_list: Vec<String> = Vec::new();
+        for path in paths {
+          json_data = serde_json::to_string(&path).unwrap();
+          json_data_list.push(json_data);
+        }
+
+        // Make sure the list is not empty before returning it.
+        if !json_data_list.is_empty() {
+          let json_data_string = serde_json::to_string(&json_data_list).unwrap();
+          return Ok(json_data_string);
+        }
+      }
+    }
+    Err(err) => eprintln!("{} {}", "Error:".red().bold(), err),
+  }
+
+  // If we reach here, there was an error.
+  Err("Error getting log file paths".to_string())
+}
+
 
 fn main() {
     // Builds the Tauri connection
@@ -164,7 +212,7 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![data_to_frontend])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
 }
@@ -184,6 +232,5 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("this won't show on Windows release builds");
     Ok(())
 }
-
 
 
