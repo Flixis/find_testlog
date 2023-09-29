@@ -43,8 +43,8 @@ fn data_to_frontend(
     sn: Option<String>,
     year_week: Option<String>,
     test_env: Option<String>
-) -> Result<String, String> {
-    let mut search_info = structs::AppConfig::default_values().clone();
+) -> Vec<String> {
+    let mut search_info = structs::AppConfig::default_values();
 
     search_info.sn = sn.unwrap();
     search_info.pn = pn.unwrap();
@@ -52,9 +52,7 @@ fn data_to_frontend(
     search_info.test_env = test_env.unwrap();
 
     let folder_path;
-    let mut json_data: String;
-    let mut json_data_list: Vec<String> = Vec::new();
-
+    let mut json_data_vec: Vec<String> = Vec::new();
 
 
     if search_info.year_week.is_empty() {
@@ -73,36 +71,51 @@ fn data_to_frontend(
         )
     }
 
+
     let get_log_file_path = functions::itter_find_log(folder_path, search_info.clone());
     match get_log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
                 // println!("{}", "No matches found".red().bold());
             } else {
-                println!("{}", "Matched log file paths:".green().bold());
                 for path in paths {
-                    let (date, time) = functions::extract_date_and_time(path.as_str());
-
                     let json_data = json!({
-                        "date": date,
-                        "time": time,
-                        "Location": path,
-                        "sn": search_info.sn,
+                        "date": "date",
+                        "time": "time",
+                        "Location": "pathhere",
+                        "sn": "snhere",
                     }).to_string();
-
-                    json_data_list.push(json_data);
-
+                    json_data_vec.push(json_data);
                 }
-            } // Make sure the list is not empty before returning it.
-            if !json_data_list.is_empty() {
-                let json_data_string = serde_json::to_string(&json_data_list).unwrap();
-                return Ok(json_data_string);
             }
         }
-        Err(err) => eprintln!("{} {}", "Error:".red().bold(), err),
+        _ => println!("{}", "No matches found")
     }
-    Err("Error getting log file paths".to_string())
+
+    json_data_vec
 }
+
+
+
+#[tauri::command]
+async fn testing_environment(
+    pn: Option<String>,
+    sn: Option<String>,
+    yearweek: Option<String>,
+    testenv: Option<String>
+) -> Result<serde_json::Value, String> {
+
+    let json_data = json!({
+        "pn": pn,
+        "sn": sn,
+        "yearweek": yearweek,
+        "testenv": testenv,
+    });
+
+    Ok(json_data)
+}
+
+
 
 fn main() {
     // Builds the Tauri connection
@@ -130,7 +143,7 @@ fn main() {
                 if data.occurrences > 0 || key.as_str() == "help" {
                     cli_enabled = true;
                     match key.as_str() {
-                        "pn" => {
+                        "pn" => { // Create a new SearchInfo struct with only the pn field set let saved_to_struct = functions::strip_string_of_garbage(data);
                             // Create a new SearchInfo struct with only the pn field set
                             let saved_to_struct = functions::strip_string_of_garbage(data);
                             search_info.pn = saved_to_struct;
@@ -237,7 +250,7 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![data_to_frontend])
+        .invoke_handler(tauri::generate_handler![data_to_frontend, testing_environment])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
 }
