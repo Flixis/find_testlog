@@ -86,9 +86,10 @@ fn data_to_frontend(
                     let json_data = json!({
                         "date": datetime["date"],
                         "time": datetime["time"],
-                        "Location": "isn",
-                        "sn": "why",
+                        "Location": path,
+                        "sn": search_info.serialnumber,
                     }).to_string();
+                    json_data_vec.push(json_data);
                 }
             }
         }
