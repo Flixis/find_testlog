@@ -4,7 +4,7 @@ use std::{fs, io};
 use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
 
-pub fn not_done(app: tauri::AppHandle) {
+pub fn not_implemented(app: tauri::AppHandle) {
     println!("{:?}", app.package_info());
     warn!("Function not implemented yet");
     println!("Function not implemented yet");
@@ -17,7 +17,7 @@ pub fn remove_windows_console() {
     }
 }
 
-pub fn strip_string_of_garbage(unescaped_string: ArgData) -> String {
+pub fn strip_string_of_leading_and_trailing_slashes(unescaped_string: ArgData) -> String {
     if let Some(unescaped_string) = unescaped_string.value.as_str() {
         unescaped_string.replace("\\n", "\n").replace("\\t", "\t")
     } else {
@@ -39,9 +39,9 @@ pub fn extract_date_and_time(log_file_name: &str) -> (String, String) {
     (date, time)
 }
 
-pub fn itter_find_log(
+pub fn find_logfiles_paths(
     folder_path: String,
-    cli_parse: crate::structs::AppConfig,
+    search_info_struct: crate::structs::AppConfig,
 ) -> Result<Vec<String>, io::Error> {
     // Keep track of whether a match is found
     let mut found_match: bool = false;
@@ -51,13 +51,13 @@ pub fn itter_find_log(
     for entry in WalkDir::new(folder_path) {
         if let Ok(entry) = entry {
             let file_name: String = entry.file_name().to_string_lossy().to_lowercase();
-            let sn_lower: String = cli_parse.sn.clone().to_string().to_ascii_lowercase();
+            let sn_lower: String = search_info_struct.serialnumber.clone().to_string().to_ascii_lowercase();
 
             // Check if the file name contains the serial number
             if file_name.contains(&sn_lower) {
                 found_match = true;
                 // dbg!("{}", entry.path().display());
-                if cli_parse.open_log {
+                if search_info_struct.open_log {
                     match open::that(entry.path()) {
                         Ok(()) => println!(
                             "{} {}",

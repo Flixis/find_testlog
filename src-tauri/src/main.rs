@@ -39,34 +39,34 @@ Then we encode data as JSON string.
 
 #[tauri::command]
 fn data_to_frontend(
-    pn: Option<String>,
-    sn: Option<String>,
-    yearweek: Option<String>,
+    productnumber: Option<String>,
+    serialnumber: Option<String>,
+    dateyyyyww: Option<String>,
     testenv: Option<String>
 ) -> Vec<String> {
     let mut search_info = structs::AppConfig::default_values();
 
-    search_info.sn = sn.unwrap();
-    search_info.pn = pn.unwrap();
-    search_info.year_week = yearweek.unwrap();
+    search_info.serialnumber = serialnumber.unwrap();
+    search_info.productnumber = productnumber.unwrap();
+    search_info.dateyyyyww = dateyyyyww.unwrap();
     search_info.test_env = testenv.unwrap();
 
     let folder_path;
     let mut json_data_vec: Vec<String> = Vec::new();
     dbg!(&search_info);
 
-    if search_info.year_week.is_empty() {
+    if search_info.dateyyyyww.is_empty() {
         folder_path = format!(
             "{}\\{}\\{}",
-            search_info.drive_letter, search_info.folder_location, search_info.pn
+            search_info.drive_letter, search_info.folder_location, search_info.productnumber
         )
     } else {
         folder_path = format!(
             "{}\\{}\\{}\\{}\\{}",
             search_info.drive_letter,
             search_info.folder_location,
-            search_info.pn,
-            search_info.year_week,
+            search_info.productnumber,
+            search_info.dateyyyyww,
             search_info.test_env
         )
     }
@@ -74,7 +74,7 @@ fn data_to_frontend(
     dbg!(&folder_path);
 
 
-    let get_log_file_path = functions::itter_find_log(folder_path, search_info.clone());
+    let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
     match get_log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
@@ -103,35 +103,35 @@ fn data_to_frontend(
 
 #[tauri::command]
 async fn testing_environment(
-    pn: Option<String>,
-    sn: Option<String>,
-    yearweek: Option<String>,
+    productnumber: Option<String>,
+    serialnumber: Option<String>,
+    dateyyyyww: Option<String>,
     testenv: Option<String>
 ) -> Result<serde_json::Value, String> {
 
     let mut search_info = structs::AppConfig::default_values();
     
-    search_info.sn = sn.unwrap();
-    search_info.pn = pn.unwrap();
-    search_info.year_week = yearweek.unwrap();
+    search_info.serialnumber = serialnumber.unwrap();
+    search_info.productnumber = productnumber.unwrap();
+    search_info.dateyyyyww = dateyyyyww.unwrap();
     search_info.test_env = testenv.unwrap();
 
     let folder_path;
     let mut json_data_vec: Vec<String> = Vec::new();
     dbg!(&search_info);
 
-    if search_info.year_week.is_empty() {
+    if search_info.dateyyyyww.is_empty() {
         folder_path = format!(
             "{}\\{}\\{}",
-            search_info.drive_letter, search_info.folder_location, search_info.pn
+            search_info.drive_letter, search_info.folder_location, search_info.productnumber
         )
     } else {
         folder_path = format!(
             "{}\\{}\\{}\\{}\\{}",
             search_info.drive_letter,
             search_info.folder_location,
-            search_info.pn,
-            search_info.year_week,
+            search_info.productnumber,
+            search_info.dateyyyyww,
             search_info.test_env
         )
     }
@@ -140,9 +140,9 @@ async fn testing_environment(
 
 
     let json_data = json!({
-        "pn": search_info.pn,
-        "sn": search_info.sn,
-        "yearweek": search_info.year_week,
+        "pn": search_info.productnumber,
+        "sn": search_info.serialnumber,
+        "yearweek": search_info.dateyyyyww,
         "testenv": search_info.test_env,
     });
 
@@ -179,22 +179,22 @@ fn main() {
                     match key.as_str() {
                         "pn" => { // Create a new SearchInfo struct with only the pn field set let saved_to_struct = functions::strip_string_of_garbage(data);
                             // Create a new SearchInfo struct with only the pn field set
-                            let saved_to_struct = functions::strip_string_of_garbage(data);
-                            search_info.pn = saved_to_struct;
+                            let saved_to_struct = functions::strip_string_of_leading_and_trailing_slashes(data);
+                            search_info.productnumber = saved_to_struct;
                         }
                         "sn" => {
                             // Create a new SearchInfo struct with only the sn field set
-                            let saved_to_struct = functions::strip_string_of_garbage(data);
-                            search_info.sn = saved_to_struct;
+                            let saved_to_struct = functions::strip_string_of_leading_and_trailing_slashes(data);
+                            search_info.serialnumber = saved_to_struct;
                         }
                         "year_week" => {
                             // Create a new SearchInfo struct with only the year_week field set
-                            let saved_to_struct = functions::strip_string_of_garbage(data);
-                            search_info.year_week = saved_to_struct;
+                            let saved_to_struct = functions::strip_string_of_leading_and_trailing_slashes(data);
+                            search_info.dateyyyyww = saved_to_struct;
                         }
                         "test_env" => {
                             // Create a new SearchInfo struct with only the test_env field set
-                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            let saved_to_struct = functions::strip_string_of_leading_and_trailing_slashes(data);
                             search_info.test_env = saved_to_struct;
                         }
                         "open_log" => {
@@ -202,12 +202,12 @@ fn main() {
                         }
                         "drive_letter" => {
                             // Set the drive_letter field
-                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            let saved_to_struct = functions::strip_string_of_leading_and_trailing_slashes(data);
                             search_info.drive_letter = saved_to_struct;
                         }
                         "folder_location" => {
                             // Set the folder_location field
-                            let saved_to_struct = functions::strip_string_of_garbage(data);
+                            let saved_to_struct = functions::strip_string_of_leading_and_trailing_slashes(data);
                             search_info.folder_location = saved_to_struct;
                         }
                         "get_config_file" => {
@@ -227,25 +227,25 @@ fn main() {
                             };
                             exit(2);
                         }
-                        _ => functions::not_done(app.handle()),
+                        _ => functions::not_implemented(app.handle()),
                     }
                 }
             }
 
             let folder_path;
 
-            if search_info.year_week.is_empty() {
+            if search_info.dateyyyyww.is_empty() {
                 folder_path = format!(
                     "{}\\{}\\{}",
-                    search_info.drive_letter, search_info.folder_location, search_info.pn
+                    search_info.drive_letter, search_info.folder_location, search_info.productnumber
                 )
             } else {
                 folder_path = format!(
                     "{}\\{}\\{}\\{}\\{}",
                     search_info.drive_letter,
                     search_info.folder_location,
-                    search_info.pn,
-                    search_info.year_week,
+                    search_info.productnumber,
+                    search_info.dateyyyyww,
                     search_info.test_env
                 )
             }
@@ -255,12 +255,12 @@ fn main() {
                 eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
             }
 
-            if search_info.sn.is_empty() && cli_enabled {
+            if search_info.serialnumber.is_empty() && cli_enabled {
                 eprintln!("{}", "SN cannot be empty".red().bold());
                 exit(2);
             }
 
-            let get_log_file_path = functions::itter_find_log(folder_path, search_info.clone());
+            let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
             match get_log_file_path {
                 Ok(paths) => {
                     if paths.is_empty() {
