@@ -147,7 +147,7 @@ footer {
 }
 
 #search-button[disabled] {
-  background-color: #ccc;
-  color: #999;
+  background-color: var(--color-light);
+  color: var(--color-dark-variant);
   cursor: not-allowed;
 }

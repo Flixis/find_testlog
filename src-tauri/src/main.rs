@@ -38,7 +38,7 @@ Then we encode data as JSON string.
 */
 
 #[tauri::command]
-fn data_to_frontend(
+fn parse_frontend_search_data(
     productnumber: Option<String>,
     serialnumber: Option<String>,
     dateyyyyww: Option<String>,
@@ -98,57 +98,6 @@ fn data_to_frontend(
 
     json_data_vec
 }
-
-
-
-#[tauri::command]
-async fn testing_environment(
-    productnumber: Option<String>,
-    serialnumber: Option<String>,
-    dateyyyyww: Option<String>,
-    testenv: Option<String>
-) -> Result<serde_json::Value, String> {
-
-    let mut search_info = structs::AppConfig::default_values();
-    
-    search_info.serialnumber = serialnumber.unwrap();
-    search_info.productnumber = productnumber.unwrap();
-    search_info.dateyyyyww = dateyyyyww.unwrap();
-    search_info.test_env = testenv.unwrap();
-
-    let folder_path;
-    let mut json_data_vec: Vec<String> = Vec::new();
-    dbg!(&search_info);
-
-    if search_info.dateyyyyww.is_empty() {
-        folder_path = format!(
-            "{}\\{}\\{}",
-            search_info.drive_letter, search_info.folder_location, search_info.productnumber
-        )
-    } else {
-        folder_path = format!(
-            "{}\\{}\\{}\\{}\\{}",
-            search_info.drive_letter,
-            search_info.folder_location,
-            search_info.productnumber,
-            search_info.dateyyyyww,
-            search_info.test_env
-        )
-    }
-
-    dbg!(&folder_path);
-
-
-    let json_data = json!({
-        "pn": search_info.productnumber,
-        "sn": search_info.serialnumber,
-        "yearweek": search_info.dateyyyyww,
-        "testenv": search_info.test_env,
-    });
-
-    Ok(json_data)
-}
-
 
 
 fn main() {
@@ -284,7 +233,7 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![data_to_frontend, testing_environment])
+        .invoke_handler(tauri::generate_handler![parse_frontend_search_data])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
 }

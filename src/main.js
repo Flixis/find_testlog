@@ -34,7 +34,7 @@ async function test_environment() {
     const testenv = document.getElementById("test_env").value;
     
 
-    var jsondata = await invoke('data_to_frontend',{
+    var jsondata = await invoke('parse_frontend_search_data',{
         productnumber: productnumber,
         serialnumber: serialnumber,
         dateyyyyww: date_yyyyww,
