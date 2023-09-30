@@ -30,10 +30,10 @@ pub fn extract_date_and_time(log_file_name: &str) -> (String, String) {
     let parts: Vec<&str> = log_file_name.split("_").collect();
 
     // The date is the first five parts of the split string.
-    let date = parts[0..5].join("-");
+    let date: String = parts[0..5].join("-");
 
     // The time is the next six parts of the split string.
-    let time = parts[5..11].join(":");
+    let time: String = parts[5..11].join(":");
 
     // Return the date and time as a tuple.
     (date, time)

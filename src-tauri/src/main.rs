@@ -41,19 +41,19 @@ Then we encode data as JSON string.
 fn data_to_frontend(
     pn: Option<String>,
     sn: Option<String>,
-    year_week: Option<String>,
-    test_env: Option<String>
+    yearweek: Option<String>,
+    testenv: Option<String>
 ) -> Vec<String> {
     let mut search_info = structs::AppConfig::default_values();
 
     search_info.sn = sn.unwrap();
     search_info.pn = pn.unwrap();
-    search_info.year_week = year_week.unwrap();
-    search_info.test_env = test_env.unwrap();
+    search_info.year_week = yearweek.unwrap();
+    search_info.test_env = testenv.unwrap();
 
     let folder_path;
     let mut json_data_vec: Vec<String> = Vec::new();
-
+    dbg!(&search_info);
 
     if search_info.year_week.is_empty() {
         folder_path = format!(
@@ -71,6 +71,8 @@ fn data_to_frontend(
         )
     }
 
+    dbg!(&folder_path);
+
 
     let get_log_file_path = functions::itter_find_log(folder_path, search_info.clone());
     match get_log_file_path {
@@ -79,11 +81,13 @@ fn data_to_frontend(
                 // println!("{}", "No matches found".red().bold());
             } else {
                 for path in paths {
+                    let (time,date) = functions::extract_date_and_time(&path);
+                    
                     let json_data = json!({
-                        "date": "date",
-                        "time": "time",
-                        "Location": "pathhere",
-                        "sn": "snhere",
+                        "date": "working",
+                        "time": "this",
+                        "Location": "isn",
+                        "sn": "why",
                     }).to_string();
                     json_data_vec.push(json_data);
                 }
@@ -105,11 +109,41 @@ async fn testing_environment(
     testenv: Option<String>
 ) -> Result<serde_json::Value, String> {
 
+    let mut search_info = structs::AppConfig::default_values();
+    
+    search_info.sn = sn.unwrap();
+    search_info.pn = pn.unwrap();
+    search_info.year_week = yearweek.unwrap();
+    search_info.test_env = testenv.unwrap();
+
+    let folder_path;
+    let mut json_data_vec: Vec<String> = Vec::new();
+    dbg!(&search_info);
+
+    if search_info.year_week.is_empty() {
+        folder_path = format!(
+            "{}\\{}\\{}",
+            search_info.drive_letter, search_info.folder_location, search_info.pn
+        )
+    } else {
+        folder_path = format!(
+            "{}\\{}\\{}\\{}\\{}",
+            search_info.drive_letter,
+            search_info.folder_location,
+            search_info.pn,
+            search_info.year_week,
+            search_info.test_env
+        )
+    }
+
+    dbg!(&folder_path);
+
+
     let json_data = json!({
-        "pn": pn,
-        "sn": sn,
-        "yearweek": yearweek,
-        "testenv": testenv,
+        "pn": search_info.pn,
+        "sn": search_info.sn,
+        "yearweek": search_info.year_week,
+        "testenv": search_info.test_env,
     });
 
     Ok(json_data)
