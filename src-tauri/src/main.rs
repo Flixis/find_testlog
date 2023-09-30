@@ -81,15 +81,14 @@ fn data_to_frontend(
                 // println!("{}", "No matches found".red().bold());
             } else {
                 for path in paths {
-                    let (time,date) = functions::extract_date_and_time(&path);
-                    
+                    let datetime = functions::extract_datetime(&path);
+                    dbg!(&datetime);
                     let json_data = json!({
-                        "date": "working",
-                        "time": "this",
+                        "date": datetime["date"],
+                        "time": datetime["time"],
                         "Location": "isn",
                         "sn": "why",
                     }).to_string();
-                    json_data_vec.push(json_data);
                 }
             }
         }
@@ -291,7 +290,7 @@ fn main() {
 
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("showing gui");
-    functions::remove_windows_console();
+    // functions::remove_windows_console();
     tauri::WindowBuilder::new(
         &app,
         "FindTestlog",

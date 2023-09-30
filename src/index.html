@@ -20,15 +20,15 @@
     <div id="input-container">
       <div class="input-group">
         <label for="productnumber">Product Number (PN):</label>
-        <input type="text" id="productnumber" placeholder="Example: 9999-1234-5678">
+        <input type="text" id="productnumber" placeholder="Example: 9999-1234-5678" required>
       </div>
       <div class="input-group">
         <label for="serialnumber">Serial Number (SN):</label>
-        <input type="text" id="serialnumber" placeholder="Example: xx-xx-yyy-000">
+        <input type="text" id="serialnumber" placeholder="Example: xx-xx-yyy-000" required>
       </div>
       <div class="input-group">
         <label for="datepicker">Year Week:</label>
-        <input type="date" id="datepicker" placeholder="Example: 2023-W51">
+        <input type="date" id="datepicker">
       </div>
       <div class="input-group">
         <label for="testenv">Test Environment:</label>
@@ -41,7 +41,7 @@
   </form>
   <div id="results-box">
     <form id="search-button-form">
-      <button type="button" id="search-button">Search</button>
+      <button type="button" id="search-button" disabled="true">Search</button>
     </form>
     <h2 id="results-box-heading">Search results:</h2>
     <table id="sortable-table">
@@ -63,7 +63,17 @@
     <a id="footer-content" href="https://github.com/Flixis/find_testlog/tree/main">Tariq Dinmohamed(Github)</a>
   </footer>
 
-  <p id="greet-msg"></p>
 </body>
-
+<script>
+  $(document).ready(function() {
+    // Enable the search button when both productnummer and serial number fields are not empty.
+    $("#productnumber, #serialnumber").on("keyup change", function() {
+      if ($("#productnumber").val() && $("#serialnumber").val()) {
+        $("#search-button").removeAttr("disabled");
+      } else {
+        $("#search-button").attr("disabled", true);
+      }
+    });
+  });
+  </script>
 </html>

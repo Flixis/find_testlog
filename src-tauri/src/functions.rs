@@ -3,6 +3,8 @@ use log::warn;
 use std::{fs, io};
 use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
+use regex::Regex;
+use std::collections::HashMap;
 
 pub fn not_implemented(app: tauri::AppHandle) {
     println!("{:?}", app.package_info());
@@ -25,19 +27,17 @@ pub fn strip_string_of_leading_and_trailing_slashes(unescaped_string: ArgData) -
     }
 }
 
-pub fn extract_date_and_time(log_file_name: &str) -> (String, String) {
-    // Split the log file name on the underscore character.
-    let parts: Vec<&str> = log_file_name.split("_").collect();
+pub fn extract_datetime(log_path: &str) -> HashMap<String, String> {
+    let re = Regex::new(r"(\d{8})_(\d{6})").unwrap();
+    let caps = re.captures(log_path).unwrap();
 
-    // The date is the first five parts of the split string.
-    let date: String = parts[0..5].join("-");
+    let mut result = HashMap::new();
+    result.insert(String::from("date"), caps[1].to_string());
+    result.insert(String::from("time"), caps[2].to_string());
 
-    // The time is the next six parts of the split string.
-    let time: String = parts[5..11].join(":");
-
-    // Return the date and time as a tuple.
-    (date, time)
+    result
 }
+
 
 pub fn find_logfiles_paths(
     folder_path: String,

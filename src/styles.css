@@ -145,3 +145,9 @@ footer {
   width: 100%;
   
 }
+
+#search-button[disabled] {
+  background-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
