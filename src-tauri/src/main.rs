@@ -3,7 +3,7 @@
 
 use colored::*;
 use log::{debug, error};
-use serde_json::json;
+use serde_json::{json,Value};
 use std::process::exit;
 
 mod functions;
@@ -43,7 +43,7 @@ fn parse_frontend_search_data(
     serialnumber: Option<String>,
     dateyyyyww: Option<String>,
     testenv: Option<String>
-) -> Vec<String> {
+) -> Value {
     let mut search_info = structs::AppConfig::default_values();
 
     search_info.serialnumber = serialnumber.unwrap();
@@ -71,6 +71,13 @@ fn parse_frontend_search_data(
         )
     }
 
+    let mut json_data = json!({
+        "date": "",
+        "time": "",
+        "Location": "",
+        "sn": "",
+    });
+
     dbg!(&folder_path);
 
 
@@ -82,21 +89,19 @@ fn parse_frontend_search_data(
             } else {
                 for path in paths {
                     let datetime = functions::extract_datetime(&path);
-                    dbg!(&datetime);
-                    let json_data = json!({
+                    json_data = json!({
                         "date": datetime["date"],
                         "time": datetime["time"],
-                        "Location": path,
+                        "Location": path.to_string(),
                         "sn": search_info.serialnumber,
-                    }).to_string();
-                    json_data_vec.push(json_data);
+                    })
                 }
             }
         }
         _ => println!("{}", "No matches found")
     }
 
-    json_data_vec
+    json_data
 }
 
 
@@ -126,7 +131,7 @@ fn main() {
                 if data.occurrences > 0 || key.as_str() == "help" {
                     cli_enabled = true;
                     match key.as_str() {
-                        "pn" => { // Create a new SearchInfo struct with only the pn field set let saved_to_struct = functions::strip_string_of_garbage(data);
+                        "pn" => {
                             // Create a new SearchInfo struct with only the pn field set
                             let saved_to_struct = functions::strip_string_of_leading_and_trailing_slashes(data);
                             search_info.productnumber = saved_to_struct;
