@@ -1,7 +1,5 @@
 const { invoke } = window.__TAURI__.tauri;
 
-
-
 function FormatDateToYYYYWW(datepicker_id) {
  
   const input = document.getElementById(datepicker_id);
@@ -41,7 +39,12 @@ async function test_environment() {
         testenv: testenv,
     });
     console.log(jsondata);
-}
 
+
+    console.log(jsondata.date);
+    console.log(jsondata.time);
+    console.log(jsondata.location);
+    console.log(jsondata.serialnumber);
+}
 
 $('#search-button').click(test_environment);

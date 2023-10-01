@@ -43,7 +43,7 @@ fn parse_frontend_search_data(
     serialnumber: Option<String>,
     dateyyyyww: Option<String>,
     testenv: Option<String>
-) -> Value {
+) -> String {
     let mut search_info = structs::AppConfig::default_values();
 
     search_info.serialnumber = serialnumber.unwrap();
@@ -51,8 +51,9 @@ fn parse_frontend_search_data(
     search_info.dateyyyyww = dateyyyyww.unwrap();
     search_info.test_env = testenv.unwrap();
 
-    let folder_path;
+    let folder_path: String;
     let mut json_data_vec: Vec<String> = Vec::new();
+    let mut convert_vec_to_json: String = "".to_string();
     dbg!(&search_info);
 
     if search_info.dateyyyyww.is_empty() {
@@ -78,9 +79,6 @@ fn parse_frontend_search_data(
         "sn": "",
     });
 
-    dbg!(&folder_path);
-
-
     let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
     match get_log_file_path {
         Ok(paths) => {
@@ -92,16 +90,19 @@ fn parse_frontend_search_data(
                     json_data = json!({
                         "date": datetime["date"],
                         "time": datetime["time"],
-                        "Location": path.to_string(),
-                        "sn": search_info.serialnumber,
-                    })
+                        "location": path.to_string(),
+                        "serialnumber": search_info.serialnumber,
+                    });
+                    json_data_vec.push(json_data.to_string());
+                    convert_vec_to_json = serde_json::to_string(&json_data_vec).unwrap()
                 }
             }
         }
         _ => println!("{}", "No matches found")
     }
 
-    json_data
+    dbg!(&convert_vec_to_json);
+    convert_vec_to_json
 }
 
 
@@ -245,7 +246,7 @@ fn main() {
 
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("showing gui");
-    // functions::remove_windows_console();
+    //functions::remove_windows_console();
     tauri::WindowBuilder::new(
         &app,
         "FindTestlog",
