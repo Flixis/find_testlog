@@ -43,7 +43,7 @@ fn parse_frontend_search_data(
     serialnumber: Option<String>,
     dateyyyyww: Option<String>,
     testenv: Option<String>
-) -> String {
+) -> Value {
     let mut search_info = structs::AppConfig::default_values();
 
     search_info.serialnumber = serialnumber.unwrap();
@@ -52,8 +52,13 @@ fn parse_frontend_search_data(
     search_info.test_env = testenv.unwrap();
 
     let folder_path: String;
-    let mut json_data_vec: Vec<String> = Vec::new();
-    let mut convert_vec_to_json: String = "".to_string();
+    let mut json_data = json!({
+        "time": [],
+        "date": [],
+        "location": [],
+        "serialnumber": [],
+    });
+
     dbg!(&search_info);
 
     if search_info.dateyyyyww.is_empty() {
@@ -72,38 +77,42 @@ fn parse_frontend_search_data(
         )
     }
 
-    let mut json_data = json!({
-        "date": "",
-        "time": "",
-        "Location": "",
-        "sn": "",
-    });
+    let mut json_data_vec: Vec<String> = Vec::new();
 
     let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
     match get_log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
-                // println!("{}", "No matches found".red().bold());
+                // Handle the case where no matches are found.
+                // You can either leave it empty or handle it as needed.
             } else {
                 for path in paths {
                     let datetime = functions::extract_datetime(&path);
-                    json_data = json!({
+                    let mut entry = json!({
                         "date": datetime["date"],
                         "time": datetime["time"],
                         "location": path.to_string(),
                         "serialnumber": search_info.serialnumber,
                     });
-                    json_data_vec.push(json_data.to_string());
-                    convert_vec_to_json = serde_json::to_string(&json_data_vec).unwrap()
+
+                    // Push values to arrays in the JSON object
+                    json_data["time"].as_array_mut().unwrap().push(entry["time"].take());
+                    json_data["date"].as_array_mut().unwrap().push(entry["date"].take());
+                    json_data["location"].as_array_mut().unwrap().push(entry["location"].take());
+                    json_data["serialnumber"].as_array_mut().unwrap().push(entry["serialnumber"].take());
+
+                    json_data_vec.push(entry.to_string());
                 }
             }
         }
         _ => println!("{}", "No matches found")
     }
 
-    dbg!(&convert_vec_to_json);
-    convert_vec_to_json
+    dbg!(&json_data);
+
+    json_data
 }
+
 
 
 fn main() {
