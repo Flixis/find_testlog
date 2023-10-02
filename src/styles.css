@@ -108,6 +108,7 @@ tbody tr:nth-child(even) {
 /* Style table data cells */
 th, td {
   text-align: center;
+  overflow: hidden;
   border: 1px solid var(--color-white);
   padding: 0.5rem;
   max-width: 1rem;
@@ -138,16 +139,19 @@ button:hover {
 footer {
   background-color: var(--color-primary);
   color: #fff;
-  padding: 1rem;
+  padding: .3rem;
   text-align: center;
-  position: absolute;
-  bottom: 0rem;
-  width: 100%;
-  
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  width: 100%; 
 }
 
 #search-button[disabled] {
   background-color: var(--color-light);
   color: var(--color-dark-variant);
   cursor: not-allowed;
+}
+
+.sortable-table-div{
 }

@@ -1,5 +1,6 @@
 const { invoke } = window.__TAURI__.tauri;
 
+
 function FormatDateToYYYYWW(datepicker_id) {
  
   const input = document.getElementById(datepicker_id);
@@ -49,9 +50,10 @@ async function test_environment() {
           <td>${jsondata.serialnumber[i]}</td>
           <td>${testenv}</td>
           <td><button onclick="openLog('${jsondata.location[i]}')">Open Log</button></td>
-      `;
+          </tr>`;
       tableBody.appendChild(row);
   }
+  
 }
 
 $('#search-button').click(test_environment);
