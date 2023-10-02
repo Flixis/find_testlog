@@ -48,7 +48,7 @@ async function test_environment() {
           <td>${jsondata.datetime[i]}</td>
           <td>${jsondata.location[i]}</td>
           <td>${jsondata.serialnumber[i]}</td>
-          <td>${testenv}</td>
+          <td>${jsondata.testenv[i]}</td>
           <td><button onclick="openLog('${jsondata.location[i]}')">Open Log</button></td>
           </tr>`;
       tableBody.appendChild(row);

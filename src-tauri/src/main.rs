@@ -54,6 +54,7 @@ fn parse_frontend_search_data(
     let folder_path: String;
     let mut results_from_search_json: Value = json!({
         "datetime": [],
+        "testenv": [],
         "location": [],
         "serialnumber": [],
     });
@@ -76,6 +77,8 @@ fn parse_frontend_search_data(
         )
     }
 
+    dbg!(&folder_path);
+
     let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
     match get_log_file_path {
         Ok(paths) => {
@@ -84,15 +87,19 @@ fn parse_frontend_search_data(
                 // You can either leave it empty or handle it as needed.
             } else {
                 for path in paths {
-                    let datetime = functions::extract_datetime(&path);
+                    dbg!(&path);
+                    let extracted_datetime = functions::extract_datetime(&path);
+                    let extracted_ptf_eat = functions::get_ptf_aet(&path);
                     let mut _json_data: Value = json!({
-                        "datetime": datetime["date"],
+                        "datetime": extracted_datetime,
+                        "testenv": extracted_ptf_eat,
                         "location": path.to_string(),
                         "serialnumber": search_info.serialnumber,
                     });
 
                     // Push values to arrays in the JSON object
                     results_from_search_json["datetime"].as_array_mut().unwrap().push(_json_data["datetime"].take());
+                    results_from_search_json["testenv"].as_array_mut().unwrap().push(_json_data["testenv"].take());
                     results_from_search_json["location"].as_array_mut().unwrap().push(_json_data["location"].take());
                     results_from_search_json["serialnumber"].as_array_mut().unwrap().push(_json_data["serialnumber"].take());
 

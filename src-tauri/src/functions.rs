@@ -29,7 +29,7 @@ pub fn strip_string_of_leading_and_trailing_slashes(unescaped_string: ArgData) -
 
 use chrono::{NaiveDateTime, NaiveDate, NaiveTime};
 
-pub fn extract_datetime(log_path: &str) -> HashMap<String, String> {
+pub fn extract_datetime(log_path: &str) -> String {
     let re = Regex::new(r"(\d{8})_(\d{6})").unwrap();
     let caps = re.captures(log_path).unwrap();
 
@@ -46,11 +46,19 @@ pub fn extract_datetime(log_path: &str) -> HashMap<String, String> {
     // Format the datetime object into the desired format
     let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
 
-    let mut result = HashMap::new();
-    result.insert(String::from("date"), formatted_datetime);
-
-    result
+    formatted_datetime
 }
+
+pub fn get_ptf_aet(input_string: &str) -> String {
+    let re = Regex::new(r"(PTF|AET)").unwrap();
+    let ptf_aet = re.find(input_string);
+
+    match ptf_aet{
+        Some(m) => m.as_str().to_string(),
+        None => "".to_string(),
+    }
+}
+
 
 pub fn find_logfiles_paths(
     folder_path: String,
