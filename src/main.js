@@ -25,26 +25,40 @@ function FormatDateToYYYYWW(datepicker_id) {
 }
 
 async function test_environment() {
+  const productnumber = document.getElementById('productnumber').value;
+  const serialnumber = document.getElementById('serialnumber').value;
+  const date_yyyyww = FormatDateToYYYYWW('datepicker');
+  const testenv = document.getElementById("test_env").value;
 
-    const productnumber = document.getElementById('productnumber').value;
-    const serialnumber = document.getElementById('serialnumber').value;
-    const date_yyyyww = FormatDateToYYYYWW('datepicker');
-    const testenv = document.getElementById("test_env").value;
-    
+  var jsondata = await invoke('parse_frontend_search_data', {
+      productnumber: productnumber,
+      serialnumber: serialnumber,
+      dateyyyyww: date_yyyyww,
+      testenv: testenv,
+  });
 
-    var jsondata = await invoke('parse_frontend_search_data',{
-        productnumber: productnumber,
-        serialnumber: serialnumber,
-        dateyyyyww: date_yyyyww,
-        testenv: testenv,
-    });
-    console.log(jsondata);
+  const tableBody = document.getElementById('table-body');
+  tableBody.innerHTML = ''; // Clear existing table data
 
-
-    console.log(jsondata.date);
-    console.log(jsondata.time);
-    console.log(jsondata.location);
-    console.log(jsondata.serialnumber);
+  // Loop through the data and create a row for each entry
+  for (let i = 0; i < jsondata.date.length; i++) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+          <td>${jsondata.date[i]}</td>
+          <td>${jsondata.time[i]}</td>
+          <td>${jsondata.location[i]}</td>
+          <td>${jsondata.serialnumber[i]}</td>
+          <td>${testenv}</td>
+          <td><button onclick="openLog('${jsondata.location[i]}')">Open Log</button></td>
+      `;
+      tableBody.appendChild(row);
+  }
 }
 
 $('#search-button').click(test_environment);
+
+// Function to open the log when the "Open Log" button is clicked
+function openLog(logLocation) {
+  // Implement your logic to open the log here
+  console.log('Opening log:', logLocation);
+}
