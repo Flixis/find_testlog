@@ -52,9 +52,8 @@ fn parse_frontend_search_data(
     search_info.test_env = testenv.unwrap();
 
     let folder_path: String;
-    let mut json_data = json!({
-        "time": [],
-        "date": [],
+    let mut results_from_search_json: Value = json!({
+        "datetime": [],
         "location": [],
         "serialnumber": [],
     });
@@ -77,8 +76,6 @@ fn parse_frontend_search_data(
         )
     }
 
-    let mut json_data_vec: Vec<String> = Vec::new();
-
     let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
     match get_log_file_path {
         Ok(paths) => {
@@ -88,29 +85,26 @@ fn parse_frontend_search_data(
             } else {
                 for path in paths {
                     let datetime = functions::extract_datetime(&path);
-                    let mut entry = json!({
-                        "date": datetime["date"],
-                        "time": datetime["time"],
+                    let mut _json_data: Value = json!({
+                        "datetime": datetime["date"],
                         "location": path.to_string(),
                         "serialnumber": search_info.serialnumber,
                     });
 
                     // Push values to arrays in the JSON object
-                    json_data["time"].as_array_mut().unwrap().push(entry["time"].take());
-                    json_data["date"].as_array_mut().unwrap().push(entry["date"].take());
-                    json_data["location"].as_array_mut().unwrap().push(entry["location"].take());
-                    json_data["serialnumber"].as_array_mut().unwrap().push(entry["serialnumber"].take());
+                    results_from_search_json["datetime"].as_array_mut().unwrap().push(_json_data["datetime"].take());
+                    results_from_search_json["location"].as_array_mut().unwrap().push(_json_data["location"].take());
+                    results_from_search_json["serialnumber"].as_array_mut().unwrap().push(_json_data["serialnumber"].take());
 
-                    json_data_vec.push(entry.to_string());
                 }
             }
         }
         _ => println!("{}", "No matches found")
     }
 
-    dbg!(&json_data);
+    dbg!(&results_from_search_json);
 
-    json_data
+    results_from_search_json
 }
 
 

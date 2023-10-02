@@ -41,11 +41,10 @@ async function test_environment() {
   tableBody.innerHTML = ''; // Clear existing table data
 
   // Loop through the data and create a row for each entry
-  for (let i = 0; i < jsondata.date.length; i++) {
+  for (let i = 0; i < jsondata.datetime.length; i++) {
       const row = document.createElement('tr');
       row.innerHTML = `
-          <td>${jsondata.date[i]}</td>
-          <td>${jsondata.time[i]}</td>
+          <td>${jsondata.datetime[i]}</td>
           <td>${jsondata.location[i]}</td>
           <td>${jsondata.serialnumber[i]}</td>
           <td>${testenv}</td>

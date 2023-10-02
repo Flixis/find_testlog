@@ -27,17 +27,30 @@ pub fn strip_string_of_leading_and_trailing_slashes(unescaped_string: ArgData) -
     }
 }
 
+use chrono::{NaiveDateTime, NaiveDate, NaiveTime};
+
 pub fn extract_datetime(log_path: &str) -> HashMap<String, String> {
     let re = Regex::new(r"(\d{8})_(\d{6})").unwrap();
     let caps = re.captures(log_path).unwrap();
 
+    let date_str = caps[1].to_string();
+    let time_str = caps[2].to_string();
+
+    // Parse date and time strings into chrono objects
+    let date = NaiveDate::parse_from_str(&date_str, "%Y%m%d").unwrap();
+    let time = NaiveTime::parse_from_str(&time_str, "%H%M%S").unwrap();
+
+    // Create a combined datetime object
+    let datetime = NaiveDateTime::new(date, time);
+
+    // Format the datetime object into the desired format
+    let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
+
     let mut result = HashMap::new();
-    result.insert(String::from("date"), caps[1].to_string());
-    result.insert(String::from("time"), caps[2].to_string());
+    result.insert(String::from("date"), formatted_datetime);
 
     result
 }
-
 
 pub fn find_logfiles_paths(
     folder_path: String,
