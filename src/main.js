@@ -1,6 +1,7 @@
 const { invoke } = window.__TAURI__.tauri;
 
 
+//Parse the date from the datepicker to YYYY-WW
 function FormatDateToYYYYWW(datepicker_id) {
  
   const input = document.getElementById(datepicker_id);
@@ -8,11 +9,11 @@ function FormatDateToYYYYWW(datepicker_id) {
   
   // Get the start date of the week (Monday)
   const monday = new Date(date);
-  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+  monday.setDate(monday.getDate());
   
   // Calculate the week number
   const firstDayOfYear = new Date(monday.getFullYear(), 0, 1);
-  const weekNumber = Math.ceil((((monday - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7);
+  const weekNumber = Math.ceil((((monday - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7); //https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-phpShout out google
   
   // Format the date
   const formattedDate = `${monday.getFullYear()}-W${String(weekNumber).padStart(2, '0')}`;
@@ -22,10 +23,11 @@ function FormatDateToYYYYWW(datepicker_id) {
     return "";
   } 
   
-  return formattedDate;  // Output: 2023-W12
+  return formattedDate;  // Output: YYYY-WW
 }
 
-async function test_environment() {
+
+async function execute_search() {
   const productnumber = document.getElementById('productnumber').value;
   const serialnumber = document.getElementById('serialnumber').value;
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
@@ -56,10 +58,6 @@ async function test_environment() {
   
 }
 
-$('#search-button').click(test_environment);
+$('#search-button').click(execute_search);
 
-// Function to open the log when the "Open Log" button is clicked
-function openLog(logLocation) {
-  // Implement your logic to open the log here
-  console.log('Opening log:', logLocation);
-}
+

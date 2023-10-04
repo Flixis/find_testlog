@@ -109,40 +109,46 @@ pub fn find_logfiles_paths(
     }
 }
 
-#[allow(dead_code)] /*Code is unused but still usefull for later use */
-pub fn get_most_recent_folder_name(path: &str) -> String {
-    let min_char_length_folder_name: usize = 7;
+pub fn search_serial_number_in_folder(search_info: &crate::structs::AppConfig) -> Option<String> {
+    let base_path = if search_info.dateyyyyww.is_empty() {
+        format!(
+            "{}\\{}\\{}",
+            search_info.drive_letter, search_info.folder_location, search_info.productnumber
+        )
+    } else {
+        format!(
+            "{}\\{}\\{}\\{}\\{}",
+            search_info.drive_letter,
+            search_info.folder_location,
+            search_info.productnumber,
+            search_info.dateyyyyww,
+            search_info.test_env
+        )
+    };
 
-    // Start by reading all the folders inside the given path
-    let folder_names = fs::read_dir(path)
-        .ok()
-        .unwrap_or_else(|| {
-            eprintln!("Failed to read directory: {}", path);
-            fs::read_dir(".").unwrap() // Empty ReadDir iterator
-        })
-        .filter_map(|entry| {
-            // Build the filter for finding the folders
-            let entry = entry.ok()?;
-            let file_name = entry.file_name();
-            let folder_name = file_name.to_string_lossy().to_string();
-            Some(folder_name)
-        })
-        .filter(|folder_name| {
-            // Now check if the foldername has at least 7 chars or more, if not, it's not relevant.
-            folder_name.len() >= min_char_length_folder_name
-                && folder_name[..4].parse::<i32>().is_ok() // Convert the first 4 chars into an INT32, because YYYY format.
-        })
-        .collect::<Vec<String>>();
+    // Try to search in the PTF folder
+    let ptf_path = format!("{}/PTF", base_path);
+    let ptf_file_path = format!(
+        "{}\\{}.log",
+        ptf_path,
+        search_info.serialnumber
+    );
 
-    // Now we filter again, but this time we return the highest value folder.
-    let most_recent_folder = folder_names.into_iter().max_by_key(|folder| {
-        let year = folder[..4].parse::<i32>().unwrap_or(0); // Check the YYYY
-        let week = folder[6..].parse::<i32>().unwrap_or(0); // Check the WW
-        (year, week)
-    });
+    if std::fs::metadata(&ptf_file_path).is_ok() {
+        return Some(ptf_file_path);
+    }
 
-    most_recent_folder.unwrap_or_else(|| {
-        eprintln!("{}", "No matching folders found.".red().bold());
-        String::new()
-    })
+    // Try to search in the AET folder
+    let aet_path = format!("{}/AET", base_path);
+    let aet_file_path = format!(
+        "{}\\{}.log",
+        aet_path,
+        search_info.serialnumber
+    );
+
+    if std::fs::metadata(&aet_file_path).is_ok() {
+        return Some(aet_file_path);
+    }
+
+    None
 }

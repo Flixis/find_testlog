@@ -5,6 +5,7 @@ use colored::*;
 use log::{debug, error};
 use serde_json::{json,Value};
 use std::process::exit;
+use tauri::{api::shell::open, Manager};
 
 mod functions;
 mod structs;
@@ -75,9 +76,21 @@ fn parse_frontend_search_data(
             search_info.dateyyyyww,
             search_info.test_env
         )
+    }            
+    
+    //Make sure to save after we've written new data
+    if let Err(err) = search_info.save() {
+        eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
 
-    dbg!(&folder_path);
+    // dbg!(&folder_path);
+
+    if let Some(file_path) = functions::search_serial_number_in_folder(&search_info) {
+        dbg!("Found serial number at: {}", file_path);
+    } else {
+        dbg!("Serial number not found in AET or PTF folders.");
+    }
+
 
     let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
     match get_log_file_path {
@@ -109,12 +122,10 @@ fn parse_frontend_search_data(
         _ => println!("{}", "No matches found")
     }
 
-    dbg!(&results_from_search_json);
+    // dbg!(&results_from_search_json);
 
     results_from_search_json
 }
-
-
 
 fn main() {
     // Builds the Tauri connection
@@ -241,7 +252,7 @@ fn main() {
             }
 
             // Print the struct at the end
-            dbg!("{:?}", &search_info);
+            // dbg!("{:?}", &search_info);
 
             if cli_enabled {
                 exit(0);
@@ -269,3 +280,4 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("this won't show on Windows release builds");
     Ok(())
 }
+

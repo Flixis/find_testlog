@@ -2,6 +2,9 @@
 
 This is a command-line utility developed in Rust, designed to assist in finding and opening log files in a complex directory structure. This tool can be extremely useful if you have a directory structure based on product numbers, year-weeks, and test environments. The application uses a configuration file to save and reuse settings, enhancing its usability.
 
+
+![gui](/gui.png)
+
 ## Features
 - Search for log files based on parameters like drive letter, folder location, product number, year-week, test environment, and serial number.
 - Automatically open the found log files (optional).

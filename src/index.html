@@ -64,8 +64,10 @@
     <a id="footer-content" href="https://github.com/Flixis/find_testlog/tree/main">Tariq Dinmohamed(Github)</a>
   </footer>
 
-</body>
+
 <script>
+  const { shell } = window.__TAURI__.shell;
+
   $(document).ready(function() {
     // Enable the search button when both productnummer and serial number fields are not empty.
     $("#productnumber, #serialnumber").on("keyup change", function() {
@@ -76,5 +78,12 @@
       }
     });
   });
-  </script>
+  
+  // Function to open the log when the "Open Log" button is clicked
+  async function openLog(logLocation) {
+    await open(logLocation);  
+  }
+</script>
+
+</body>
 </html>
