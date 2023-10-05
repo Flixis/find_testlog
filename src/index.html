@@ -45,7 +45,7 @@
     </form>
     <h2 id="results-box-heading">Search results:</h2>
     <div class="sortable-table-div">
-      <table id="sortable-table">
+      <table id="sortable-table" class="">
         <thead>
           <tr>
             <th>Date/Time</th>
@@ -83,7 +83,6 @@
   
   // Function to open the log when the "Open Log" button is clicked
   async function openLog(logLocation) {
-    console.log(logLocation);
     await open(logLocation);
   }
 

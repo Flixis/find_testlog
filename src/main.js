@@ -39,8 +39,6 @@ async function execute_search() {
       testenv: testenv,
   });
 
-  console.log(jsondata);
-
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
 
