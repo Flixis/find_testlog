@@ -6,6 +6,8 @@ use log::{debug, error};
 use serde_json::{json, Value};
 use std::process::exit;
 
+use crate::functions::search_serial_number_in_folder;
+
 mod functions;
 mod structs;
 
@@ -74,8 +76,7 @@ fn parse_frontend_search_data(
     match get_log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
-                // Handle the case where no matches are found.
-                // You can either leave it empty or handle it as needed.
+                eprintln!("{} {:?}" , "Path could not be matched".red().bold(), search_info);
             } else {
                 for path in paths {
                     dbg!(&path);
@@ -108,10 +109,8 @@ fn parse_frontend_search_data(
                 }
             }
         }
-        _ => println!("{}", "No matches found"),
+        _ => eprintln!("{} {:?}", "No matches found".red().bold(), search_info),
     }
-
-    // dbg!(&results_from_search_json);
 
     results_from_search_json
 }
@@ -192,7 +191,6 @@ fn main() {
                         }
                         "get_config_file" => {
                             // Set the get_config_location flag to true
-                            //TODO: implement structinformation.get_config_location = true;
                             match confy::get_configuration_file_path("find_testlog", None) {
                                 Ok(file) => {
                                     println!(
@@ -250,7 +248,7 @@ fn main() {
                 match get_log_file_path {
                     Ok(paths) => {
                         if paths.is_empty() {
-                            println!("{}", "No matches found".red().bold());
+                            println!("{} {:?}", "No matches found".red().bold(), search_info);
                         } else {
                             println!("{}", "Matched log file paths:".green().bold());
                             for path in paths {
@@ -258,7 +256,7 @@ fn main() {
                             }
                         }
                     }
-                    Err(err) => eprintln!("{} {}", "Error:".red().bold(), err),
+                    Err(err) => eprintln!("{} {} \n {:?}", "Error:".red().bold(), err, search_info),
                 }
 
                 exit(0);
