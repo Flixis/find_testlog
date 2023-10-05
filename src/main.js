@@ -39,18 +39,21 @@ async function execute_search() {
       testenv: testenv,
   });
 
+  console.log(jsondata);
+
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
 
   // Loop through the data and create a row for each entry
   for (let i = 0; i < jsondata.datetime.length; i++) {
       const row = document.createElement('tr');
+      const logLocation = jsondata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
       row.innerHTML = `
           <td>${jsondata.datetime[i]}</td>
           <td>${jsondata.location[i]}</td>
           <td>${jsondata.serialnumber[i]}</td>
           <td>${jsondata.testenv[i]}</td>
-          <td><button onclick='openLog("${jsondata.location[i]}")'>Open Log</button></td>
+          <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
           </tr>`;
       tableBody.appendChild(row);
   }

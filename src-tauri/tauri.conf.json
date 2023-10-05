@@ -16,33 +16,8 @@
       "shell": {
         "all": false,
         "execute": false,
-        "open": true,
-        "scope": [],
+        "open": "^.*\\.log$",
         "sidecar": false
-      },
-      "dialog": {
-        "open": true
-      },
-      "fs": {
-        "all": true,
-        "copyFile": false,
-        "createDir": false,
-        "exists": true,
-        "readDir": true,
-        "readFile": true,
-        "removeDir": false,
-        "removeFile": false,
-        "renameFile": false,
-        "scope": ["*","**"],
-        "writeFile": false
-      },
-      "path": {
-        "all": true
-      },
-      "protocol": {
-        "all": true,
-        "asset": false,
-        "assetScope": ["*"]
       }
     },
     "bundle": {

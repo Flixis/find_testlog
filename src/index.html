@@ -81,9 +81,8 @@
   
   // Function to open the log when the "Open Log" button is clicked
   async function openLog(logLocation) {
-    // await open(convertFileSrc(logLocation));
     console.log(logLocation);
-    console.log(convertFileSrc(logLocation));
+    await open(logLocation);
   }
 
 </script>
