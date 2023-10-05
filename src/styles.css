@@ -149,6 +149,7 @@ button:hover {
   cursor: not-allowed;
 }
 
+/* Style the footer */
 footer {
   background-color: var(--color-primary);
   color: #fff;

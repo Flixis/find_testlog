@@ -1,11 +1,19 @@
 use colored::Colorize;
 use log::warn;
 use regex::Regex;
-use std::collections::HashMap;
-use std::{fs, io};
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use std::io;
 use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
 
+/*
+
+Called when -h is parsed...
+I should really figure out if I can just get the 'clap' -h window to do this...
+
+Because i'm not using Tauri in its intended way, this is not really easily done.
+
+*/
 pub fn not_implemented(app: tauri::AppHandle) {
     println!("{:?}", app.package_info());
     warn!("Function not implemented yet");
@@ -13,6 +21,11 @@ pub fn not_implemented(app: tauri::AppHandle) {
     app.exit(127);
 }
 
+/*
+required to removed windows console when launching GUI.
+Tauri by default does not support this feature.
+
+*/
 pub fn remove_windows_console() {
     unsafe {
         windows_sys::Win32::System::Console::FreeConsole();
@@ -27,8 +40,14 @@ pub fn strip_string_of_leading_and_trailing_slashes(unescaped_string: ArgData) -
     }
 }
 
-use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+/*
 
+Regex pattern matches on date and time.
+then gets converted to string.
+
+time and date required to build valid date time string.
+
+*/
 pub fn extract_datetime(log_path: &str) -> String {
     let re = Regex::new(r"(\d{8})_(\d{6})").unwrap();
     let caps = re.captures(log_path).unwrap();
@@ -49,6 +68,13 @@ pub fn extract_datetime(log_path: &str) -> String {
     formatted_datetime
 }
 
+
+/*
+
+Regex pattern matches on PTF or AET in string.
+Used for confirming whether the returned path is actually correctly pulled from source directory.
+
+*/
 pub fn get_ptf_aet(input_string: &str) -> String {
     let re = Regex::new(r"(PTF|AET)").unwrap();
     let ptf_aet = re.find(input_string);
@@ -59,6 +85,13 @@ pub fn get_ptf_aet(input_string: &str) -> String {
     }
 }
 
+/*
+
+Logic of the application.
+Please refractor me
+TODO: write new and better version. -> Hint: see fn below.
+
+*/
 pub fn find_logfiles_paths(
     folder_path: String,
     search_info_struct: crate::structs::AppConfig,
@@ -112,6 +145,8 @@ pub fn find_logfiles_paths(
     }
 }
 
+//working on new version of itterator
+#[warn(unused)]
 pub fn search_serial_number_in_folder(search_info: &crate::structs::AppConfig) -> Option<String> {
     let base_path = if search_info.dateyyyyww.is_empty() {
         format!(

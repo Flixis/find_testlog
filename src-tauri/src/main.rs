@@ -5,14 +5,12 @@ use colored::*;
 use log::{debug, error};
 use serde_json::{json, Value};
 use std::process::exit;
-use tauri::{api::shell::open, Manager};
 
 mod functions;
 mod structs;
 
 /*
-Written 07/09/2023
-Tariq Dinmohamed
+(C) Tariq Dinmohamed
 
 I hated searching for logfiles, So I challenged myself to make something to help with that.
 Documentation and code comes as is.
@@ -20,21 +18,9 @@ Documentation and code comes as is.
 
 /*
 
+Parsing data from frontend.
+The search logic for the GUI part of the app is done here.
 
-IN from JS:
-PN SN Year_week test_env
-
-OUT to JS:
-
-Date
-Time
-Location
-SN
-
-How:
-Lets search using query string with get_log_file_path() function.
-Then we strip the date and time from the path.
-Then we encode data as JSON string.
 
 */
 
@@ -83,13 +69,6 @@ fn parse_frontend_search_data(
         eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
 
-    // dbg!(&folder_path);
-
-    if let Some(file_path) = functions::search_serial_number_in_folder(&search_info) {
-        dbg!("Found serial number at: {}", file_path);
-    } else {
-        dbg!("Serial number not found in AET or PTF folders.");
-    }
 
     let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
     match get_log_file_path {
@@ -137,6 +116,15 @@ fn parse_frontend_search_data(
     results_from_search_json
 }
 
+
+/*
+
+Yes, the main call of the app is not clean.
+But hey... it works...
+
+I may fix this later. But for now it serves its purpose.
+
+*/
 fn main() {
     // Builds the Tauri connection
     tauri::Builder::default()
@@ -224,6 +212,8 @@ fn main() {
                 }
             }
 
+
+            //this if-statment is important, if you remove it will always start a search, thus delaying GUI launch.
             if cli_enabled {
                 let folder_path;
 
@@ -270,7 +260,7 @@ fn main() {
                     }
                     Err(err) => eprintln!("{} {}", "Error:".red().bold(), err),
                 }
-                
+
                 exit(0);
             }
 
@@ -282,9 +272,14 @@ fn main() {
         .expect("error while running tauri application")
 }
 
+/*
+
+Create a GUI with following options.
+
+*/
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("showing gui");
-    //functions::remove_windows_console();
+    //functions::remove_windows_console(); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     tauri::WindowBuilder::new(
         &app,
         "FindTestlog",
@@ -294,6 +289,5 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     .inner_size(800., 480.)
     .resizable(true)
     .build()?;
-    debug!("this won't show on Windows release builds");
     Ok(())
 }
