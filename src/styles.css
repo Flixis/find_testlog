@@ -149,13 +149,6 @@ button:hover {
   cursor: not-allowed;
 }
 
-/* Style the footer */
-.footer-padding{
-  position: absolute;
-  height: 100%;
-  bottom: 0;
-}
-
 footer {
   background-color: var(--color-primary);
   color: #fff;
