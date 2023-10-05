@@ -1,10 +1,10 @@
 use colored::Colorize;
 use log::warn;
+use regex::Regex;
+use std::collections::HashMap;
 use std::{fs, io};
 use tauri::api::cli::ArgData;
 use walkdir::WalkDir;
-use regex::Regex;
-use std::collections::HashMap;
 
 pub fn not_implemented(app: tauri::AppHandle) {
     println!("{:?}", app.package_info());
@@ -27,7 +27,7 @@ pub fn strip_string_of_leading_and_trailing_slashes(unescaped_string: ArgData) -
     }
 }
 
-use chrono::{NaiveDateTime, NaiveDate, NaiveTime};
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 pub fn extract_datetime(log_path: &str) -> String {
     let re = Regex::new(r"(\d{8})_(\d{6})").unwrap();
@@ -53,12 +53,11 @@ pub fn get_ptf_aet(input_string: &str) -> String {
     let re = Regex::new(r"(PTF|AET)").unwrap();
     let ptf_aet = re.find(input_string);
 
-    match ptf_aet{
+    match ptf_aet {
         Some(m) => m.as_str().to_string(),
         None => "".to_string(),
     }
 }
-
 
 pub fn find_logfiles_paths(
     folder_path: String,
@@ -72,7 +71,11 @@ pub fn find_logfiles_paths(
     for entry in WalkDir::new(folder_path) {
         if let Ok(entry) = entry {
             let file_name: String = entry.file_name().to_string_lossy().to_lowercase();
-            let sn_lower: String = search_info_struct.serialnumber.clone().to_string().to_ascii_lowercase();
+            let sn_lower: String = search_info_struct
+                .serialnumber
+                .clone()
+                .to_string()
+                .to_ascii_lowercase();
 
             // Check if the file name contains the serial number
             if file_name.contains(&sn_lower) {
@@ -128,11 +131,7 @@ pub fn search_serial_number_in_folder(search_info: &crate::structs::AppConfig) -
 
     // Try to search in the PTF folder
     let ptf_path = format!("{}/PTF", base_path);
-    let ptf_file_path = format!(
-        "{}\\{}.log",
-        ptf_path,
-        search_info.serialnumber
-    );
+    let ptf_file_path = format!("{}\\{}.log", ptf_path, search_info.serialnumber);
 
     if std::fs::metadata(&ptf_file_path).is_ok() {
         return Some(ptf_file_path);
@@ -140,11 +139,7 @@ pub fn search_serial_number_in_folder(search_info: &crate::structs::AppConfig) -
 
     // Try to search in the AET folder
     let aet_path = format!("{}/AET", base_path);
-    let aet_file_path = format!(
-        "{}\\{}.log",
-        aet_path,
-        search_info.serialnumber
-    );
+    let aet_file_path = format!("{}\\{}.log", aet_path, search_info.serialnumber);
 
     if std::fs::metadata(&aet_file_path).is_ok() {
         return Some(aet_file_path);
