@@ -5,6 +5,7 @@ use colored::*;
 use log::{debug, error};
 use serde_json::{json, Value};
 use std::process::exit;
+use std::{thread, time::Duration};
 
 mod functions;
 mod structs;
@@ -171,7 +172,9 @@ Create a GUI with following options.
 */
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("showing gui");
-    //functions::remove_windows_console(); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
+    println!("{}", "Starting Test Log Finder! Tariq Dinmohamed (C)".green().bold());
+    functions::remove_windows_console(); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
+    thread::sleep(Duration::from_millis(700)); //Here because sometimes the console window is removed before the GUI renders, killing the app.
     tauri::WindowBuilder::new(
         &app,
         "FindTestlog",
