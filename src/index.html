@@ -13,7 +13,7 @@
   <header>
     <div id="logo">Find TestLogs</div>
     <div class="settings-header">
-      <button type="button" id="get_config_location">Open Config file</button>
+      <button type="button" id="get_config_location" onclick="openconfig()">Open Config file</button>
     </div>
   </header>
   <form id="search-form">
@@ -65,7 +65,9 @@
   </footer>
 
 <script>
+  /*Yes we have JS in here , its just easier sometimes you know.*/
   const { open } = window.__TAURI__.shell;
+  const { invoke } = window.__TAURI__.tauri;
   const { convertFileSrc } = window.__TAURI__.tauri;
   
   $(document).ready(function() {
@@ -83,6 +85,12 @@
   async function openLog(logLocation) {
     console.log(logLocation);
     await open(logLocation);
+  }
+
+  // Function to open the config file when the "Open Config file" button is clicked
+  async function openconfig() {
+     var config_location = await invoke("get_configuration_file_path", {confyConfigName: "find_testlog"});
+     await open(config_location);
   }
 
 </script>

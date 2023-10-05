@@ -16,7 +16,7 @@
       "shell": {
         "all": false,
         "execute": false,
-        "open": "^.*\\.log$",
+        "open": "^.*\\.txt|.*\\.toml$",
         "sidecar": false
       }
     },
