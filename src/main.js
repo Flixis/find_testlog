@@ -26,7 +26,6 @@ function FormatDateToYYYYWW(datepicker_id) {
   return formattedDate;  // Output: YYYY-WW
 }
 
-
 async function execute_search() {
   const productnumber = document.getElementById('productnumber').value;
   const serialnumber = document.getElementById('serialnumber').value;
@@ -51,12 +50,13 @@ async function execute_search() {
           <td>${jsondata.location[i]}</td>
           <td>${jsondata.serialnumber[i]}</td>
           <td>${jsondata.testenv[i]}</td>
-          <td><button onclick="openLog('${jsondata.location[i]}')">Open Log</button></td>
+          <td><button onclick='openLog("${jsondata.location[i]}")'>Open Log</button></td>
           </tr>`;
       tableBody.appendChild(row);
   }
-  
+
 }
+
 
 $('#search-button').click(execute_search);
 

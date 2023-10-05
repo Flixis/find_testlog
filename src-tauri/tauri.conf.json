@@ -24,7 +24,7 @@
         "open": true
       },
       "fs": {
-        "all": false,
+        "all": true,
         "copyFile": false,
         "createDir": false,
         "exists": true,

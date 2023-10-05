@@ -59,6 +59,7 @@
       </table>
     </div>
   </div>
+  <div class="footer-padding"></div>
   <footer id="footer">
     <div id="footer-content">&copy; Find_testlog</div>
     <a id="footer-content" href="https://github.com/Flixis/find_testlog/tree/main">Tariq Dinmohamed(Github)</a>
@@ -66,8 +67,9 @@
 
 
 <script>
-  const { shell } = window.__TAURI__.shell;
-
+  const { open } = window.__TAURI__.shell;
+  const { convertFileSrc } = window.__TAURI__.tauri;
+  
   $(document).ready(function() {
     // Enable the search button when both productnummer and serial number fields are not empty.
     $("#productnumber, #serialnumber").on("keyup change", function() {
@@ -81,8 +83,11 @@
   
   // Function to open the log when the "Open Log" button is clicked
   async function openLog(logLocation) {
-    await open(logLocation);  
+    // await open(convertFileSrc(logLocation));
+    console.log(logLocation);
+    console.log(convertFileSrc(logLocation));
   }
+
 </script>
 
 </body>
