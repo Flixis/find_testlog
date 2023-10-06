@@ -39,7 +39,7 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
     
     test_env = random.choice(test_env_list)
     
-    log_file_name = generate_random_string()
+    log_file_name = generate_random_string() #replace this with "20231006_194142_CLNT2228_group_0_41-82-SBV-LBK" or some shit if you wanna have the same sn in different folders.
     log_file_path = os.path.join(drive, folder, pn_formatted, f"{year}-W{week_str}", test_env, log_file_name)
     os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
         
