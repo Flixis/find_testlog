@@ -50,10 +50,10 @@ time and date required to build valid date time string.
 */
 pub fn extract_datetime(log_path: &str) -> String {
     let re = Regex::new(r"(\d{8}).(\d{6})").unwrap();
-    let caps = re.captures(log_path).unwrap();
+    let regex_captures = re.captures(log_path).unwrap();
 
-    let date_str = caps[1].to_string();
-    let time_str = caps[2].to_string();
+    let date_str = regex_captures[1].to_string();
+    let time_str = regex_captures[2].to_string();
 
     // Parse date and time strings into chrono objects
     let date = NaiveDate::parse_from_str(&date_str, "%Y%m%d").unwrap();
@@ -71,17 +71,26 @@ pub fn extract_datetime(log_path: &str) -> String {
 
 /*
 
-Regex pattern matches on PTF or AET in string.
+Regex pattern matches on the '\test_env\' | \PTF\ | \PTF\ in string.
 Used for confirming whether the returned path is actually correctly pulled from source directory.
 
 */
-pub fn get_ptf_aet(input_string: &str) -> String {
-    let re = Regex::new(r"(PTF|AET)").unwrap();
-    let ptf_aet = re.find(input_string);
+pub fn get_test_env(test_environment_string: &str) -> String {
+    let re = Regex::new(r"\\([A-Z])[A-Z]{1,2}").unwrap();
+    let regex_captures = re.captures(test_environment_string).unwrap();
+    dbg!(&regex_captures);
+    let mut test_environment = regex_captures[0].to_string();
 
-    match ptf_aet {
-        Some(m) => m.as_str().to_string(),
-        None => "".to_string(),
+    //I couldn't get the regex to filter out the first '\' in the string, so I just move the string 1 forward.
+    test_environment = test_environment[1..regex_captures[0].len()].to_string();
+    dbg!(&test_environment);
+
+    //super premitive error handling.
+    if test_environment.is_empty(){
+        eprintln!("{}", "Could not find test_env string".red().bold());
+        return "Could not find test_env string".to_string();
+    }else {
+        test_environment
     }
 }
 

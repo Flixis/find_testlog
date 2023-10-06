@@ -173,7 +173,7 @@ Create a GUI with following options.
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("showing gui");
     println!("{}", "Starting Test Log Finder! Tariq Dinmohamed (C)".green().bold());
-    functions::remove_windows_console(); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
+    //functions::remove_windows_console(); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     thread::sleep(Duration::from_millis(700)); //Here because sometimes the console window is removed before the GUI renders, killing the app.
     tauri::WindowBuilder::new(
         &app,
@@ -277,7 +277,7 @@ fn parse_frontend_search_data(
                 for path in paths {
                     dbg!(&path);
                     let extracted_datetime = functions::extract_datetime(&path);
-                    let extracted_ptf_eat = functions::get_ptf_aet(&path);
+                    let extracted_ptf_eat = functions::get_test_env(&path);
                     let mut _json_data: Value = json!({
                         "datetime": extracted_datetime,
                         "testenv": extracted_ptf_eat,
