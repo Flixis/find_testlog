@@ -49,7 +49,7 @@ time and date required to build valid date time string.
 
 */
 pub fn extract_datetime(log_path: &str) -> String {
-    let re = Regex::new(r"(\d{8})_(\d{6})").unwrap();
+    let re = Regex::new(r"(\d{8}).(\d{6})").unwrap();
     let caps = re.captures(log_path).unwrap();
 
     let date_str = caps[1].to_string();
