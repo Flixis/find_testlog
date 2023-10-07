@@ -187,14 +187,14 @@ fn parse_frontend_search_data(
                 for path in paths {
                     dbg!(&path);
                     let extracted_datetime = functions::extract_datetime(&path);
-                    let extracted_ptf_eat = functions::get_test_env_string(&path);
+                    let extracted_test_env = functions::get_test_env_string(&path);
                     let mut _json_data: Value = json!({
                         "datetime": extracted_datetime,
-                        "testenv": extracted_ptf_eat,
+                        "testenv": extracted_test_env,
                         "location": path.to_string(),
                         "serialnumber": search_info.serialnumber,
                     });
-
+                    dbg!(&_json_data);
                     // Push values to arrays in the JSON object
                     results_from_search_json["datetime"]
                         .as_array_mut()

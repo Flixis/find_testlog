@@ -47,15 +47,15 @@ function FormatDateToYYYYWW(datepicker_id) {
   const date = new Date(input.value);
   
   // Get the start date of the week (Monday)
-  const monday = new Date(date);
-  monday.setDate(monday.getDate());
+  const Sunday = new Date(date);
+  Sunday.setDate(Sunday.getDate());
   
   // Calculate the week number
-  const firstDayOfYear = new Date(monday.getFullYear(), 0, 1);
-  const weekNumber = Math.ceil((((monday - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7); //https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-phpShout out google
+  const firstDayOfYear = new Date(Sunday.getFullYear(), 0, 1);
+  const weekNumber = Math.ceil((((Sunday - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7); //https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-phpShout out google
   
   // Format the date
-  const formattedDate = `${monday.getFullYear()}-W${String(weekNumber).padStart(2, '0')}`;
+  const formattedDate = `${Sunday.getFullYear()}-W${String(weekNumber).padStart(2, '0')}`;
   
   //if the user doesn't pick a date in the datepicker then return an empty string
    if (formattedDate == "NaN-WNaN") { 
