@@ -102,7 +102,6 @@
   async function get_application_version(){
     const app_semver = await getVersion();
     document.getElementById("footer-content").innerHTML = "&copy; Find_testlog " + app_semver;
-    console.log(app_semver);
   }
   get_application_version();
 </script>
