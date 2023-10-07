@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find TestLogs</title>
+  <script type="module" src="/main.js" defer></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <div class="loading-bar">
+    <div class="loading-bar-inner"></div>
+  </div>
+  <header>
+    <div id="logo">Find TestLogs</div>
+    <div class="settings-header">
+      <button type="button" id="get_config_location" onclick="openconfig()">Open Config file</button>
+    </div>
+  </header>
+  <form id="search-form">
+    <div id="input-container">
+      <div class="input-group">
+        <label for="productnumber">Product Number (PN):</label>
+        <input type="text" id="productnumber" placeholder="Example: 9999-1234-5678" minlength="10" required>
+      </div>
+      <div class="input-group">
+        <label for="serialnumber">Serial Number (SN):</label>
+        <input type="text" id="serialnumber" placeholder="Example: xx-xx-yyy-000" minlength="10" required>
+      </div>
+      <div class="input-group">
+        <label for="datepicker">Year Week:</label>
+        <input type="date" id="datepicker">
+      </div>
+      <div class="input-group">
+        <label for="testenv">Test Environment:</label>
+        <select id="test_env">
+          <option value="">All</option>
+          <option value="PTF">PTF</option>
+          <option value="FT">FT</option>
+          <option value="ET">ET</option>
+          <option value="XT">XT</option>
+          <option value="PI">PI</option>
+          <option value="AET">AET</option>
+          <option value="ICT">ICT</option>
+        </select>
+      </div>
+    </div>
+  </form>
+  <div id="results-box">
+    <form id="search-button-form">
+      <button type="button" id="search-button" disabled="true" title="Hit ENTER to search">Search</button>
+    </form>
+    <div id="search-results-text"style="display: flex; ">
+      <h2 id="results-box-heading" title="CNTRL+F to search">Search results:</h2>
+      <h2><span id="results-count"></span></h2>
+    </div>
+    <div class="sortable-table-div">
+      <table id="sortable-table" class="">
+        <thead>
+          <tr>
+            <th>Date/Time</th>
+            <th>Location</th>
+            <th>SN</th>
+            <th>Test Environment</th>
+            <th>Open Log</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+  <footer id="footer">
+    <div id="footer-content"></div>
+    <a id="footer-content" href="https://github.com/Flixis/find_testlog/tree/main">Tariq Dinmohamed(Github)</a>
+  </footer>
+
+<script>
+  /*Yes we have JS in here , its just easier sometimes you know.*/
+  const { open } = window.__TAURI__.shell;
+  const { invoke } = window.__TAURI__.tauri;
+  const { convertFileSrc } = window.__TAURI__.tauri;
+  const { getVersion } = window.__TAURI__.app
+  
+  $(document).ready(function() {
+    // Enable the search button when both productnummer and serial number fields are not empty.
+    $("#productnumber, #serialnumber").on("keyup change", function() {
+      const productNumberLength = $("#productnumber").val().length;
+      const serialNumberLength = $("#serialnumber").val().length;
+      //https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+      if (productNumberLength < 10 || serialNumberLength < 10) {
+        $("#search-button").attr("disabled", true);
+      } else {
+        $("#search-button").removeAttr("disabled");
+      }
+    });
+  });
+  
+  // Function to open the log when the "Open Log" button is clicked
+  async function openLog(logLocation) {
+    await open(logLocation);
+  }
+
+  // Function to open the config file when the "Open Config file" button is clicked
+  async function openconfig() {
+     var config_location = await invoke("get_configuration_file_path", {confyConfigName: "find_testlog"});
+     await open(config_location);
+  }
+
+  //Print version information in footer
+  async function get_application_version(){
+    const app_semver = await getVersion();
+    document.getElementById("footer-content").innerHTML = "&copy; Find_testlog " + app_semver;
+  }
+  get_application_version();
+
+</script>
+
+</body>
+</html>

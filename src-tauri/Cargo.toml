@@ -1,0 +1,31 @@
+[package]
+name = "find_testlog_tauri"
+version = "2.0.0"
+description = "Find Testlog"
+authors = ["Tariq Dinmohamed <github.com/flixis>"]
+repository = "https://github.com/Flixis/find_testlog"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.4", features = [] }
+
+[dependencies]
+tauri = { version = "1.4", features = [ "os-all", "shell-open", "cli"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+confy = "0.5.1"
+colored = "2.0.4"
+walkdir = "2.3.3"
+open = "5.0.0"
+log = "0.4.20"
+windows-sys = "0.48.0"
+regex = "1.9.6"
+chrono = "0.4.31"
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
