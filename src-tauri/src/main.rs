@@ -101,34 +101,15 @@ fn main() {
                     }
                 }
             }
-
+            
+            //Make sure to save after we've written new data
+            if let Err(err) = search_info.save() {
+                eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
+            }
 
             //this if-statment is important, if you remove it will always start a search, thus delaying GUI launch.
             if cli_enabled {
-                let folder_path;
 
-                if search_info.dateyyyyww.is_empty() {
-                    folder_path = format!(
-                        "{}\\{}\\{}",
-                        search_info.drive_letter,
-                        search_info.folder_location,
-                        search_info.productnumber
-                    )
-                } else {
-                    folder_path = format!(
-                        "{}\\{}\\{}\\{}\\{}",
-                        search_info.drive_letter,
-                        search_info.folder_location,
-                        search_info.productnumber,
-                        search_info.dateyyyyww,
-                        search_info.test_env
-                    )
-                }
-
-                //Make sure to save after we've written new data
-                if let Err(err) = search_info.save() {
-                    eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
-                }
 
                 if search_info.serialnumber.is_empty() && cli_enabled {
                     eprintln!("{}", "SN cannot be empty".red().bold());
@@ -136,7 +117,7 @@ fn main() {
                 }
 
                 let get_log_file_path =
-                    functions::find_logfiles_paths(folder_path, search_info.clone());
+                    functions::search_for_log(&search_info);
                 match get_log_file_path {
                     Ok(paths) => {
                         if paths.is_empty() {
@@ -187,7 +168,6 @@ fn parse_frontend_search_data(
     search_info.dateyyyyww = dateyyyyww.unwrap();
     search_info.test_env = testenv.unwrap();
 
-    let folder_path: String;
     let mut results_from_search_json: Value = json!({
         "datetime": [],
         "testenv": [],
@@ -200,11 +180,45 @@ fn parse_frontend_search_data(
         eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
 
-    functions::search_for_log(&search_info);
-
-
     let log_file_path = functions::search_for_log(&search_info);
-    
+    match log_file_path {
+        Ok(paths) => {
+            if paths.is_empty() {
+                eprintln!("{} {:?}" , "Path could not be matched".red().bold(), search_info);
+            } else {
+                for path in paths {
+                    dbg!(&path);
+                    let extracted_datetime = functions::extract_datetime(&path);
+                    let extracted_ptf_eat = functions::get_test_env_string(&path);
+                    let mut _json_data: Value = json!({
+                        "datetime": extracted_datetime,
+                        "testenv": extracted_ptf_eat,
+                        "location": path.to_string(),
+                        "serialnumber": search_info.serialnumber,
+                    });
+
+                    // Push values to arrays in the JSON object
+                    results_from_search_json["datetime"]
+                        .as_array_mut()
+                        .unwrap()
+                        .push(_json_data["datetime"].take());
+                    results_from_search_json["testenv"]
+                        .as_array_mut()
+                        .unwrap()
+                        .push(_json_data["testenv"].take());
+                    results_from_search_json["location"]
+                        .as_array_mut()
+                        .unwrap()
+                        .push(_json_data["location"].take());
+                    results_from_search_json["serialnumber"]
+                        .as_array_mut()
+                        .unwrap()
+                        .push(_json_data["serialnumber"].take());
+                }
+            }
+        }
+        _ => eprintln!("{} {:?}", "No matches found".red().bold(), search_info),
+    }
 
     results_from_search_json
 }

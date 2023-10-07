@@ -123,27 +123,36 @@ Err() -> error message
 
 */
 
-pub fn search_for_log(search_info: &crate::structs::AppConfig) {
+pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<String>, io::Error>{
     let productnumber: &String = &search_info.productnumber;
     let serialnumber: &String = &search_info.serialnumber;
     let dateyyyyww: &String = &search_info.dateyyyyww;
     let driveletter: &String = &search_info.drive_letter;
     let folderlocation: &String = &search_info.folder_location;
     let test_env: &String = &search_info.test_env;
-    let open_log: &bool = &search_info.open_log; //unused here, should be handled elsewhere.
 
     let folder_path = format!("{}\\{}\\{}", driveletter, folderlocation, productnumber);
     let log_pattern = format!(".*{}.*", serialnumber);
+    let mut log_file_paths: Vec<String> = Vec::new();
+    let mut found_match = false;
+
 
     let log_re = Regex::new(&log_pattern).unwrap();
 
     for entry in WalkDir::new(folder_path).into_iter().filter_map(|e| e.ok()) {
         if let Some(file_name) = entry.file_name().to_str() {
             if log_re.is_match(file_name) && is_in_date_range(&entry, dateyyyyww) && is_in_test_env(&entry, test_env) {
-                println!("Found: {:?}", entry.path());
-                // Here you can add logic to open the log if open_log is true
+                found_match = true;
+                // dbg!("Found: {:?}", entry.path());
+                log_file_paths.push(entry.path().display().to_string());
             }
         }
+    }
+
+    if found_match {
+        Ok(log_file_paths)
+    }else {
+        return Err(io::Error::new(io::ErrorKind::Other, "Could not find log file."));
     }
 }
 
