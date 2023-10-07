@@ -17,15 +17,17 @@ def generate_random_sn():
   sn += "-"
   for i in range(3):
     sn += random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+  
+  # sn = "46-40-GGG-AAA" #overwrite for testing
   return sn
 
 def generate_random_string():
   """Generates a random string in the format <date>_<time>_CLNT<randomint>_group_0_<random_sn>."""
-  date = datetime.datetime.today().strftime("%Y%m%d")
-  time = datetime.datetime.today().strftime("%H%M%S")
+  random_date = datetime.datetime(random.randint(2000, 2023), random.randint(1, 12), random.randint(1, 28)).strftime("%Y%m%d")  
+  random_time = datetime.time(random.randint(0, 23), random.randint(0, 59), random.randint(0, 59)).strftime("%H%M%S")
   random_int = random.randint(1000, 9999)
   random_sn = generate_random_sn()
-  return f"{date}_{time}_CLNT{random_int}_group_0_{random_sn}.log"
+  return f"{random_date}_{random_time}_CLNT{random_int}_group_0_{random_sn}.log"
 
 # Generates a random folder structure in the format <drive>:<folder>/<pn_formatted>/<year>-W<week_str>/<test_env>/<log_file_name>
 def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, year_max, week_min, week_max, test_env_list):
