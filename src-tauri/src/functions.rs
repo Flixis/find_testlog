@@ -127,7 +127,6 @@ Err() -> error message
 */
 
 pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<String>, io::Error> {
-
     let product_number: &String = &search_info.productnumber;
     let serial_number: &String = &search_info.serialnumber;
     let date_yyyyww: &String = &search_info.dateyyyyww;
@@ -190,7 +189,7 @@ fn is_in_date_range(entry: &DirEntry, date: &String) -> bool {
 
     // Check if any of the path components contain the date string.
     /*
-    
+
     components splits string up into parts, so /path/to/file.txt is split into ["path", "to", "file.txt]
     any check if any of the components contains the date string.
 

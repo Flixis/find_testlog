@@ -83,7 +83,7 @@ async function fakeProgressBar() {
 
   function frame() {
     if (loadingbarprogress < 100) {
-      loadingbarprogress+=10;
+      loadingbarprogress+= Math.random() + 10;
       loadingBar.style.width = loadingbarprogress + '%';
     } else {
       clearInterval(id);

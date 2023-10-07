@@ -138,10 +138,16 @@ Remember, the use of the configuration file can streamline your workflow, partic
 - [colored: For coloring terminal text.](https://docs.rs/crate/colored/2.0.4)
 - [walkdir: For walking directory trees.](https://docs.rs/crate/walkdir/2.3.3)
 - [open: path or URL using the program configured on the system. ](https://docs.rs/crate/open/5.0.0)
+- [log: A Rust library providing a lightweight logging facade.](https://docs.rs/crate/log/0.4.20)
+- [windows-sys: Windows API.](https://docs.rs/crate/windows-sys/0.48.0)
+- [Regex: Regex...](https://docs.rs/crate/regex/1.9.6)
+- [Chrono: Operations on dates and time.](https://docs.rs/crate/chrono/0.4.31)
 
 ### Contribution
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-License
-
 This project is licensed under the GNU General Public License v3.0 License - see the LICENSE file for details.
+
+### Special thanks
+- [Alex Nolan](https://github.com/ifyre)
+    - Solved bug
+    - Tested on his machine

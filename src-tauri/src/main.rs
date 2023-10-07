@@ -260,7 +260,7 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
             .green()
             .bold()
     );
-    functions::hide_windows_console(false); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
+    functions::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     thread::sleep(Duration::from_millis(700)); //Here because sometimes the console window is removed before the GUI renders, killing the app.
     tauri::WindowBuilder::new(
         &app,
