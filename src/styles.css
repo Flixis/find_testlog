@@ -53,6 +53,30 @@ body, h1, h2, p, ul {
 }
 
 
+.loading-bar {
+  position: relative;
+  width: 100%;
+  height: .5rem;
+  background-color: #ccc;
+}
+
+.loading-bar-inner {
+  width: 0%;
+  height: 100%;
+  background-color: var(--color-success);
+  animation: loading-animation 0s linear infinite;
+}
+
+@keyframes loading-animation {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+
 /* Style the header */
 header {
   background-color: var(--color-primary);
@@ -129,8 +153,6 @@ th, td {
   max-width: 1rem;
 }
 
-
-
 /* Style the open button */
 button {
   background-color: var(--color-button-default);
@@ -143,6 +165,10 @@ button {
   transition: background-color 0.3s ease;
 }
 
+#results-count{
+  color: var(--color-success);
+  padding-left: 0.25rem;
+}
 
 /* Style the search button container */
 #search-button {
@@ -171,4 +197,3 @@ footer {
   bottom: 0;
   width: 100%; 
 }
-
