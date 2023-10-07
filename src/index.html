@@ -61,7 +61,7 @@
     </div>
   </div>
   <footer id="footer">
-    <div id="footer-content">&copy; Find_testlog</div>
+    <div id="footer-content"></div>
     <a id="footer-content" href="https://github.com/Flixis/find_testlog/tree/main">Tariq Dinmohamed(Github)</a>
   </footer>
 
@@ -70,6 +70,7 @@
   const { open } = window.__TAURI__.shell;
   const { invoke } = window.__TAURI__.tauri;
   const { convertFileSrc } = window.__TAURI__.tauri;
+  const { getVersion } = window.__TAURI__.app
   
   $(document).ready(function() {
     // Enable the search button when both productnummer and serial number fields are not empty.
@@ -97,6 +98,13 @@
      await open(config_location);
   }
 
+  //Print version information in footer
+  async function get_application_version(){
+    const app_semver = await getVersion();
+    document.getElementById("footer-content").innerHTML = "&copy; Find_testlog " + app_semver;
+    console.log(app_semver);
+  }
+  get_application_version();
 </script>
 
 </body>
