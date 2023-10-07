@@ -29,6 +29,15 @@ async function execute_search() {
           </tr>`;
       tableBody.appendChild(row);
   }
+  
+  // Update the results count
+  const resultsCount = document.getElementById("results-count");
+  // Update the results count when the search results are updated.
+  function updateResultsCount() {
+    resultsCount.textContent = document.getElementById("table-body").childElementCount;
+  }
+  // Update the results count when the page loads.
+  updateResultsCount();
 
 }
 

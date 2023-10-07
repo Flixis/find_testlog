@@ -49,7 +49,7 @@
     <form id="search-button-form">
       <button type="button" id="search-button" disabled="true" title="Hit ENTER to search">Search</button>
     </form>
-    <h2 id="results-box-heading" title="CNTRL+F to search">Search results:</h2>
+    <h2 id="results-box-heading" title="CNTRL+F to search">Search results: <span id="results-count"></span></h2>
     <div class="sortable-table-div">
       <table id="sortable-table" class="">
         <thead>
@@ -90,7 +90,6 @@
       }
     });
   });
-
   
   // Function to open the log when the "Open Log" button is clicked
   async function openLog(logLocation) {

@@ -58,7 +58,7 @@ time and date required to build valid date time string.
 pub fn extract_datetime(log_path: &str) -> String {
     let re = Regex::new(r"(\d{8}).(\d{6})").unwrap();
     let regex_captures = re.captures(log_path);
-    dbg!(&regex_captures);
+    // dbg!(&regex_captures);
     match regex_captures {
         Some(captures) => {
             let date_str = captures[1].to_string();
