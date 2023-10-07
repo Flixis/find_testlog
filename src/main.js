@@ -1,6 +1,9 @@
 const { invoke } = window.__TAURI__.tauri;
 
+let loadingbarprogress;
+
 async function execute_search() {
+  loadingbarprogress = 0;
   const productnumber = document.getElementById('productnumber').value;
   const serialnumber = document.getElementById('serialnumber').value;
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
@@ -76,12 +79,12 @@ function FormatDateToYYYYWW(datepicker_id) {
 
 async function fakeProgressBar() {
   const loadingBar = document.querySelector('.loading-bar-inner');
-  let width = 0;
+  let loadingbarprogress = 0;
 
   function frame() {
-    if (width < 100) {
-      width+=10;
-      loadingBar.style.width = width + '%';
+    if (loadingbarprogress < 100) {
+      loadingbarprogress+=10;
+      loadingBar.style.width = loadingbarprogress + '%';
     } else {
       clearInterval(id);
     }
