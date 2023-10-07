@@ -17,8 +17,6 @@ I hated searching for logfiles, So I challenged myself to make something to help
 Documentation and code comes as is.
 */
 
-
-
 /*
 
 Yes, the main call of the app is not clean.
@@ -101,7 +99,7 @@ fn main() {
                     }
                 }
             }
-            
+
             //Make sure to save after we've written new data
             if let Err(err) = search_info.save() {
                 eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
@@ -109,15 +107,12 @@ fn main() {
 
             //this if-statment is important, if you remove it will always start a search, thus delaying GUI launch.
             if cli_enabled {
-
-
                 if search_info.serialnumber.is_empty() && cli_enabled {
                     eprintln!("{}", "SN cannot be empty".red().bold());
                     exit(2);
                 }
 
-                let get_log_file_path =
-                    functions::search_for_log(&search_info);
+                let get_log_file_path = functions::search_for_log(&search_info);
                 match get_log_file_path {
                     Ok(paths) => {
                         if paths.is_empty() {
@@ -135,13 +130,12 @@ fn main() {
                 exit(0);
             }
 
-
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-                        parse_frontend_search_data,
-                        get_configuration_file_path
-                        ])
+            parse_frontend_search_data,
+            get_configuration_file_path
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
 }
@@ -184,7 +178,11 @@ fn parse_frontend_search_data(
     match log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
-                eprintln!("{} {:?}" , "Path could not be matched".red().bold(), search_info);
+                eprintln!(
+                    "{} {:?}",
+                    "Path could not be matched".red().bold(),
+                    search_info
+                );
             } else {
                 for path in paths {
                     dbg!(&path);
@@ -223,7 +221,6 @@ fn parse_frontend_search_data(
     results_from_search_json
 }
 
-
 /*
 
 Gets the path to the configuration file.
@@ -233,7 +230,7 @@ TODO: Fix this.
 
 */
 #[tauri::command]
-fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf{
+fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
     match confy::get_configuration_file_path(&confy_config_name, None) {
         Ok(file) => {
             println!(
@@ -250,7 +247,6 @@ fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf{
     };
 }
 
-
 /*
 
 Create a GUI with following options.
@@ -258,7 +254,12 @@ Create a GUI with following options.
 */
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     debug!("showing gui");
-    println!("{}", "Starting Test Log Finder! Tariq Dinmohamed (C)".green().bold());
+    println!(
+        "{}",
+        "Starting Test Log Finder! Tariq Dinmohamed (C)"
+            .green()
+            .bold()
+    );
     functions::hide_windows_console(false); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     thread::sleep(Duration::from_millis(700)); //Here because sometimes the console window is removed before the GUI renders, killing the app.
     tauri::WindowBuilder::new(
