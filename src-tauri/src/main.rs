@@ -116,7 +116,7 @@ fn main() {
                 match get_log_file_path {
                     Ok(paths) => {
                         if paths.is_empty() {
-                            println!("{} {:?}", "No matches found".red().bold(), search_info);
+                            println!("{} {:?}", "No matches found: ".red().bold(), search_info);
                         } else {
                             println!("{}", "Matched log file paths:".green().bold());
                             for path in paths {
@@ -215,7 +215,7 @@ fn parse_frontend_search_data(
                 }
             }
         }
-        _ => eprintln!("{} {:?}", "No matches found".red().bold(), search_info),
+        _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
 
     results_from_search_json
