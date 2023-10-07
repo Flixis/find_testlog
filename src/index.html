@@ -20,11 +20,11 @@
     <div id="input-container">
       <div class="input-group">
         <label for="productnumber">Product Number (PN):</label>
-        <input type="text" id="productnumber" placeholder="Example: 9999-1234-5678" required>
+        <input type="text" id="productnumber" placeholder="Example: 9999-1234-5678" minlength="10" required>
       </div>
       <div class="input-group">
         <label for="serialnumber">Serial Number (SN):</label>
-        <input type="text" id="serialnumber" placeholder="Example: xx-xx-yyy-000" required>
+        <input type="text" id="serialnumber" placeholder="Example: xx-xx-yyy-000" minlength="10" required>
       </div>
       <div class="input-group">
         <label for="datepicker">Year Week:</label>
@@ -73,13 +73,17 @@
   $(document).ready(function() {
     // Enable the search button when both productnummer and serial number fields are not empty.
     $("#productnumber, #serialnumber").on("keyup change", function() {
-      if ($("#productnumber").val() && $("#serialnumber").val()) {
-        $("#search-button").removeAttr("disabled");
-      } else {
+      const productNumberLength = $("#productnumber").val().length;
+      const serialNumberLength = $("#serialnumber").val().length;
+
+      if (productNumberLength < 10 || serialNumberLength < 10) {
         $("#search-button").attr("disabled", true);
+      } else {
+        $("#search-button").removeAttr("disabled");
       }
     });
   });
+
   
   // Function to open the log when the "Open Log" button is clicked
   async function openLog(logLocation) {

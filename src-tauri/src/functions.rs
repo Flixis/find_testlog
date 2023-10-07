@@ -26,9 +26,13 @@ required to removed windows console when launching GUI.
 Tauri by default does not support this feature.
 
 */
-pub fn remove_windows_console() {
+pub fn hide_windows_console(switch: bool) {
     unsafe {
-        windows_sys::Win32::System::Console::FreeConsole();
+        if switch{
+            windows_sys::Win32::System::Console::FreeConsole();
+        }else {
+            windows_sys::Win32::System::Console::AllocConsole();            
+        }
     }
 }
 
@@ -50,23 +54,33 @@ time and date required to build valid date time string.
 */
 pub fn extract_datetime(log_path: &str) -> String {
     let re = Regex::new(r"(\d{8}).(\d{6})").unwrap();
-    let regex_captures = re.captures(log_path).unwrap();
+    let regex_captures = re.captures(log_path);
 
-    let date_str = regex_captures[1].to_string();
-    let time_str = regex_captures[2].to_string();
+    match regex_captures {
+        Some(captures) => {
+            let date_str = captures[1].to_string();
+            let time_str = captures[2].to_string();
 
-    // Parse date and time strings into chrono objects
-    let date = NaiveDate::parse_from_str(&date_str, "%Y%m%d").unwrap();
-    let time = NaiveTime::parse_from_str(&time_str, "%H%M%S").unwrap();
+            // Parse date and time strings into chrono objects
+            let date = NaiveDate::parse_from_str(&date_str, "%Y%m%d").unwrap();
+            let time = NaiveTime::parse_from_str(&time_str, "%H%M%S").unwrap();
 
-    // Create a combined datetime object
-    let datetime = NaiveDateTime::new(date, time);
+            // Create a combined datetime object
+            let datetime = NaiveDateTime::new(date, time);
 
-    // Format the datetime object into the desired format
-    let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
+            // Format the datetime object into the desired format
+            let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
 
-    formatted_datetime
+            formatted_datetime
+        },
+        None => {
+            // Handle the case where the regex does not match.
+            log::error!("Could not extract datetime from log path: {}", log_path);
+            String::new()
+        },
+    }
 }
+
 
 
 /*
@@ -75,22 +89,25 @@ Regex pattern matches on the '\test_env\' | \PTF\ | \PTF\ in string.
 Used for confirming whether the returned path is actually correctly pulled from source directory.
 
 */
-pub fn get_test_env(test_environment_string: &str) -> String {
+pub fn get_test_env_string(test_environment_string: &str) -> String {
     let re = Regex::new(r"\\([A-Z])[A-Z]{1,2}").unwrap();
-    let regex_captures = re.captures(test_environment_string).unwrap();
-    dbg!(&regex_captures);
-    let mut test_environment = regex_captures[0].to_string();
+    let regex_captures = re.captures(test_environment_string);
 
-    //I couldn't get the regex to filter out the first '\' in the string, so I just move the string 1 forward.
-    test_environment = test_environment[1..regex_captures[0].len()].to_string();
-    dbg!(&test_environment);
+    match regex_captures {
+        Some(captures) => {
+            let mut test_environment = captures[0].to_string();
 
-    //super premitive error handling.
-    if test_environment.is_empty(){
-        eprintln!("{}", "Could not find test_env string".red().bold());
-        return "Could not find test_env string".to_string();
-    }else {
-        test_environment
+            // Remove the leading backslash from the test environment string.
+            test_environment = test_environment[1..captures[0].len()].to_string();
+
+            // Return the test environment string.
+            test_environment
+        },
+        None => {
+            // Handle the case where the regex does not match.
+            log::error!("Could not find test_env string in test environment string: {}", test_environment_string);
+            "Could not find test_env string".to_string()
+        },
     }
 }
 
@@ -98,7 +115,7 @@ pub fn get_test_env(test_environment_string: &str) -> String {
 
 Logic of the application.
 Please refractor me
-TODO: write new and better version. -> Hint: see fn below.
+TODO: write new and better version.
 
 */
 pub fn find_logfiles_paths(
@@ -152,42 +169,4 @@ pub fn find_logfiles_paths(
         // If no match is found, return an error
         Err(io::Error::new(io::ErrorKind::NotFound, "No matches found"))
     }
-}
-
-//working on new version of itterator
-#[warn(unused)]
-pub fn search_serial_number_in_folder(search_info: &crate::structs::AppConfig) -> Option<String> {
-    let base_path = if search_info.dateyyyyww.is_empty() {
-        format!(
-            "{}\\{}\\{}",
-            search_info.drive_letter, search_info.folder_location, search_info.productnumber
-        )
-    } else {
-        format!(
-            "{}\\{}\\{}\\{}\\{}",
-            search_info.drive_letter,
-            search_info.folder_location,
-            search_info.productnumber,
-            search_info.dateyyyyww,
-            search_info.test_env
-        )
-    };
-
-    // Try to search in the PTF folder
-    let ptf_path = format!("{}/PTF", base_path);
-    let ptf_file_path = format!("{}\\{}.log", ptf_path, search_info.serialnumber);
-
-    if std::fs::metadata(&ptf_file_path).is_ok() {
-        return Some(ptf_file_path);
-    }
-
-    // Try to search in the AET folder
-    let aet_path = format!("{}/AET", base_path);
-    let aet_file_path = format!("{}\\{}.log", aet_path, search_info.serialnumber);
-
-    if std::fs::metadata(&aet_file_path).is_ok() {
-        return Some(aet_file_path);
-    }
-
-    None
 }

@@ -167,55 +167,6 @@ fn main() {
 
 /*
 
-Create a GUI with following options.
-
-*/
-fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
-    debug!("showing gui");
-    println!("{}", "Starting Test Log Finder! Tariq Dinmohamed (C)".green().bold());
-    //functions::remove_windows_console(); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
-    thread::sleep(Duration::from_millis(700)); //Here because sometimes the console window is removed before the GUI renders, killing the app.
-    tauri::WindowBuilder::new(
-        &app,
-        "FindTestlog",
-        tauri::WindowUrl::App("index.html".into()),
-    )
-    .title("Find Testlog")
-    .inner_size(800., 480.)
-    .resizable(true)
-    .build()?;
-    Ok(())
-}
-
-
-/*
-
-Gets the path to the configuration file.
-Why is this here and not in functions.rs?
-Because the #[tauri::command] complains, and I cba to figure it out now.
-TODO: Fix this.
-
-*/
-#[tauri::command]
-fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf{
-    match confy::get_configuration_file_path(&confy_config_name, None) {
-        Ok(file) => {
-            println!(
-                "{} {:#?}",
-                "Configuration file is located at:".green().bold(),
-                file
-            );
-            return file;
-        }
-        Err(err) => {
-            eprintln!("Failed to get configuration file path: {}", err);
-            exit(1)
-        }
-    };
-}
-
-/*
-
 Parsing data from frontend.
 The search logic for the GUI part of the app is done here.
 
@@ -269,6 +220,7 @@ fn parse_frontend_search_data(
 
 
     let get_log_file_path = functions::find_logfiles_paths(folder_path, search_info.clone());
+    dbg!(&get_log_file_path);
     match get_log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
@@ -277,7 +229,7 @@ fn parse_frontend_search_data(
                 for path in paths {
                     dbg!(&path);
                     let extracted_datetime = functions::extract_datetime(&path);
-                    let extracted_ptf_eat = functions::get_test_env(&path);
+                    let extracted_ptf_eat = functions::get_test_env_string(&path);
                     let mut _json_data: Value = json!({
                         "datetime": extracted_datetime,
                         "testenv": extracted_ptf_eat,
@@ -309,4 +261,54 @@ fn parse_frontend_search_data(
     }
 
     results_from_search_json
+}
+
+
+/*
+
+Gets the path to the configuration file.
+Why is this here and not in functions.rs?
+Because the #[tauri::command] complains, and I cba to figure it out now.
+TODO: Fix this.
+
+*/
+#[tauri::command]
+fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf{
+    match confy::get_configuration_file_path(&confy_config_name, None) {
+        Ok(file) => {
+            println!(
+                "{} {:#?}",
+                "Configuration file is located at:".green().bold(),
+                file
+            );
+            return file;
+        }
+        Err(err) => {
+            eprintln!("Failed to get configuration file path: {}", err);
+            exit(1)
+        }
+    };
+}
+
+
+/*
+
+Create a GUI with following options.
+
+*/
+fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
+    debug!("showing gui");
+    println!("{}", "Starting Test Log Finder! Tariq Dinmohamed (C)".green().bold());
+    functions::hide_windows_console(false); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
+    thread::sleep(Duration::from_millis(700)); //Here because sometimes the console window is removed before the GUI renders, killing the app.
+    tauri::WindowBuilder::new(
+        &app,
+        "FindTestlog",
+        tauri::WindowUrl::App("index.html".into()),
+    )
+    .title("Find Testlog")
+    .inner_size(800., 480.)
+    .resizable(true)
+    .build()?;
+    Ok(())
 }
