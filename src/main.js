@@ -15,6 +15,7 @@ async function execute_search() {
 
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
+  fakeProgressBar();
 
   // Loop through the data and create a row for each entry
   for (let i = 0; i < jsondata.datetime.length; i++) {
@@ -38,7 +39,6 @@ async function execute_search() {
   }
   // Update the results count when the page loads.
   updateResultsCount();
-
 }
 
 $('#search-button').click(execute_search);
@@ -74,6 +74,21 @@ function FormatDateToYYYYWW(datepicker_id) {
   return formattedDate;  // Output: YYYY-WW
 }
 
+async function fakeProgressBar() {
+  const loadingBar = document.querySelector('.loading-bar-inner');
+  let width = 0;
+
+  function frame() {
+    if (width < 100) {
+      width+=10;
+      loadingBar.style.width = width + '%';
+    } else {
+      clearInterval(id);
+    }
+  }
+
+  const id = setInterval(frame, 100); // Adjust the interval as needed
+}
 
 
 

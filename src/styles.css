@@ -64,16 +64,6 @@ body, h1, h2, p, ul {
   width: 0%;
   height: 100%;
   background-color: var(--color-success);
-  animation: loading-animation 0s linear infinite;
-}
-
-@keyframes loading-animation {
-  0% {
-    width: 0%;
-  }
-  100% {
-    width: 100%;
-  }
 }
 
 
