@@ -3,8 +3,9 @@ use log::warn;
 use regex::Regex;
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use std::io;
+use std::path::Path;
 use tauri::api::cli::ArgData;
-use walkdir::WalkDir;
+use walkdir::{WalkDir, DirEntry};
 
 /*
 
@@ -113,60 +114,53 @@ pub fn get_test_env_string(test_environment_string: &str) -> String {
 
 /*
 
-Logic of the application.
-Please refractor me
-TODO: write new and better version.
+
+input: crate::struct::Appconfig
+output: 
+OK() -> folderpath to file -> 
+    D\:TestLogs\6107-2100-6501\2002-W27\PI\20231006_194703_CLNT7942_group_0_39-69-G0E-4QA.log
+Err() -> error message
 
 */
-pub fn find_logfiles_paths(
-    folder_path: String,
-    search_info_struct: crate::structs::AppConfig,
-) -> Result<Vec<String>, io::Error> {
-    // Keep track of whether a match is found
-    let mut found_match: bool = false;
-    let mut log_file_paths: Vec<String> = Vec::new();
 
-    // Iterate over the files in the folder path
-    for entry in WalkDir::new(folder_path) {
-        if let Ok(entry) = entry {
-            let file_name: String = entry.file_name().to_string_lossy().to_lowercase();
-            let sn_lower: String = search_info_struct
-                .serialnumber
-                .clone()
-                .to_string()
-                .to_ascii_lowercase();
+pub fn search_for_log(search_info: &crate::structs::AppConfig) {
+    let productnumber: &String = &search_info.productnumber;
+    let serialnumber: &String = &search_info.serialnumber;
+    let dateyyyyww: &String = &search_info.dateyyyyww;
+    let driveletter: &String = &search_info.drive_letter;
+    let folderlocation: &String = &search_info.folder_location;
+    let test_env: &String = &search_info.test_env;
+    let open_log: &bool = &search_info.open_log; //unused here, should be handled elsewhere.
 
-            // Check if the file name contains the serial number
-            if file_name.contains(&sn_lower) {
-                found_match = true;
-                // dbg!("{}", entry.path().display());
-                if search_info_struct.open_log {
-                    match open::that(entry.path()) {
-                        Ok(()) => println!(
-                            "{} {}",
-                            "Opening Successfully.".green().bold(),
-                            entry.path().display()
-                        ),
-                        Err(err) => {
-                            return Err(io::Error::new(
-                                io::ErrorKind::Other,
-                                format!(
-                                    "An error occurred when opening {}: {}",
-                                    entry.path().display(),
-                                    err
-                                ),
-                            ))
-                        }
-                    }
-                }
-                log_file_paths.push(entry.path().display().to_string());
+    let folder_path = format!("{}\\{}\\{}", driveletter, folderlocation, productnumber);
+    let log_pattern = format!(".*{}.*", serialnumber);
+
+    let log_re = Regex::new(&log_pattern).unwrap();
+
+    for entry in WalkDir::new(folder_path).into_iter().filter_map(|e| e.ok()) {
+        if let Some(file_name) = entry.file_name().to_str() {
+            if log_re.is_match(file_name) && is_in_date_range(&entry, dateyyyyww) && is_in_test_env(&entry, test_env) {
+                println!("Found: {:?}", entry.path());
+                // Here you can add logic to open the log if open_log is true
             }
         }
     }
-    if found_match {
-        return Ok(log_file_paths);
-    } else {
-        // If no match is found, return an error
-        Err(io::Error::new(io::ErrorKind::NotFound, "No matches found"))
+}
+
+fn is_in_date_range(entry: &DirEntry, date: &String) -> bool {
+    if date.is_empty() {
+        return true;
     }
+    let path: &Path = entry.path();
+    let components: Vec<_> = path.components().collect();
+    components.iter().any(|comp| comp.as_os_str().to_str().unwrap().contains(date))
+}
+
+fn is_in_test_env(entry: &DirEntry, test_env: &String) -> bool {
+    if test_env.is_empty() {
+        return true;
+    }
+    let path: &Path = entry.path();
+    let components: Vec<_> = path.components().collect();
+    components.iter().any(|comp| comp.as_os_str().to_str().unwrap().contains(test_env))
 }

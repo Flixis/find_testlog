@@ -87,11 +87,11 @@ input#productnumber:invalid, input#serialnumber:invalid {
   box-shadow: 0 0 .25rem var(--color-danger);
 }
 
-#testenv[disabled]{
+/* #testenv[disabled]{
   background-color: var(--color-light);
   color: var(--color-dark-variant);
   cursor: not-allowed;
-}
+} */
 
 select { /*dropdown menu bar */
   width: calc(100% + 20px); /* for some reason if you just specify 100% it doesn't align */
