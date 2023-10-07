@@ -18,7 +18,7 @@ def generate_random_sn():
   for i in range(3):
     sn += random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
   
-  #sn = "46-40-GGG-AAA" #overwrite for testing
+  sn = "99-11-AAA-BBB" #overwrite for testing
   return sn
 
 def generate_random_string(year, week):
@@ -93,8 +93,8 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
 
 drive = "D:"
 folder = "TestLogs"
-pn_min = 610721006501
-pn_max = 610721006501
+pn_min = 999911112222
+pn_max = 999911112222
 year_min = 1998
 year_max = 2023
 week_min = 0 #0=1 
