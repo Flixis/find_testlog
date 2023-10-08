@@ -1,5 +1,4 @@
 import argparse
-import concurrent.futures
 import random
 import os
 import datetime
@@ -19,7 +18,7 @@ def generate_random_sn():
   for i in range(3):
     sn += random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
   
-  #sn = "99-11-AAA-BBB" #overwrite for testing
+  sn = "99-11-AAA-BBB" #overwrite for testing
   return sn
 
 def generate_random_string(year, week):
@@ -89,7 +88,6 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
   with open(log_file_path, "w") as f:
     f.write("This is a test log file." + log_file_name)
 
-  print(log_file_path)
   # Return the path to the log file.
   return log_file_path
 
@@ -104,20 +102,10 @@ week_max = 51 #51=52
 test_env_list = ["PTF", "FT", "ET", "XT", "PI","AET", "ICT"]
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--count", type=int, default=1, help="The number of times to generate a random folder structure.")
-    parser.add_argument("--max_workers", type=int, default=4, help="The number of concurrent workers.")
-    args = parser.parse_args()
-    
-    with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as executor:
-        # Create a list of tasks to generate random folder structures
-        tasks = [
-            executor.submit(
-                generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, year_max, week_min, week_max, test_env_list)
-            )
-            for _ in range(args.count)
-        ]
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--count", type=int, default=1, help="The number of times to generate a random folder structure.")
+  args = parser.parse_args()
 
-        # Wait for all tasks to complete
-        concurrent.futures.wait(tasks)
-        
+  for i in range(args.count):
+    log_file_path = generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, year_max, week_min, week_max, test_env_list)
+    print(log_file_path)
