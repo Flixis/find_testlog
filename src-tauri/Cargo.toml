@@ -1,6 +1,6 @@
 [package]
 name = "find_testlog_tauri"
-version = "2.0.0"
+version = "2.1.0"
 description = "Find Testlog"
 authors = ["Tariq Dinmohamed <github.com/flixis>"]
 repository = "https://github.com/Flixis/find_testlog"
