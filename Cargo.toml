@@ -1,6 +1,6 @@
 [package]
 name = "find_testlog"
-version = "1.1.0"
+version = "1.2.0"
 edition = "2021"
 authors = ["Tariq Dinmohamed <github.com/flixis>"]
 description = "Quickly find and open testlogs for Company products"
@@ -15,3 +15,4 @@ confy = "0.5.1"
 colored = "2.0.4"
 walkdir = "2.3.3"
 open = "5.0.0"
+regex = "1.10.0"

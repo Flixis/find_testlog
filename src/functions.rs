@@ -1,72 +1,95 @@
-use std::fs;
 use std::io;
-use colored::Colorize;
-use walkdir::WalkDir;
+use std::path::Path;
+use walkdir::{WalkDir,DirEntry};
+use regex::Regex;
 
-pub fn itter_find_log(folder_path: String, cli_parse: crate::structs::Cli) -> Result<Vec<String>, io::Error> {
-    // Keep track of whether a match is found
-    let mut found_match: bool = false;
+pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<String>, io::Error> {
+    let product_number: &String = &search_info.productnumber;
+    let serial_number: &String = &search_info.serialnumber;
+    let date_yyyyww: &String = &search_info.dateyyyyww;
+    let drive_letter: &String = &search_info.drive_letter;
+    let folder_location: &String = &search_info.folder_location;
+    let test_env: &String = &search_info.test_env;
+
+    // Create the folder path to search.
+    let folder_path = format!("{}\\{}\\{}", drive_letter, folder_location, product_number);
+
+    // Create a regular expression to match the log file names.
+    let log_pattern = format!(".*{}.*", serial_number);
+
+    // Create a vector to store the log file paths.
     let mut log_file_paths: Vec<String> = Vec::new();
+    let mut found_match = false;
+    let log_re = Regex::new(&log_pattern).unwrap();
 
-    // Iterate over the files in the folder path  
-    for entry in WalkDir::new(folder_path) {
-        if let Ok(entry) = entry {
-            let file_name: String = entry.file_name().to_string_lossy().to_lowercase();
-            let sn_lower: String = cli_parse.sn.clone().unwrap_or_default().to_string().to_ascii_lowercase();
-
-            // Check if the file name contains the serial number
-            if file_name.contains(&sn_lower) {
+    // Iterate over all of the files and directories in the folder path.
+    for entry in WalkDir::new(folder_path).into_iter().filter_map(|e| e.ok()) {
+        // Get the file name.
+        if let Some(file_name) = entry.file_name().to_str() {
+            // Check if the file name matches the regular expression.
+            if log_re.is_match(file_name) &&
+                // Check if the file is in the date range.
+                is_in_date_range(&entry, date_yyyyww) &&
+                // Check if the file is in the test environment.
+                is_in_test_env(&entry, test_env)
+            {
+                // Set the found_match flag to true.
                 found_match = true;
-                // dbg!("{}", entry.path().display());
-                if cli_parse.open_log {
-                    match open::that(entry.path()) {
-                        Ok(()) => println!("{} {}", "Opening Successfully.".green().bold(), entry.path().display()),
-                        Err(err) => return Err(io::Error::new(io::ErrorKind::Other, format!("An error occurred when opening {}: {}", entry.path().display(), err))),
-                    }
-                }
+
+                // Add the log file path to the vector.
                 log_file_paths.push(entry.path().display().to_string());
             }
         }
     }
-    if found_match{
-        return Ok(log_file_paths)
-    }else {
-        // If no match is found, return an error
-        Err(io::Error::new(io::ErrorKind::NotFound, "No matches found"))
+
+    if found_match {
+        Ok(log_file_paths)
+    } else {
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            "Could not find log file.",
+        ));
     }
 }
 
-#[allow(dead_code)]/*Code is unused but still usefull for later use */
-pub fn get_most_recent_folder_name(path: &str) -> String {
-    let min_char_length_folder_name: usize = 7;
-    
-    // Start by reading all the folders inside the given path
-    let folder_names = fs::read_dir(path)
-        .ok()
-        .unwrap_or_else(|| {
-            eprintln!("Failed to read directory: {}", path);
-            fs::read_dir(".").unwrap() // Empty ReadDir iterator
-        })
-        .filter_map(|entry| { // Build the filter for finding the folders
-            let entry = entry.ok()?;
-            let file_name = entry.file_name();
-            let folder_name = file_name.to_string_lossy().to_string();
-            Some(folder_name)
-        })
-        .filter(|folder_name| { // Now check if the foldername has at least 7 chars or more, if not, it's not relevant.
-            folder_name.len() >= min_char_length_folder_name && folder_name[..4].parse::<i32>().is_ok() // Convert the first 4 chars into an INT32, because YYYY format.
-        })
-        .collect::<Vec<String>>();
+fn is_in_date_range(entry: &DirEntry, date: &String) -> bool {
+    // If the date string is empty, return true.
+    if date.is_empty() {
+        return true;
+    }
 
-    // Now we filter again, but this time we return the highest value folder.
-    let most_recent_folder = folder_names.into_iter().max_by_key(|folder| {
-        let year = folder[..4].parse::<i32>().unwrap_or(0); // Check the YYYY
-        let week = folder[6..].parse::<i32>().unwrap_or(0); // Check the WW
-        (year, week)
-    });
+    // Get the path to the file or directory.
+    let path: &Path = entry.path();
 
-    most_recent_folder.unwrap_or_else(|| {
-        eprintln!("{}", "No matching folders found.".red().bold());
-        String::new()
-    })
+    // Split the path into components.
+    let components: Vec<_> = path.components().collect();
+
+    // Check if any of the path components contain the date string.
+    /*
+
+    components splits string up into parts, so /path/to/file.txt is split into ["path", "to", "file.txt]
+    any check if any of the components contains the date string.
+
+     */
+    components
+        .iter()
+        .any(|comp| comp.as_os_str().to_str().unwrap().contains(date))
+}
+
+fn is_in_test_env(entry: &DirEntry, test_env: &String) -> bool {
+    // If the test environment string is empty, return true.
+    if test_env.is_empty() {
+        return true;
+    }
+
+    // Get the path to the file or directory.
+    let path: &Path = entry.path();
+
+    // Split the path into components.
+    let components: Vec<_> = path.components().collect();
+
+    // Check if any of the path components contain the test environment string.
+    components
+        .iter()
+        .any(|comp| comp.as_os_str().to_str().unwrap().contains(test_env))
 }

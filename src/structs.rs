@@ -6,9 +6,10 @@ use confy::ConfyError;
 pub struct AppConfig {
     pub drive_letter: String,
     pub folder_location: String,
-    pub pn: String,
+    pub productnumber: String,
     pub test_env: String,
-    pub sn: String,
+    pub serialnumber: String,
+    pub dateyyyyww: String,
 }
 
 // Default values for AppConfig
@@ -17,9 +18,10 @@ impl Default for AppConfig {
         Self {
             drive_letter: String::from("Q:"),
             folder_location: String::from("TestLogs"),
-            pn: String::from(""),
+            productnumber: String::from(""),
             test_env: String::from("PTF"),
-            sn: String::from(""),
+            serialnumber: String::from(""),
+            dateyyyyww: String::from(""),
         }
     }
 }

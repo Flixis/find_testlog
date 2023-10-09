@@ -1,5 +1,6 @@
 use clap::Parser;
 use colored::*;
+use structs::AppConfig;
 
 mod functions;
 mod structs;
@@ -26,14 +27,14 @@ fn main() {
     // Extract arguments or use default values
     let drive_letter = args.drive_letter.as_deref().unwrap_or(&default_app_config.drive_letter).to_string();
     let folder_location = args.folder_location.as_deref().unwrap_or(&default_app_config.folder_location).to_string();
-    let pn = args.pn.as_deref().unwrap_or(&default_app_config.pn).to_string();
+    let pn = args.pn.as_deref().unwrap_or(&default_app_config.productnumber).to_string();
     let test_env = args.test_env.as_deref().unwrap_or(&default_app_config.test_env).to_string();
 
     // Build the folder path, used for get_most_recent_folder_name
     let mut folder_path = format!("{}\\{}\\{}\\", drive_letter, folder_location, pn);
     let year_week = args.year_week.as_deref().unwrap_or("");
 
-    let sn = args.sn.clone().unwrap_or(default_app_config.sn);
+    let sn = args.sn.clone().unwrap_or(default_app_config.serialnumber);
     
     if sn.is_empty() {
         eprintln!("{}", "SN cannot be empty".red().bold());
@@ -52,16 +53,17 @@ fn main() {
     let app_config = structs::AppConfig { //save current params to cfg file
         drive_letter,
         folder_location,
-        pn,
+        productnumber: pn,
         test_env,
-        sn: sn.clone(),
+        serialnumber: sn.clone(),
+        dateyyyyww: year_week.clone().to_string(),
     };
     
     if let Err(err) = app_config.save() {
         eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
 
-    let get_log_file_path = functions::itter_find_log(folder_path, args.clone());
+    let get_log_file_path = functions::search_for_log(&app_config);
     match get_log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
