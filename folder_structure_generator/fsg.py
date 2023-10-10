@@ -18,7 +18,7 @@ def generate_random_sn():
   for i in range(3):
     sn += random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
   
-  sn = "99-11-AAA-BBB" #overwrite for testing
+  #sn = "99-11-AAA-BBB" #overwrite for testing
   return sn
 
 def generate_random_string(year, week):
