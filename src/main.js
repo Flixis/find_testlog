@@ -6,7 +6,10 @@ let updateInterval;
 async function execute_search() {
   //reset the progress bar
   loadingbarprogress = 0;
-
+  updateInterval = setInterval(() => {
+    updateProgressBar(1); // Update amount of progress
+  }, 250); // Adjust the interval as needed
+  
   //grab the important elements
   const productnumber = document.getElementById('productnumber').value;
   const serialnumber = document.getElementById('serialnumber').value;
@@ -59,11 +62,6 @@ $('#search-button').click(execute_search);
 document.getElementById("search-form").addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
       execute_search();
-
-      updateInterval = setInterval(() => {
-          updateProgressBar(1); // Update amount of progress
-      }, 250); // Adjust the interval as needed
-
   }
 });
 
