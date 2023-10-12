@@ -1,6 +1,6 @@
 # Find TestLog
 
-This is a command-line utility developed in Rust, designed to assist in finding and opening log files in a complex directory structure. This tool can be extremely useful if you have a directory structure based on product numbers, year-weeks, and test environments. The application uses a configuration file to save and reuse settings, enhancing its usability.
+This is a utility developed in Rust & Tauri Framework, designed to assist in finding and opening log files in a complex directory structure. This tool can be extremely useful if you have a directory structure based on product numbers, year-weeks, and test environments. The application uses a configuration file to save and reuse settings, enhancing its usability.
 
 
 ![gui](/gui.png)
@@ -131,7 +131,7 @@ The configuration file can be edited manually if needed. However, it is recommen
 Remember, the use of the configuration file can streamline your workflow, particularly when frequently searching for log files with the same parameters.
 
 ## Dependencies
-
+- [Tauri: Build an optimized, secure, and frontend-independent application for multi-platform deployment.](https://tauri.app/)
 - [clap: For building command-line interfaces.](https://docs.rs/crate/clap/4.3.17)
 - [confy: For handling application configuration.](https://docs.rs/crate/confy/0.5.1)
 - [serde: For serializing and deserializing Rust data structures.](https://docs.rs/crate/serde/1.0.163)
