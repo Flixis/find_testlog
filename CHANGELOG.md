@@ -2,135 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+
 ## [V2.2.1] - 2023-10-12
 
-### Add
-
-- Removed JS as it would often crash the app
-- Added image of new tauri implement
-- Comments everywhere
-- Hit enter to search in GUI
-- Created a folder structure .py module for testing
-- Created a folder structure .py module for testing
-- Comments for .py module
-- Tooltips for 'search-button' and 'search results:'
-- Disabled test_env usage, because its broken in this version
-- Icons
-- Semver in the footer of gui
-- Random date time generator for fsg.py
-- Moving app to new search algo
-- Comments to explain code
-- More dropdown for testenv options
-- Count for search results
-- Loadingbar
-- Fake loadingbar for now
-- Re-add of fsg.py
-- Updated readme
-- Updated image
-- Multithreading to fsg.py
-- Multithreading to fsg.py
-
-### Bug Fixes
-
-- Changed order of items to align everywhere
-- CLI parsed items are now stripped of garbage
-- Use appconfig::defaults_values() instead of creating a new struct
-- Program now exits correctly, fixed exit codes
-- Cli now exits correctly... again..
-- Cleanup in tauri.conf
-
-### Change
-
-- Added comments to CSS, partial implement of 'openlog' button
-- Fsg.py sn state reverted to generated
-
-### Cleanup
-
-- Removed seperate 'time' colum, easier for backend
-
-### Feat
-
-- Initial version of gui updating with jsondata
-- Openlog button works, better error messages
-- Open config button now working
-- Initial GUI release pretty much done
-- Changed logo to something fresh
-- Ready for V2.0.0
-- V2.0.0 ready
-
-### Features
-
-- CLI functionality working
-- Cli no longer appears when opening gui
-
 ### Fix
-
-- Not parsing 'sn' while trying to open GUI no longer exits app
-- Underscores suck, removed from naming convention
-- Data_to_frontend is now working
-- Parse_frontend_search_data now actually parsing as json not vec!.to_string()
-- Footer now sticks to the bottom of the table
-- Testenv now gets properly passed around from frontend to backend
-- App no longer searches by default, must be initiated by command
-- Openlog button now works, testing to be done
-- #14 'Unhanded structures may result in crashing for GUI'
-- #14 Better regex algo
-- #16 Not the ideal fix, but works for now
-- Fixed week bug with fsg.py
-- Loadingbar stuck at 100%
-- Changed Version
-- Cargo.toml
-- #20 App no longer hangs when searching, Loadingbar now works.
-- Search button not initating loadingbar
-- Loadingbar finishing before search completes
-
-### Miscellaneous Tasks
-
-- Comment for simplicity smarts
-
-### Refactor
-
-- V2.1.0 -> New search algorithm #13 #14
-
-### Refractor
-
-- Updated frontend, changed extract_time_date
-- Data_to_frontend -> parse_frontend_search_data, removed: testing functions
-
-### Removed
-
-- CSS footer padding
-
-### Revert
-
-- Disabled new algo because of performance issues
-- Fsg.py... threading is not what I thought it was
-
-### Update
-
-- Gui.png
-- Image
-- V2.2.0 tag
-- Readme.md
-
-### Add
-
-- Cli command parsing
-- Check if SN is availible, \n change: moved scope 'search_info'
-- Get_config_file working
-- Error handling for getting logfile
-- Error handling for getting logfile
-- '-o' arg now works
-- Package info displays when 'not_done' is called
-
-### Refractor
-
-- Changing name conventions to something more readable
-- More changes to naming conventions
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
+- Loading bar not working when clicking seach button
+- Loading bar finishing before search completion.
+- Updated versioning
 
 ## [V2.2.0] - 2023-10-12
 
@@ -142,8 +20,8 @@ All notable changes to this project will be documented in this file.
 
 ## [2.0.1]
 
-### Fix
-- Reverted back to old algorithm
+
+verted back to old algorithm
 - Updated versioning
 
 ## [2.0.0]
