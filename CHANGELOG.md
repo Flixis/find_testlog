@@ -2,8 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.0.1]
+## [V2.2.0] - 2023-10-12
 
+### Fix
+- [#20](https://github.com/Flixis/find_testlog/issues/20) Fixed
+- Loading bar fixed
+- Updated versioning
+
+
+## [2.0.1]
 
 ### Fix
 - Reverted back to old algorithm

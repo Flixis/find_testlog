@@ -149,7 +149,7 @@ The search logic for the GUI part of the app is done here.
 */
 
 #[tauri::command]
-fn parse_frontend_search_data(
+async fn parse_frontend_search_data(
     productnumber: Option<String>,
     serialnumber: Option<String>,
     dateyyyyww: Option<String>,
@@ -173,8 +173,9 @@ fn parse_frontend_search_data(
     if let Err(err) = search_info.save() {
         eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
-
+    
     let log_file_path = functions::search_for_log(&search_info);
+    // dbg!(&log_file_path);
     match log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
@@ -217,7 +218,8 @@ fn parse_frontend_search_data(
         }
         _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
-
+    
+    // dbg!(&results_from_search_json);
     results_from_search_json
 }
 

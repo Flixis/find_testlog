@@ -8,11 +8,7 @@
   },
   "package": {
     "productName": "find_testlog_tauri",
-<<<<<<< HEAD
-    "version": "2.0.1"
-=======
-    "version": "2.0.0"
->>>>>>> parent of 64619b2 (Revert: Disabled new algo because of performance issues)
+    "version": "2.2.0"
   },
   "tauri": {
     "allowlist": {
