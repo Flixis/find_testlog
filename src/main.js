@@ -2,10 +2,12 @@ const { invoke } = window.__TAURI__.tauri;
 
 let loadingbarprogress = 0;
 let updateInterval;
+let loadingfinished = false;
 
 async function execute_search() {
   //reset the progress bar
   loadingbarprogress = 0;
+  let loadingfinished = false;
   updateInterval = setInterval(() => {
     updateProgressBar(1); // Update amount of progress
   }, 250); // Adjust the interval as needed
@@ -51,7 +53,7 @@ async function execute_search() {
 
   // Stop the interval and finalize the progress bar
   clearInterval(updateInterval);
-  loadingbarprogress = 100;
+  loadingfinished = true;
   const loadingBar = document.querySelector('.loading-bar-inner');
   loadingBar.style.width = '100%';
 
@@ -94,9 +96,15 @@ function FormatDateToYYYYWW(datepicker_id) {
 async function updateProgressBar(updateamount) {
   const loadingBar = document.querySelector('.loading-bar-inner');
   if (loadingbarprogress + updateamount <= 100) {
+      if (!loadingfinished && loadingbarprogress > 65) {
+        updateamount = 0.25;
+        if(loadingbarprogress > 80){
+          updateamount = 0.05;
+        }
+      }
       loadingbarprogress += updateamount;
       loadingBar.style.width = loadingbarprogress + '%';
-  } else {
+    } else {
       loadingbarprogress = 100;
       loadingBar.style.width = '100%';
   }
