@@ -1,12 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
-//#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+// #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use clap::Parser;
 use colored::*;
-use log::debug;
 use serde_json::{json, Value};
 use std::process::exit;
-use std::{thread, time::Duration};
 
 mod cli;
 mod functions;
@@ -163,15 +161,14 @@ Create a GUI with following options.
 
 */
 fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
-    debug!("showing gui");
     println!(
         "{}",
         "Starting Test Log Finder! Tariq Dinmohamed (C)"
             .green()
             .bold()
     );
+    #[cfg(all(not(debug_assertions), windows))]
     functions::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
-    thread::sleep(Duration::from_millis(700)); //Here because sometimes the console window is removed before the GUI renders, killing the app.
     tauri::WindowBuilder::new(
         &app,
         "FindTestlog",
