@@ -3,7 +3,7 @@
 
 use clap::Parser;
 use colored::*;
-use log::{debug, error};
+use log::debug;
 use serde_json::{json, Value};
 use std::process::exit;
 use std::{thread, time::Duration};
@@ -28,20 +28,10 @@ I may fix this later. But for now it serves its purpose.
 
 */
 fn main() {
-    let args = cli::CliCommands::parse();
+    let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
 
     if std::env::args_os().count() > 1 {
-        println!("hello");
-
-        if args.get_config_location {
-            let file = confy::get_configuration_file_path("find_testlog", None).unwrap();
-            eprintln!(
-                "{} {:#?}",
-                "Configuration file is located at:".green().bold(),
-                file
-            );
-            return;
-        }
+        cli::execute_cli_args(commandlinearguments);
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()

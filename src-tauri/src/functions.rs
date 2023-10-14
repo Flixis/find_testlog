@@ -35,6 +35,7 @@ pub fn hide_windows_console(switch: bool) {
     }
 }
 
+
 /*
 
 Regex pattern matches on date and time.
