@@ -24,10 +24,6 @@ pub struct CliCommands {
     pub test_env: Option<String>,
 
     #[clap(short, long)]
-    ///DISABLED Will automatically open the resulting log files, WARNING OPENS ALL OF THEM.
-    pub open_log: bool,
-
-    #[clap(short, long)]
     ///Drive letter, Default Q:
     pub drive_letter: Option<String>,
 

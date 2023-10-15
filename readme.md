@@ -14,7 +14,7 @@ This is a utility developed in Rust & Tauri Framework, designed to assist in fin
 - Load and save application configuration from a file.
 - Easy interaction through a command-line interface.
 
-## Usage
+## Commandline Usage
 
 The application accepts several command-line arguments:
 
@@ -22,7 +22,6 @@ The application accepts several command-line arguments:
     -s, --sn <sn>: Serial Number (Example: xx-xx-yyy-000).
     -y, --year_week <year_week>: Year Week (Example: 2023-W51). Defaults to searching all year-week folders.
     -t, --test_env <test_env>: Test environment. Default is PTF.
-    -o, --open_log: If passed, will automatically open the resulting log files. WARNING: OPENS ALL OF THEM.
     -d, --drive_letter <drive_letter>: Drive letter. Default is Q:.
     -f, --folder_location <folder_location>: Folder location. Default is TestLogs.
     -g, --get_config_location: If passed, Returns config location.
@@ -41,7 +40,8 @@ Once you have Rust installed, you can clone this repository and build the projec
 ```bash
 git clone https://github.com/yourusername/find-testlog.git
 cd find-testlog
-cargo build --release
+npm run tauri init
+npm run tauri build
 ```
 
 [Or You can download the latest version from the releases page.](https://github.com/Flixis/find_testlog/releases)
@@ -54,63 +54,26 @@ Now you can run the utility (from the project root):
 ./target/release/find-testlog -d "D:" -f "TestLogs" -p "REPLACE_PRODUCT_NUMBER" -y "2023-W51" -t "PTF" -s "REPLACE_SERIAL_NUMBER"
 
 output:
-Searching inside: 2023-W51
-Matched log file paths:
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+$ #1 D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+$ #2 D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+$ Please select #.. to open
 ```
 
-Only passing the ``SN`` will make the CLI tool search all folders.
+Only passing the ``SN`` or ``PN`` will make the CLI tool search all folders.
 
 ```bash
 ./target/release/find-testlog -s "REPLACE_SERIAL_NUMBER"
 
 output:
-Year-week not specified, searching all folders.
 Matched log file paths:
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER - Copy.log
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+$ #1 D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER - Copy.log
+$ #2 D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+$ #3 D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20230515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+$ #4 D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNTXXXX_group_0_REPLACE_SERIAL_NUMBER.log
+$ Please select #.. to open
 ```
 
-
-### Configuration and Persistent Parameters
-
-Once find-testlog has been run once, it will save the provided parameters into a configuration file. The next time the application is run, if no arguments are provided, find-testlog will pull parameters from this configuration file, allowing for quicker and more convenient usage.
-
-Here's how it works:
-
-1. Run the find-testlog application with your desired parameters. For example:
-```bash
-./target/release/find-testlog -d "D:" -f "TestLogs" -p "REPLACE_PRODUCT_NUMBER" -y "2023-W51" -t "PTF" -s "REPLACE_SERIAL_NUMBER"
-
-output:
-Searching inside: 2023-W51
-Matched log file paths:
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20230515_105021_CLNT4408_group_0_REPLACE_SERIAL_NUMBER.log
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNT4408_group_0_REPLACE_SERIAL_NUMBER.log
-```
-The application will now save these parameters into the configuration file.
-
-2. The next time you need to search for log files with the same parameters, you can simply run:
-
-```bash
-Note: When running with no params the program will search all folders.
-
-.\find_testlog.exe
-Year-week not specified, searching all folders.
-Matched log file paths:
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2021-W19
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2022-W43
-......
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W20\PTF
-D:\TestLogs\REPLACE_PRODUCT_NUMBER\2023-W51\PTF\20240515_105021_CLNT4408_group_0_REPLACE_SERIAL_NUMBER.log
-```    
-The application will automatically pull the parameters from the configuration file and use them for the search.
-
+### Overwrite configuration
 If you wish to override some or all parameters stored in the configuration file, simply provide the new values as command-line arguments. For example:
 
 ```bash
@@ -142,6 +105,7 @@ Remember, the use of the configuration file can streamline your workflow, partic
 - [windows-sys: Windows API.](https://docs.rs/crate/windows-sys/0.48.0)
 - [Regex: Regex...](https://docs.rs/crate/regex/1.9.6)
 - [Chrono: Operations on dates and time.](https://docs.rs/crate/chrono/0.4.31)
+- [Indexmap: hash table where the iteration order of the key-value pairs is independent of the hash values of the keys.](https://docs.rs/indexmap/latest/indexmap/)
 
 ### Contribution
 
