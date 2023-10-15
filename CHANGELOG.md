@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V2.3.0] - 2023-10-15
+
+### Feat
+
+- Clap implementation done
+- You can now pick from list when using CLI commands
+
+### add
+
+- New icon 
+- removed threadsleep before opening GUI
 
 ## [V2.2.1] - 2023-10-12
 
