@@ -3,7 +3,6 @@ use log::warn;
 use regex::Regex;
 use std::io;
 use std::path::Path;
-use tauri::api::cli::ArgData;
 use walkdir::{DirEntry, WalkDir};
 
 /*
@@ -33,17 +32,6 @@ pub fn hide_windows_console(switch: bool) {
         } else {
             windows_sys::Win32::System::Console::AllocConsole();
         }
-    }
-}
-
-pub fn strip_string_of_leading_and_trailing_slashes(unescaped_string: ArgData) -> String {
-    // Check if the ArgData value has a string value.
-    if let Some(unescaped_string) = unescaped_string.value.as_str() {
-        // Replace all instances of the \n and \t escape sequences with the actual newline and tab characters, respectively.
-        unescaped_string.replace("\\n", "\n").replace("\\t", "\t")
-    } else {
-        // If the ArgData value does not have a string value, return an empty string.
-        return "".to_string();
     }
 }
 

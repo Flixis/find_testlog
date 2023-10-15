@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "find_testlog_tauri",
-    "version": "2.2.1"
+    "version": "2.3.0"
   },
   "tauri": {
     "allowlist": {
@@ -42,55 +42,6 @@
     },
     "updater": {
       "active": false
-    },
-    "cli": {
-      "description": "Find TestLog, a utility to assist in finding and opening log files",
-      "longDescription": "Find TestLog navigates a complex directory structure to help you quickly find and optionally open log files. It uses a configuration file to save and reuse settings for a more streamlined user experience.",
-      "beforeHelp": "FIND TESTLOG HELP PAGE", 
-      "afterHelp": "Thank you for using Find TestLog!", 
-      "args": [
-        {
-          "name": "pn",
-          "short": "p",
-          "takesValue": true
-        },
-        {
-          "name": "sn",
-          "short": "s",
-          "takesValue": true
-        },
-        {
-          "name": "year_week",
-          "short": "y",
-          "takesValue": true
-        },
-        {
-          "name": "drive_letter",
-          "short": "d",
-          "takesValue": true
-        },
-        {
-          "name": "folder_location",
-          "short": "f",
-          "takesValue": true
-        },
-        {
-          "name": "test_env",
-          "short": "t",
-          "takesValue": true
-        },
-        {
-          "name": "open_log",
-          "short": "o",
-          "takesValue": false
-        },
-        {
-          "name": "get_config_file",
-          "short": "g",
-          "takesValue": false
-        }
-      ],
-      "subcommands": {}
     }
   }
 }

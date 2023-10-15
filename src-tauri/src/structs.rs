@@ -9,7 +9,6 @@ pub struct AppConfig {
     pub drive_letter: String,
     pub folder_location: String,
     pub test_env: String,
-    pub open_log: bool,
 }
 
 // Default values for AppConfig
@@ -22,7 +21,6 @@ impl Default for AppConfig {
             drive_letter: String::from("Q:"),
             folder_location: String::from("TestLogs"),
             test_env: String::from("PTF"),
-            open_log: false,
         }
     }
 }
