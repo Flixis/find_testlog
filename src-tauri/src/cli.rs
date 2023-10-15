@@ -1,5 +1,7 @@
 use clap::Parser;
 use colored::*;
+use indexmap::indexmap;
+use std::io;
 use std::process::exit;
 
 #[derive(Parser, Clone)]
@@ -38,9 +40,8 @@ pub struct CliCommands {
     pub get_config_location: bool,
 }
 
-pub fn execute_cli_args(commandlinearguments: CliCommands) {
+pub fn parse_cli_args(commandlinearguments: CliCommands) {
     let mut search_info = crate::structs::AppConfig::default_values();
-
 
     //Make sure that the arguments have data else just ignore.
     if commandlinearguments.productnumber.is_some() {
@@ -61,6 +62,8 @@ pub fn execute_cli_args(commandlinearguments: CliCommands) {
             .year_week
             .unwrap_or_default()
             .to_string();
+    } else {
+        search_info.dateyyyyww = "".to_string();
     }
 
     if commandlinearguments.folder_location.is_some() {
@@ -75,6 +78,8 @@ pub fn execute_cli_args(commandlinearguments: CliCommands) {
             .test_env
             .unwrap_or_default()
             .to_string();
+    } else {
+        search_info.test_env = "".to_string();
     }
 
     if commandlinearguments.drive_letter.is_some() {
@@ -99,9 +104,19 @@ pub fn execute_cli_args(commandlinearguments: CliCommands) {
         exit(0);
     }
 
+    execute_search_results_from_cli(search_info);
+}
+
+fn execute_search_results_from_cli(search_info: crate::structs::AppConfig) {
+    // using indexmap crate because there is no way to order std::hashmaps.
+    let mut mapped_search_results = indexmap! {};
+    // Search for log files based on the search criteria.
     let search_result = crate::functions::search_for_log(&search_info);
+    let mut key_counter: i16 = 0;
+
     match search_result {
         Ok(paths) => {
+            // If no log files were found, print an error message.
             if paths.is_empty() {
                 eprintln!(
                     "{} {:?}",
@@ -109,13 +124,52 @@ pub fn execute_cli_args(commandlinearguments: CliCommands) {
                     search_info
                 );
             } else {
+                // Iterate over the found log files and add them to a hashmap,
+                // where the key is a counter and the value is the file path.
                 for path in paths {
-                    println!("{}", path.replace("\\\\", "\\")); //Remove the double slashes
+                    key_counter += 1;
+                    mapped_search_results.insert(key_counter, path);
                 }
             }
         }
+
         _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
 
+    // If one or more log file was found, prompt the user to select
+    // which one they want to open.
+    if key_counter >= 1 {
+        for (key, value) in &mapped_search_results {
+            println!("#{key} {value}");
+        }
 
+        println!("Please select #.. to open");
+
+        // Read the user's input and try to parse it as an integer.
+        let mut input_string = String::new();
+        io::stdin()
+            .read_line(&mut input_string)
+            .expect("Failed to read from stdin");
+        let input_to_int = input_string.trim().parse::<i16>();
+
+        // If the user's input was successfully parsed, get the file path
+        // at the corresponding index in the map.
+        let open_file: Option<&String> = match input_to_int {
+            Ok(i) => mapped_search_results.get(&i),
+            Err(..) => {
+                eprintln!("{}","Couldn't parse".red().bold());
+                None
+            }
+        };
+
+        // If a file path was found, try to open the file.
+        if let Some(path) = open_file {
+            open::that(path).expect("Failed to open the file");
+        } else {
+            eprintln!("{}", "Invalid file path".red().bold());
+        }
+    } else {
+        // if key_counter is 0 then just exit.
+        exit(-1);
+    }
 }

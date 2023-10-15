@@ -818,6 +818,7 @@ dependencies = [
  "clap",
  "colored",
  "confy",
+ "indexmap 2.0.2",
  "log",
  "open 5.0.0",
  "regex",

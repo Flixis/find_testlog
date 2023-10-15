@@ -25,6 +25,7 @@ windows-sys = "0.48.0"
 regex = "1.9.6"
 chrono = "0.4.31"
 clap = { version = "4.4.6", features = ["derive"] }
+indexmap = "2.0.2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

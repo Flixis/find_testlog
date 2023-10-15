@@ -29,7 +29,7 @@ fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
 
     if std::env::args_os().count() > 1 {
-        cli::execute_cli_args(commandlinearguments);
+        cli::parse_cli_args(commandlinearguments);
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
@@ -168,7 +168,6 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
             .bold()
     );
     #[cfg(all(not(debug_assertions), windows))]
-    functions::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     tauri::WindowBuilder::new(
         &app,
         "FindTestlog",
@@ -178,5 +177,6 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     .inner_size(800., 480.)
     .resizable(true)
     .build()?;
+    functions::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     Ok(())
 }
