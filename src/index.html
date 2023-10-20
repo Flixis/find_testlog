@@ -8,6 +8,7 @@
   <title>Find TestLogs</title>
   <script type="module" src="/main.js" defer></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="sortable.min.js"></script>
 </head>
 <body>
   <div class="loading-bar">
@@ -57,7 +58,7 @@
       <h2><span id="results-count"></span></h2>
     </div>
     <div class="sortable-table-div">
-      <table id="sortable-table" class="">
+      <table id="sortable-table" class="sortable">
         <thead>
           <tr>
             <th>Date/Time</th>
