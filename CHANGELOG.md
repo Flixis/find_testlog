@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V2.3.2] - 2023-10-20
+
+### Add
+
+- Tables are now sortable
+
+### Change
+
+- Flipped option for testenv
+
+## [V2.3.1] - 2023-10-15
+
+### Remove
+
+- Removed -O from command line arguments
+
 ## [V2.3.0] - 2023-10-15
 
 ### Feat
