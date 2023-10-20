@@ -100,7 +100,7 @@ pub fn parse_cli_args(commandlinearguments: CliCommands) {
         exit(0);
     }
 
-    execute_search_results_from_cli(search_info);
+    execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
 }
 
 fn execute_search_results_from_cli(search_info: crate::structs::AppConfig) {

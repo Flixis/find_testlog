@@ -167,7 +167,6 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
             .green()
             .bold()
     );
-    #[cfg(all(not(debug_assertions), windows))]
     tauri::WindowBuilder::new(
         &app,
         "FindTestlog",
@@ -177,6 +176,7 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     .inner_size(800., 480.)
     .resizable(true)
     .build()?;
+    #[cfg(all(not(debug_assertions), windows))]
     functions::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     Ok(())
 }
