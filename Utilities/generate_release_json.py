@@ -30,37 +30,31 @@ from datetime import datetime
 
 
 """
-
-
-def generate_json(version, pub_date, platforms):
-    """_summary_
-
-    Args:
-        version (_type_): _description_
-        pub_date (_type_): _description_
-        platforms (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
+def generate_json(version, pub_date, platform_data):
     data = {
         "version": version,
         "notes": "See the assets to download this version and install.",
         "pub_date": pub_date,
-        "platforms": {}
-    }
-    for platform, url in platforms:
-        data["platforms"][platform] = {
-            "signature": "PLACEHOLDER_SIGNATURE_FOR_{}".format(platform),
-            "url": url
+        "platforms": {
+            "linux-x86_64": {"signature": "PLACEHOLDER_SIGNATURE", "url": "PLACEHOLDER_URL"},
+            "windows-x86_64": {"signature": "PLACEHOLDER_SIGNATURE", "url": "PLACEHOLDER_URL"},
+            "darwin-aarch64": {"signature": "PLACEHOLDER_SIGNATURE", "url": "PLACEHOLDER_URL"},
+            "darwin-x86_64": {"signature": "PLACEHOLDER_SIGNATURE", "url": "PLACEHOLDER_URL"}
         }
+    }
+
+    for platform, url, signature in platform_data:
+        if platform in data["platforms"]:
+            data["platforms"][platform]["url"] = url
+            data["platforms"][platform]["signature"] = signature
+
     return json.dumps(data, indent=2)
 
 def main():
     parser = argparse.ArgumentParser(description='Generate specified .json format.')
     parser.add_argument('--version', required=True, help='Version of the release')
     parser.add_argument('--pub-date', default=datetime.utcnow().isoformat() + 'Z', help='Publication date in ISO format')
-    parser.add_argument('--platform', action='append', nargs=2, metavar=('PLATFORM', 'URL'), help='Platform and associated URL', required=True)
+    parser.add_argument('--platform', action='append', nargs=3, metavar=('PLATFORM', 'URL', 'SIGNATURE'), help='Platform, associated URL, and signature', required=True)
     parser.add_argument('--output', default="releases_tauri.json", help='Output file name (default: output.json)')
 
     args = parser.parse_args()
