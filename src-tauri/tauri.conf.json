@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "find_testlog_tauri",
-    "version": "2.3.2"
+    "version": "2.4.0"
   },
   "tauri": {
     "allowlist": {
@@ -41,7 +41,11 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://gist.githubusercontent.com/Flixis/4797c2696d2525950248bafc4b9a90f5/raw/"
+      ],
+      "pubkey": ""
     }
   }
 }
