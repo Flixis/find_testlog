@@ -130,7 +130,7 @@ async fn parse_frontend_search_data(
         _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
 
-     dbg!(&results_from_search_json);
+    //dbg!(&results_from_search_json);
     results_from_search_json
 }
 

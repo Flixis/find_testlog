@@ -1,8 +1,12 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use regex::Regex;
-use std::io;
 use std::path::Path;
+use std::io;
+use std::fs::File;
+use std::io::BufRead;
 use walkdir::{DirEntry, WalkDir};
+use colored::*;
+
 
 
 /*
@@ -63,29 +67,32 @@ Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
 Used for confirming whether the returned path is actually correctly pulled from source directory.
 
 */
+
+
 pub fn get_test_env_string(log_path: &str) -> String {
-    let re = Regex::new(r"\\([A-Z])[A-Z]{1,2}").unwrap();
-    let regex_captures = re.captures(log_path);
+    // Open the file for reading
+    let file = File::open(log_path).unwrap();
 
-    match regex_captures {
-        Some(captures) => {
-            let mut test_environment = captures[0].to_string();
+    // Create a regular expression pattern to match the desired text
+    let re = Regex::new(r"- Operation configuration: (\w+)").unwrap();
 
-            // Remove the leading backslash from the test environment string.
-            test_environment = test_environment[1..captures[0].len()].to_string();
-
-            // Return the test environment string.
-            test_environment
-        }
-        None => {
-            // Handle the case where the regex does not match.
-            log::error!(
-                "Could not find test_env string in test environment string: {}",
-                log_path
-            );
-            "Could not find test_env string".to_string()
+    for line in io::BufReader::new(file).lines() {
+        if let Ok(line) = line {
+            if let Some(captures) = re.captures(&line) {
+                // Extract the captured text
+                if let Some(operation) = captures.get(1) {
+                    println!("{}", operation.as_str());
+                    return operation.as_str().to_string();
+                }
+            }
         }
     }
+
+    eprintln!("{}","Text not found in the file.".bold().red());
+    //This is super lazy, but if we don't match anything we just return an empty string...
+    //TODO: actually add programatic error
+    let failed_to_match = "failed to find test_env string".to_string();
+    failed_to_match
 }
 
 
