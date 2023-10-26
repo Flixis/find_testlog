@@ -26,52 +26,23 @@ I may fix this later. But for now it serves its purpose.
 
 */
 fn main() {
-    let commandlinearguments = cli::CliCommands::parse();
+    let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
 
     if std::env::args_os().count() > 1 {
         cli::parse_cli_args(commandlinearguments);
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
-            .setup(|app, event| {
-                match event {
-                    tauri::RunEvent::Updater(updater_event) => match updater_event {
-                        tauri::UpdaterEvent::UpdateAvailable { body, date, version } => {
-                            println!("update available {} {:?} {}", body, date, version);
-                        }
-                        tauri::UpdaterEvent::Pending => {
-                            println!("update is pending!");
-                        }
-                        tauri::UpdaterEvent::DownloadProgress { chunk_length, content_length } => {
-                            println!("downloaded {} of {:?}", chunk_length, content_length);
-                        }
-                        tauri::UpdaterEvent::Downloaded => {
-                            println!("update has been downloaded!");
-                        }
-                        tauri::UpdaterEvent::Updated => {
-                            println!("app has been updated");
-                        }
-                        tauri::UpdaterEvent::AlreadyUpToDate => {
-                            println!("app is already up to date");
-                        }
-                        tauri::UpdaterEvent::Error(error) => {
-                            println!("failed to update: {}", error);
-                        }
-                        _ => {
-                            // Assuming cli_gui returns a Result, using `?` to propagate errors.
-                            cli_gui(app.handle())?;
-                        }
-                    },
-                    _ => {}
-                }
-                Ok(())  // Return Ok(()) at the end of the setup closure to indicate success.
+            .setup(|app| {
+                cli_gui(app.handle())?;
+                Ok(())
             })
             .invoke_handler(tauri::generate_handler![
                 parse_frontend_search_data,
                 get_configuration_file_path
             ])
             .run(tauri::generate_context!())
-            .expect("error while running tauri application");
+            .expect("error while running tauri application")
     }
 }
 

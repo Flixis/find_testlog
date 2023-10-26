@@ -5,20 +5,6 @@ use std::io;
 use std::path::Path;
 use walkdir::{DirEntry, WalkDir};
 
-/*
-
-Called when -h is parsed...
-I should really figure out if I can just get the 'clap' -h window to do this...
-
-Because i'm not using Tauri in its intended way, this is not really easily done.
-
-*/
-pub fn not_implemented(app: tauri::AppHandle) {
-    println!("{:?}", app.package_info());
-    warn!("Function not implemented yet");
-    println!("Function not implemented yet");
-    app.exit(127);
-}
 
 /*
 required to removed windows console when launching GUI.
