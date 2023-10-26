@@ -101,10 +101,10 @@ $(document).ready(function() {
   // Listen for keyboard events
   $(document).on("keydown", function(event) {
     // Check if the event was triggered by a barcode scanner, according to google that is could be event 13? 
-    if (event.which === 13){
+    if (event.which === 131231){
       $("#productnumber").val(""); // Clear the input field
+      $("#productnumber").focus(); // Focus on the Product Number input field
     }
-    $("#productnumber").focus(); // Focus on the Product Number input field
   });
 });
 

@@ -81,7 +81,7 @@ pub fn get_test_env_string(log_path: &str) -> String {
             if let Some(captures) = re.captures(&line) {
                 // Extract the captured text
                 if let Some(operation) = captures.get(1) {
-                    println!("{}", operation.as_str());
+                    // println!("{}", operation.as_str());
                     return operation.as_str().to_string();
                 }
             }
