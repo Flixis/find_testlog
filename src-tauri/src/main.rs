@@ -27,9 +27,11 @@ I may fix this later. But for now it serves its purpose.
 */
 fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
-
+    
     if std::env::args_os().count() > 1 {
-        cli::parse_cli_args(commandlinearguments);
+        let search_info = cli::parse_cli_args(commandlinearguments);
+        cli::execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
+
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
