@@ -108,7 +108,7 @@ pub fn get_clnt_string(log_path: &str) -> String {
 
     match regex_captures {
         Some(captures) => {
-            let mut clnt = captures[0].to_string();
+            let clnt = captures[0].to_string();
             // Return the test environment string.
             clnt
         }

@@ -84,19 +84,31 @@
   const { convertFileSrc } = window.__TAURI__.tauri;
   const { getVersion } = window.__TAURI__.app
   
-  $(document).ready(function() {
-    // Enable the search button when both productnummer and serial number fields are not empty.
-    $("#productnumber, #serialnumber").on("keyup change", function() {
-      const productNumberLength = $("#productnumber").val().length;
-      const serialNumberLength = $("#serialnumber").val().length;
-      //https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
-      if (productNumberLength < 10 || serialNumberLength < 10) {
-        $("#search-button").attr("disabled", true);
-      } else {
-        $("#search-button").removeAttr("disabled");
-      }
-    });
+$(document).ready(function() {
+  // Enable the search button when both product number and serial number fields are not empty.
+  $("#productnumber, #serialnumber").on("keyup change", function() {
+    const productNumberLength = $("#productnumber").val().length;
+    const serialNumberLength = $("#serialnumber").val().length;
+
+    // Form validation logic
+    if (productNumberLength < 10 || serialNumberLength < 10) {
+      $("#search-button").attr("disabled", true);
+    } else {
+      $("#search-button").removeAttr("disabled");
+    }
   });
+
+  // Listen for keyboard events
+  $(document).on("keydown", function(event) {
+    // Check if the event was triggered by a barcode scanner, according to google that is could be event 13? 
+    if (event.which === 13){
+      $("#productnumber").val(""); // Clear the input field
+    }
+    $("#productnumber").focus(); // Focus on the Product Number input field
+  });
+});
+
+
   
   // Function to open the log when the "Open Log" button is clicked
   async function openLog(logLocation) {
