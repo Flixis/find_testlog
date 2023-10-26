@@ -11,19 +11,19 @@ from datetime import datetime
   "platforms": {
     "linux-x86_64": {
       "signature": "",
-      "url": "https://github.com/HuakunShen/<repo>/releases/download/<version>/<file>_amd64.AppImage.tar.gz"
+      "url": "https://github.com/Flixis/<repo>/releases/download/<version>/<file>_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
       "signature": "==",
-      "url": "https://github.com/HuakunShen/<repo>/releases/download/<version>/<file>_x64_en-US.msi.zip"
+      "url": "https://github.com/Flixis/<repo>/releases/download/<version>/<file>_x64_en-US.msi.zip"
     },
     "darwin-aarch64": {
       "signature": "",
-      "url": "https://github.com/HuakunShen/<repo>/releases/download/<version>/<file>_universal.app.tar.gz"
+      "url": "https://github.com/Flixis/<repo>/releases/download/<version>/<file>_universal.app.tar.gz"
     },
     "darwin-x86_64": {
       "signature": "",
-      "url": "https://github.com/HuakunShen/<repo>/releases/download/<version>/<file>_universal.app.tar.gz"
+      "url": "https://github.com/Flixis/<repo>/releases/download/<version>/<file>_universal.app.tar.gz"
     }
   }
 }

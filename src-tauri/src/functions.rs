@@ -1,5 +1,4 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
-use log::warn;
 use regex::Regex;
 use std::io;
 use std::path::Path;
@@ -140,6 +139,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     }
 
     if found_match {
+        log_file_paths.reverse(); //Send the log file paths in descending order.
         Ok(log_file_paths)
     } else {
         return Err(io::Error::new(

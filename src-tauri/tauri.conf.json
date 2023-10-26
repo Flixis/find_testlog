@@ -24,7 +24,7 @@
       }
     },
     "bundle": {
-      "active": true,
+      "active": false,
       "targets": "all",
       "identifier": "com.tauri.flixis.findtestlog",
       "copyright": "Tariq Dinmohamed (C) 2023",
@@ -45,7 +45,8 @@
       "endpoints": [
         "https://gist.githubusercontent.com/Flixis/4797c2696d2525950248bafc4b9a90f5/raw/"
       ],
-      "pubkey": ""
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU2RDEzMzJCQjQ2MEYwNkEKUldScThHQzBLelBSVmtKejZrZERtM3pNVUV6VFZJazNSL1hHVEpwNUZKYVErUTA1R0JMV3VjZWgK"
     }
   }
 }
