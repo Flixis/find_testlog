@@ -35,7 +35,7 @@ async function execute_search() {
       row.innerHTML = `
         <td>${jsondata.datetime[i]}</td>
         <td>${jsondata.location[i]}</td>
-        <td>${jsondata.serialnumber[i]}</td>
+        <td>${jsondata.clnt[i]}</td>
         <td>${jsondata.testenv[i]}</td>
         <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
         </tr>`;

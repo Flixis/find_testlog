@@ -59,13 +59,13 @@ pub fn extract_datetime(log_path: &str) -> String {
 
 /*
 
-Regex pattern matches on the '\test_env\' | \PTF\ | \PTF\ in string.
+Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
 Used for confirming whether the returned path is actually correctly pulled from source directory.
 
 */
-pub fn get_test_env_string(test_environment_string: &str) -> String {
+pub fn get_test_env_string(log_path: &str) -> String {
     let re = Regex::new(r"\\([A-Z])[A-Z]{1,2}").unwrap();
-    let regex_captures = re.captures(test_environment_string);
+    let regex_captures = re.captures(log_path);
 
     match regex_captures {
         Some(captures) => {
@@ -81,12 +81,41 @@ pub fn get_test_env_string(test_environment_string: &str) -> String {
             // Handle the case where the regex does not match.
             log::error!(
                 "Could not find test_env string in test environment string: {}",
-                test_environment_string
+                log_path
             );
             "Could not find test_env string".to_string()
         }
     }
 }
+
+
+/*
+
+Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
+Used for confirming whether the returned path is actually correctly pulled from source directory.
+
+*/
+pub fn get_clnt_string(log_path: &str) -> String {
+    let re = Regex::new(r"CLNT\d+").unwrap();
+    let regex_captures = re.captures(log_path);
+
+    match regex_captures {
+        Some(captures) => {
+            let mut clnt = captures[0].to_string();
+            // Return the test environment string.
+            clnt
+        }
+        None => {
+            // Handle the case where the regex does not match.
+            log::error!(
+                "Could not find CLNT string in test environment string: {}",
+                log_path
+            );
+            "Could not find CLNT string".to_string()
+        }
+    }
+}
+
 
 /*
 
