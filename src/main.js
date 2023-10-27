@@ -13,15 +13,10 @@ async function execute_search() {
   }, 250); // Adjust the interval as needed
   
   //grab the important elements
-  let productnumber = document.getElementById('productnumber').value;
-  let serialnumber = document.getElementById('serialnumber').value;
+  const productnumber = document.getElementById('productnumber').value;
+  const serialnumber = document.getElementById('serialnumber').value;
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
-  let testenv = document.getElementById("test_env").value;
-
-  productnumber = productnumber.toUpperCase(); // Convert serialnumber to uppercase
-  serialnumber = serialnumber.toUpperCase(); // Convert serialnumber to uppercase
-  testenv = testenv.toUpperCase(); // Convert serialnumber to uppercase
-
+  const testenv = document.getElementById("test_env").value;
   
   var jsondata = await invoke('parse_frontend_search_data', {
       productnumber: productnumber,

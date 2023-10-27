@@ -143,6 +143,13 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     let folder_location: &String = &search_info.folder_location;
     let test_env: &String = &search_info.test_env;
 
+    //Parse user input data to uppercase. Not for folderlocation because its doesn't follow a standard.
+    let product_number: String = product_number.to_uppercase();
+    let serial_number: String = serial_number.to_uppercase();
+    let date_yyyyww: String = date_yyyyww.to_uppercase();
+    let drive_letter: String = drive_letter.to_uppercase();
+    let test_env: String = test_env.to_uppercase();
+
     // Create the folder path to search.
     let folder_path = format!("{}\\{}\\{}", drive_letter, folder_location, product_number);
 
@@ -161,9 +168,9 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
             // Check if the file name matches the regular expression.
             if log_re.is_match(file_name) &&
                 // Check if the file is in the date range.
-                is_in_date_range(&entry, date_yyyyww) &&
+                is_in_date_range(&entry, &date_yyyyww) &&
                 // Check if the file is in the test environment.
-                is_in_test_env(&entry, test_env)
+                is_in_test_env(&entry, &test_env)
             {
                 // Set the found_match flag to true.
                 found_match = true;
