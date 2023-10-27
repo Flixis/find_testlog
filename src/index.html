@@ -102,17 +102,12 @@ $(document).ready(function() {
   $(document).on("keydown", function(event) {
     // When the barcode recipe is called, I trigger a HOME button keypress first, this then resets the input fields.
     if (event.which === 36){
-      $("#productnumber").val(""); // Clear the input field
-      $("#serialnumber").val(""); // Clear the input field
-      $("#productnumber").focus(); // Focus on the Product Number input field
-    }
+        $("#productnumber").val(""); // Clear the input field
+        $("#serialnumber").val("");
+        $("#productnumber").focus(); // Focus on the Product Number input field
+      }
+    });
   });
-});
-
-document.body.addEventListener('keyup', function(event) {
-  console.log(event.key);
-  console.log(event.code);
-});
 
   
   // Function to open the log when the "Open Log" button is clicked
