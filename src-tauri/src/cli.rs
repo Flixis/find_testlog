@@ -36,7 +36,7 @@ pub struct CliCommands {
     pub get_config_location: bool,
 }
 
-pub fn parse_cli_args(commandlinearguments: CliCommands) {
+pub fn parse_cli_args(commandlinearguments: CliCommands) -> crate::structs::AppConfig {
     let mut search_info = crate::structs::AppConfig::default_values();
 
     //Make sure that the arguments have data else just ignore.
@@ -99,11 +99,12 @@ pub fn parse_cli_args(commandlinearguments: CliCommands) {
         );
         exit(0);
     }
+    
+    search_info
 
-    execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
 }
 
-fn execute_search_results_from_cli(search_info: crate::structs::AppConfig) {
+pub fn execute_search_results_from_cli(search_info: crate::structs::AppConfig) {
     // using indexmap crate because there is no way to order std::hashmaps.
     let mut mapped_search_results = indexmap! {};
     // Search for log files based on the search criteria.

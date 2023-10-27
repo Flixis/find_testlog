@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "find_testlog_tauri",
-    "version": "2.3.2"
+    "version": "2.4.0"
   },
   "tauri": {
     "allowlist": {
@@ -24,11 +24,11 @@
       }
     },
     "bundle": {
-      "active": false,
+      "active": true,
       "targets": "all",
       "identifier": "com.tauri.flixis.findtestlog",
       "copyright": "Tariq Dinmohamed (C) 2023",
-      "shortDescription": "Utility to assist in finding and opening log files",
+      "shortDescription": "Find Testlog Tauri",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -41,7 +41,12 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://gist.githubusercontent.com/Flixis/4797c2696d2525950248bafc4b9a90f5/raw/"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU2RDEzMzJCQjQ2MEYwNkEKUldScThHQzBLelBSVmtKejZrZERtM3pNVUV6VFZJazNSL1hHVEpwNUZKYVErUTA1R0JMV3VjZWgK"
     }
   }
 }

@@ -63,7 +63,7 @@
           <tr>
             <th>Date/Time</th>
             <th>Location</th>
-            <th>SN</th>
+            <th>CLNT</th>
             <th>Test Environment</th>
             <th>Open Log</th>
           </tr>
@@ -74,7 +74,7 @@
   </div>
   <footer id="footer">
     <div id="footer-content"></div>
-    <a id="footer-content" href="https://github.com/Flixis/find_testlog/tree/main">Tariq Dinmohamed(Github)</a>
+    <a id="footer-content">Tariq Dinmohamed</a>
   </footer>
 
 <script>
@@ -84,19 +84,31 @@
   const { convertFileSrc } = window.__TAURI__.tauri;
   const { getVersion } = window.__TAURI__.app
   
-  $(document).ready(function() {
-    // Enable the search button when both productnummer and serial number fields are not empty.
-    $("#productnumber, #serialnumber").on("keyup change", function() {
-      const productNumberLength = $("#productnumber").val().length;
-      const serialNumberLength = $("#serialnumber").val().length;
-      //https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
-      if (productNumberLength < 10 || serialNumberLength < 10) {
-        $("#search-button").attr("disabled", true);
-      } else {
-        $("#search-button").removeAttr("disabled");
+$(document).ready(function() {
+  // Enable the search button when both product number and serial number fields are not empty.
+  $("#productnumber, #serialnumber").on("keyup change", function() {
+    const productNumberLength = $("#productnumber").val().length;
+    const serialNumberLength = $("#serialnumber").val().length;
+
+    // Form validation logic
+    if (productNumberLength < 10 || serialNumberLength < 10) {
+      $("#search-button").attr("disabled", true);
+    } else {
+      $("#search-button").removeAttr("disabled");
+    }
+  });
+
+  // Listen for keyboard events
+  $(document).on("keydown", function(event) {
+    // When the barcode recipe is called, I trigger a HOME button keypress first, this then resets the input fields.
+    if (event.which === 36){
+        $("#productnumber").val(""); // Clear the input field
+        $("#serialnumber").val("");
+        $("#productnumber").focus(); // Focus on the Product Number input field
       }
     });
   });
+
   
   // Function to open the log when the "Open Log" button is clicked
   async function openLog(logLocation) {
