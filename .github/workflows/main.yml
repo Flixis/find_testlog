@@ -3,7 +3,8 @@ name: 'publish'
 on:
   push:
     branches:
-      - release
+      - github-actions
+      - main
 
 jobs:
   publish-tauri:
