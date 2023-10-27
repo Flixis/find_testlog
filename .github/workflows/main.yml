@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - github-actions
-      - main
+      - release
 
 jobs:
   publish-tauri:
@@ -38,14 +38,14 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           tagName: V__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: 'v__VERSION__'
           releaseBody: 'Assets are as follows:\n
             - `.AppImage` or `.deb` for Linux\n
             - `.dmg` or `.app.tar.gz` for macOS\n
-            - `.exe` or `.msi` for Windows\n\n
-
-            Please note that the builds are not signed.'
+            - `.exe` or `.msi` for Windows\n\n'
           releaseDraft: true
-          prerelease: false
+          prerelease: true
