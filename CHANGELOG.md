@@ -1,6 +1,18 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [V2.4.0] - 2023-10-27
+
+### Add
+
+- Update checker implemented
+- Github actions
+
+### Change
+
+- SN -> CLNT
+- testenv -> testype
+- get `get_test_env_string` now pulls info from file
 
 ## [V2.3.2] - 2023-10-20
 
