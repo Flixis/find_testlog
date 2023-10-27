@@ -39,7 +39,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+          tagName: V__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: 'v__VERSION__'
           releaseBody: 'Assets are as follows:\n
             - `.AppImage` or `.deb` for Linux\n
@@ -47,5 +47,5 @@ jobs:
             - `.exe` or `.msi` for Windows\n\n
 
             Please note that the builds are not signed.'
-          releaseDraft: false
+          releaseDraft: true
           prerelease: false
