@@ -46,6 +46,6 @@ jobs:
           releaseBody: 'Assets are as follows:\n
             - `.AppImage` or `.deb` for Linux\n
             - `.dmg` or `.app.tar.gz` for macOS\n
-            - `.exe` or `.msi` for Windows\n\n'
+            - `.exe` or `.msi` for Windows'
           releaseDraft: true
           prerelease: true
