@@ -29,7 +29,9 @@ fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
 
     if std::env::args_os().count() > 1 {
-        cli::parse_cli_args(commandlinearguments);
+        let search_info = cli::parse_cli_args(commandlinearguments);
+        cli::execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
+
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
@@ -45,6 +47,7 @@ fn main() {
             .expect("error while running tauri application")
     }
 }
+
 
 /*
 
@@ -72,7 +75,7 @@ async fn parse_frontend_search_data(
         "datetime": [],
         "testenv": [],
         "location": [],
-        "serialnumber": [],
+        "clnt": [],
     });
 
     //Make sure to save after we've written new data
@@ -95,11 +98,13 @@ async fn parse_frontend_search_data(
                     // dbg!(&path);
                     let extracted_datetime = functions::extract_datetime(&path);
                     let extracted_test_env = functions::get_test_env_string(&path);
+                    let extracted_clnt = functions::get_clnt_string(&path);
+
                     let mut _json_data: Value = json!({
                         "datetime": extracted_datetime,
                         "testenv": extracted_test_env,
                         "location": path.to_string(),
-                        "serialnumber": search_info.serialnumber,
+                        "clnt": extracted_clnt,
                     });
                     // dbg!(&_json_data);
                     // Push values to arrays in the JSON object
@@ -115,17 +120,17 @@ async fn parse_frontend_search_data(
                         .as_array_mut()
                         .unwrap()
                         .push(_json_data["location"].take());
-                    results_from_search_json["serialnumber"]
+                    results_from_search_json["clnt"]
                         .as_array_mut()
                         .unwrap()
-                        .push(_json_data["serialnumber"].take());
+                        .push(_json_data["clnt"].take());
                 }
             }
         }
         _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
 
-    // dbg!(&results_from_search_json);
+    //dbg!(&results_from_search_json);
     results_from_search_json
 }
 

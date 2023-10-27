@@ -1,24 +1,13 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
-use log::warn;
 use regex::Regex;
-use std::io;
 use std::path::Path;
+use std::io;
+use std::fs::File;
+use std::io::BufRead;
 use walkdir::{DirEntry, WalkDir};
+use colored::*;
 
-/*
 
-Called when -h is parsed...
-I should really figure out if I can just get the 'clap' -h window to do this...
-
-Because i'm not using Tauri in its intended way, this is not really easily done.
-
-*/
-pub fn not_implemented(app: tauri::AppHandle) {
-    println!("{:?}", app.package_info());
-    warn!("Function not implemented yet");
-    println!("Function not implemented yet");
-    app.exit(127);
-}
 
 /*
 required to removed windows console when launching GUI.
@@ -74,34 +63,66 @@ pub fn extract_datetime(log_path: &str) -> String {
 
 /*
 
-Regex pattern matches on the '\test_env\' | \PTF\ | \PTF\ in string.
+Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
 Used for confirming whether the returned path is actually correctly pulled from source directory.
 
 */
-pub fn get_test_env_string(test_environment_string: &str) -> String {
-    let re = Regex::new(r"\\([A-Z])[A-Z]{1,2}").unwrap();
-    let regex_captures = re.captures(test_environment_string);
+
+
+pub fn get_test_env_string(log_path: &str) -> String {
+    // Open the file for reading
+    let file = File::open(log_path).unwrap();
+
+    // Create a regular expression pattern to match the desired text
+    let re = Regex::new(r"- Operation configuration: (\w+)").unwrap();
+
+    for line in io::BufReader::new(file).lines() {
+        if let Ok(line) = line {
+            if let Some(captures) = re.captures(&line) {
+                // Extract the captured text
+                if let Some(operation) = captures.get(1) {
+                    // println!("{}", operation.as_str());
+                    return operation.as_str().to_string();
+                }
+            }
+        }
+    }
+
+    eprintln!("{}","Text not found in the file.".bold().red());
+    //This is super lazy, but if we don't match anything we just return an empty string...
+    //TODO: actually add programatic error
+    let failed_to_match = "failed to find test_env string".to_string();
+    failed_to_match
+}
+
+
+/*
+
+Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
+Used for confirming whether the returned path is actually correctly pulled from source directory.
+
+*/
+pub fn get_clnt_string(log_path: &str) -> String {
+    let re = Regex::new(r"CLNT\d+").unwrap();
+    let regex_captures = re.captures(log_path);
 
     match regex_captures {
         Some(captures) => {
-            let mut test_environment = captures[0].to_string();
-
-            // Remove the leading backslash from the test environment string.
-            test_environment = test_environment[1..captures[0].len()].to_string();
-
+            let clnt = captures[0].to_string();
             // Return the test environment string.
-            test_environment
+            clnt
         }
         None => {
             // Handle the case where the regex does not match.
             log::error!(
-                "Could not find test_env string in test environment string: {}",
-                test_environment_string
+                "Could not find CLNT string in test environment string: {}",
+                log_path
             );
-            "Could not find test_env string".to_string()
+            "Could not find CLNT string".to_string()
         }
     }
 }
+
 
 /*
 
@@ -122,6 +143,13 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     let folder_location: &String = &search_info.folder_location;
     let test_env: &String = &search_info.test_env;
 
+    //Parse user input data to uppercase. Not for folderlocation because its doesn't follow a standard.
+    let product_number: String = product_number.to_uppercase();
+    let serial_number: String = serial_number.to_uppercase();
+    let date_yyyyww: String = date_yyyyww.to_uppercase();
+    let drive_letter: String = drive_letter.to_uppercase();
+    let test_env: String = test_env.to_uppercase();
+
     // Create the folder path to search.
     let folder_path = format!("{}\\{}\\{}", drive_letter, folder_location, product_number);
 
@@ -140,9 +168,9 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
             // Check if the file name matches the regular expression.
             if log_re.is_match(file_name) &&
                 // Check if the file is in the date range.
-                is_in_date_range(&entry, date_yyyyww) &&
+                is_in_date_range(&entry, &date_yyyyww) &&
                 // Check if the file is in the test environment.
-                is_in_test_env(&entry, test_env)
+                is_in_test_env(&entry, &test_env)
             {
                 // Set the found_match flag to true.
                 found_match = true;
@@ -154,6 +182,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     }
 
     if found_match {
+        log_file_paths.reverse(); //Send the log file paths in descending order.
         Ok(log_file_paths)
     } else {
         return Err(io::Error::new(

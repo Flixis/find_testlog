@@ -17,7 +17,7 @@ async function execute_search() {
   const serialnumber = document.getElementById('serialnumber').value;
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
   const testenv = document.getElementById("test_env").value;
-
+  
   var jsondata = await invoke('parse_frontend_search_data', {
       productnumber: productnumber,
       serialnumber: serialnumber,
@@ -35,7 +35,7 @@ async function execute_search() {
       row.innerHTML = `
         <td>${jsondata.datetime[i]}</td>
         <td>${jsondata.location[i]}</td>
-        <td>${jsondata.serialnumber[i]}</td>
+        <td>${jsondata.clnt[i]}</td>
         <td>${jsondata.testenv[i]}</td>
         <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
         </tr>`;
