@@ -3,7 +3,6 @@ name: 'publish'
 on:
   push:
     branches:
-      - github-actions
       - release
 
 jobs:
@@ -13,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest]
+        platform: [windows-latest]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -34,7 +33,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
       - name: install frontend dependencies
-        run: corepack enable && npm install
+        run: corepack enable && pnpm install
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,10 +41,10 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           tagName: V__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          releaseName: 'v__VERSION__'
+          releaseName: 'V__VERSION__'
           releaseBody: 'Assets are as follows:\n
             - `.AppImage` or `.deb` for Linux\n
             - `.dmg` or `.app.tar.gz` for macOS\n
-            - `.exe` or `.msi` for Windows'
+            - `.exe` or `.msi` for Windows\n'
           releaseDraft: true
           prerelease: true
