@@ -120,11 +120,12 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
 
   # Choose a random test environment.
   test_suite = random.choice(test_suite_list)
-  
   mode_type = random.choice(mode_type_list)
-  test_type_full = random.choice(test_type_list_full)
-  test_type = random.choice(test_type_list)
-
+  
+  selected_test_type = random.choice(test_type_list)
+  # Find the corresponding full name in test_type_list_full
+  full_name_index = test_type_list.index(selected_test_type)
+  selected_full_name = test_type_list_full[full_name_index]
 
   # Generate a random log file name.
   random_date_str, random_time_str, random_clnt, random_group ,random_sn  = generate_random_file_string(year, week)
@@ -139,7 +140,7 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
   # Create the log file.
   with open(log_file_path, "w") as f:
     semver = generate_random_semver()
-    text_in_file = generate_log_file_inner(semver, random_clnt, mode_type, pn_formatted,  test_type_full, test_type)
+    text_in_file = generate_log_file_inner(semver, random_clnt, mode_type, pn_formatted,  selected_full_name, selected_test_type)
     f.write(text_in_file)
 
   # Return the path to the log file.
@@ -154,8 +155,8 @@ year_max = 2023
 week_min = 0 #0=1 
 week_max = 51 #51=52
 test_suite_list = ["PTF", "FT", "ET", "XT", "PI","AET", "ICT"]
-test_type_list = ["FT", "XT", "ET", "FI", "PI","FT01", "XT01", "MAI"]
-test_type_list_full = ["Functional test", "Safety test", "Functional inspection test", "Endurance test", "Development test"]
+test_type_list = ["FT", "ST", "FI", "ET", "DT","FT01", "XT01", "MAI"]
+test_type_list_full = ["Functional test", "Safety test", "Functional inspection test", "Endurance test", "Development test", "Functional test", "Extra test", "MAI test"]
 mode_type_list = ["Production", "Service", "Development"]
 
 
