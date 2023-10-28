@@ -3,6 +3,46 @@ import random
 import os
 import datetime
 
+
+def generate_random_semver():
+    # Generate random major, minor, and patch versions
+    major = random.randint(0, 9)
+    minor = random.randint(0, 9)
+    patch = random.randint(0, 9)
+    
+    # Generate a random prerelease string (5 random uppercase letters)
+    prerelease = ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ') for _ in range(5))
+    
+    # Combine the components into a Semver string
+    semver = f"v{major}.{minor}.{patch}-{prerelease}"
+    
+    return semver
+
+def generate_log_file_inner(version, clnt, mode, pn, test_type_full, test_type):
+ 
+    application_info = {
+        'Name': 'Q\'s Test Framework',
+        'Version': version,
+        'Machine': clnt,
+        'Mode': mode
+    }
+
+    test_info = {
+        'PN': pn,
+        'Operation': test_type_full,
+        'Operation configuration': test_type
+    }
+
+    text = "Application:\n"
+    for key, value in application_info.items():
+        text += f"- {key}: {value}\n"
+
+    text += "Test:\n"
+    for key, value in test_info.items():
+        text += f"- {key}: {value}\n"
+
+    return text
+
 def generate_random_sn():
   """Generates a random SN in the format <2ints>-<2ints>-<3chars>-<3chars>."""
   sn = ""
@@ -21,7 +61,7 @@ def generate_random_sn():
   #sn = "11-11-AAA-BBB" #overwrite for testing
   return sn
 
-def generate_random_string(year, week):
+def generate_random_file_string(year, week):
   """Generates a random string in the format <date>_<time>_CLNT<randomint>_group_0_<random_sn>."""
   # Get the start and end dates of the specified week.
   start_date = datetime.datetime.strptime(f'{year}-W{week}-1', "%Y-W%U-%w")
@@ -31,12 +71,14 @@ def generate_random_string(year, week):
   random_date = start_date + datetime.timedelta(seconds=random.randint(0, int((end_date-start_date).total_seconds())))
   random_date_str = random_date.strftime("%Y%m%d")
   random_time_str = random_date.strftime("%H%M%S")
-  random_int = random.randint(1000, 9999)
-  random_sn = generate_random_sn()  # Ensure you have this function defined elsewhere
-  return f"{random_date_str}_{random_time_str}_CLNT{random_int}_group_0_{random_sn}.log"
+  random_clnt = random.randint(1000, 9999)
+  random_group = random.randint(0, 100)
+  random_sn = generate_random_sn()
+  # return f"{random_date_str}_{random_time_str}_CLNT{random_clnt}_group_0_{random_sn}.log"
+  return random_date_str, random_time_str, f"CLNT{random_clnt}", f"group_{random_group}" ,random_sn
 
 # Generates a random folder structure in the format <drive>:<folder>/<pn_formatted>/<year>-W<week_str>/<test_env>/<log_file_name>
-def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, year_max, week_min, week_max, test_env_list):
+def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, year_max, week_min, week_max, test_suite_list, mode_type_list, test_type_list, test_type_list_full):
   """
   Generates a random folder structure in the format:
 
@@ -51,7 +93,7 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
     year_max: The maximum year value to use.
     week_min: The minimum week value to use.
     week_max: The maximum week value to use.
-    test_env_list: A list of test environments to choose from.
+    test_suite_list: A list of test environments to choose from.
 
   Returns:
     The path to the generated log file.
@@ -73,20 +115,28 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
   week_str = str(week).zfill(2)
 
   # Choose a random test environment.
-  test_env = random.choice(test_env_list)
+  test_suite = random.choice(test_suite_list)
+  
+  mode_type = random.choice(mode_type_list)
+  test_type_full = random.choice(test_type_list_full)
+  test_type = random.choice(test_type_list)
+
 
   # Generate a random log file name.
-  log_file_name = generate_random_string(year, week)
+  random_date_str, random_time_str, random_clnt, random_group ,random_sn  = generate_random_file_string(year, week)
+  log_file_name = f"{random_date_str}_{random_time_str}_{random_clnt}_{random_group}_{random_sn}.log"
 
   # Construct the path to the log file.
-  log_file_path = os.path.join(drive, folder, pn_formatted, f"{year}-W{week_str}", test_env, log_file_name)
+  log_file_path = os.path.join(drive, folder, pn_formatted, f"{year}-W{week_str}", test_suite, log_file_name)
 
   # Create the directories if they don't already exist.
   os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
 
   # Create the log file.
   with open(log_file_path, "w") as f:
-    f.write("This is a test log file." + log_file_name)
+    semver = generate_random_semver()
+    text_in_file = generate_log_file_inner(semver, random_clnt, mode_type, pn_formatted,  test_type_full, test_type)
+    f.write(text_in_file)
 
   # Return the path to the log file.
   return log_file_path
@@ -99,7 +149,11 @@ year_min = 1998
 year_max = 2023
 week_min = 0 #0=1 
 week_max = 51 #51=52
-test_env_list = ["PTF", "FT", "ET", "XT", "PI","AET", "ICT"]
+test_suite_list = ["PTF", "FT", "ET", "XT", "PI","AET", "ICT"]
+test_type_list = ["FT", "XT", "ET", "FI", "PI","FT01", "XT01", "MAI"]
+test_type_list_full = ["Functional test", "Safety test", "Functional inspection test", "Endurance test", "Development test"]
+mode_type_list = ["Production", "Service", "Development"]
+
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
@@ -107,5 +161,5 @@ if __name__ == "__main__":
   args = parser.parse_args()
 
   for i in range(args.count):
-    log_file_path = generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, year_max, week_min, week_max, test_env_list)
+    log_file_path = generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, year_max, week_min, week_max, test_suite_list, mode_type_list, test_type_list, test_type_list_full)
     print(log_file_path)
