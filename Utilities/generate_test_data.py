@@ -27,10 +27,14 @@ def generate_log_file_inner(version, clnt, mode, pn, test_type_full, test_type):
         'Mode': mode
     }
 
+    random_id = random.randint(000000,999999)
+    random_release = random.randint(000, 999)
+    operation_config = f"{test_type} (id: {random_id}; Release R{random_release} (Latest))"
+    
     test_info = {
         'PN': pn,
         'Operation': test_type_full,
-        'Operation configuration': test_type
+        'Operation configuration': operation_config
     }
 
     text = "Application:\n"
