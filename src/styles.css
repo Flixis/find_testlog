@@ -127,6 +127,19 @@ thead th {
   color: var(--color-white);
   text-align: center;
   padding: 0.25rem;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Add a pseudo-element for the arrow indicator */
+thead th::after {
+  content: "↑"; /* Default indicator for newest to oldest */
+  position: absolute;
+  top: 0.7rem;
+  right: 1rem;
+  transform: translateY(-50%);
+  opacity: 0.5;
+  transition: transform 0.3s, opacity 0.3s;
 }
 
 /* Style table rows */
