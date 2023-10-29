@@ -14,7 +14,7 @@ This is a utility developed in Rust & Tauri Framework, designed to assist in fin
 - Load and save application configuration from a file.
 - Easy interaction through a command-line interface.
 
-## Commandline Usage
+## Commandline Usage <WARNING NO LONGER SUPPORT SINCE 2.4.0>
 
 The application accepts several command-line arguments:
 
