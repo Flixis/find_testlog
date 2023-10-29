@@ -146,6 +146,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     let product_number: &String = &search_info.productnumber;
     let serial_number: &String = &search_info.serialnumber;
     let date_yyyyww: &String = &search_info.dateyyyyww;
+    let test_type: &String = &search_info.test_type;
     let drive_letter: &String = &search_info.drive_letter;
     let folder_location: &String = &search_info.folder_location;
     let test_suite: &String = &search_info.test_suite;
@@ -154,6 +155,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     let product_number: String = product_number.to_uppercase();
     let serial_number: String = serial_number.to_uppercase();
     let date_yyyyww: String = date_yyyyww.to_uppercase();
+    let test_type: String = test_type.to_uppercase();
     let drive_letter: String = drive_letter.to_uppercase();
     let test_suite: String = test_suite.to_uppercase();
 

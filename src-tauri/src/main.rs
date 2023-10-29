@@ -78,6 +78,7 @@ async fn parse_frontend_search_data(
         "revision": [],
         "id": [],
         "clnt": [],
+        "location": [],
     });
 
     dbg!(&search_info);
@@ -111,6 +112,7 @@ async fn parse_frontend_search_data(
                             "revision": release,
                             "id": id,
                             "clnt": extracted_clnt,
+                            "location": path.to_string(),
                         });
                     
                         // Push values to arrays in the JSON object
@@ -134,6 +136,10 @@ async fn parse_frontend_search_data(
                             .as_array_mut()
                             .unwrap()
                             .push(_json_data["clnt"].take());
+                        results_from_search_json["location"]
+                            .as_array_mut()
+                            .unwrap()
+                            .push(_json_data["location"].take());
                     } else {
                         eprintln!("{} {:?}", "Failed to serialize to JSON".red().bold(), search_info)
                     }

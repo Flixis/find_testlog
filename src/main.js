@@ -24,7 +24,7 @@ async function execute_search() {
       dateyyyyww: date_yyyyww,
       testtype: test_type,
   });
-  console.log(test_type);
+  console.log(jsondata);
 
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
