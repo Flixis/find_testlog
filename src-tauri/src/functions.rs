@@ -5,7 +5,6 @@ use std::io;
 use std::fs::File;
 use std::io::BufRead;
 use walkdir::{DirEntry, WalkDir};
-use colored::*;
 
 
 

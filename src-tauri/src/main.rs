@@ -29,9 +29,10 @@ fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
 
     if std::env::args_os().count() > 1 {
+        eprintln!("{}", "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0".red().bold());
         let search_info = cli::parse_cli_args(commandlinearguments);
         cli::execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
-
+        eprintln!("{}", "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0".red().bold());
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()

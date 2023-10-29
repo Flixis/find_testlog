@@ -31,7 +31,7 @@ async function execute_search() {
   // Loop through the data and create a row for each entry
   for (let i = 0; i < jsondata.datetime.length; i++) {
     // Only print when it matches the following cases, or when it matches the test type
-    if (test_type === "" || test_type.toUpperCase() === "ALL" || jsondata.testtype[i] === test_type) {
+    if (test_type === "" || test_type.toUpperCase() === "ALL" || jsondata.testtype[i] === test_type.toUpperCase()) {
         const row = document.createElement('tr');
         const logLocation = jsondata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
         row.innerHTML = `
