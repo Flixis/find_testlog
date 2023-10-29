@@ -24,25 +24,27 @@ async function execute_search() {
       dateyyyyww: date_yyyyww,
       testtype: test_type,
   });
-  console.log(jsondata);
 
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
 
   // Loop through the data and create a row for each entry
   for (let i = 0; i < jsondata.datetime.length; i++) {
-      const row = document.createElement('tr');
-      const logLocation = jsondata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
-      row.innerHTML = `
-        <td>${jsondata.datetime[i]}</td>
-        <td>${jsondata.testtype[i]}</td>
-        <td>${jsondata.revision[i]}</td>
-        <td>${jsondata.clnt[i]}</td>
-        <td>${jsondata.id[i]}</td>
-        <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
-        </tr>`;
-      tableBody.appendChild(row);
-  }
+    // Only print when it matches the following cases, or when it matches the test type
+    if (test_type === "" || test_type.toUpperCase() === "ALL" || jsondata.testtype[i] === test_type) {
+        const row = document.createElement('tr');
+        const logLocation = jsondata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
+        row.innerHTML = `
+          <td>${jsondata.datetime[i]}</td>
+          <td>${jsondata.testtype[i]}</td>
+          <td>${jsondata.revision[i]}</td>
+          <td>${jsondata.clnt[i]}</td>
+          <td>${jsondata.id[i]}</td>
+          <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
+          </tr>`;
+        tableBody.appendChild(row);
+    }
+}
 
   // Update the results count
   const resultsCount = document.getElementById("results-count");
