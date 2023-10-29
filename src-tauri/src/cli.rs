@@ -70,12 +70,12 @@ pub fn parse_cli_args(commandlinearguments: CliCommands) -> crate::structs::AppC
     }
 
     if commandlinearguments.test_env.is_some() {
-        search_info.test_env = commandlinearguments
+        search_info.test_suite = commandlinearguments
             .test_env
             .unwrap_or_default()
             .to_string();
     } else {
-        search_info.test_env = "".to_string();
+        search_info.test_suite = "".to_string();
     }
 
     if commandlinearguments.drive_letter.is_some() {

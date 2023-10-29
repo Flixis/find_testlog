@@ -16,13 +16,13 @@ async function execute_search() {
   const productnumber = document.getElementById('productnumber').value;
   const serialnumber = document.getElementById('serialnumber').value;
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
-  const testenv = document.getElementById("test_env").value;
+  const test_type = document.getElementById('test_type').value;
   
   var jsondata = await invoke('parse_frontend_search_data', {
       productnumber: productnumber,
       serialnumber: serialnumber,
       dateyyyyww: date_yyyyww,
-      testenv: testenv,
+      testtype: test_type,
   });
 
   const tableBody = document.getElementById('table-body');
@@ -30,17 +30,21 @@ async function execute_search() {
 
   // Loop through the data and create a row for each entry
   for (let i = 0; i < jsondata.datetime.length; i++) {
-      const row = document.createElement('tr');
-      const logLocation = jsondata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
-      row.innerHTML = `
-        <td>${jsondata.datetime[i]}</td>
-        <td>${jsondata.location[i]}</td>
-        <td>${jsondata.clnt[i]}</td>
-        <td>${jsondata.testenv[i]}</td>
-        <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
-        </tr>`;
-      tableBody.appendChild(row);
-  }
+    // Only print when it matches the following cases, or when it matches the test type
+    if (test_type === "" || test_type.toUpperCase() === "ALL" || jsondata.testtype[i] === test_type.toUpperCase()) {
+        const row = document.createElement('tr');
+        const logLocation = jsondata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
+        row.innerHTML = `
+          <td>${jsondata.datetime[i]}</td>
+          <td>${jsondata.testtype[i]}</td>
+          <td>${jsondata.revision[i]}</td>
+          <td>${jsondata.clnt[i]}</td>
+          <td>${jsondata.id[i]}</td>
+          <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
+          </tr>`;
+        tableBody.appendChild(row);
+    }
+}
 
   // Update the results count
   const resultsCount = document.getElementById("results-count");
