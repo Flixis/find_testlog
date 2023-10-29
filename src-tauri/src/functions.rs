@@ -97,7 +97,7 @@ pub fn extract_info_from_log(log_path: &str) -> Option<(String, u32, String)> {
         eprintln!("Failed to open the file.");
     }
 
-    None
+    None //if everything failed return None
 }
 
 
