@@ -1,6 +1,20 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [V3.0.0] - 2023-10-29
+
+
+### Feat GUI
+
+- GUI now has colums for `Revision` & `Test-id`. 
+- Can now search on `test type`
+- Sorting indicator
+
+### IMPORTANT NOTE
+CLI IS NO LONGER SUPPORTED FEATURES AVAILABLE IN V3.0.0 ARE NOT IN CLI!.
+- Added warning for CLI about deprecated feature.
+
 ## [V2.4.0] - 2023-10-27
 
 ### Add

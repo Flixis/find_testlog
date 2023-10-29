@@ -35,17 +35,15 @@
         <input type="date" id="datepicker">
       </div>
       <div class="input-group">
-        <label for="testenv">Test Environment:</label>
-        <select id="test_env">
-          <option value="">All</option>
-          <option value="PTF">PTF</option>
-          <option value="AET">AET</option>
+        <label for="test_type">Test Type:</label>
+        <input type="text" id="test_type" list="test_type_list" value="All">
+        <datalist id="test_type_list">
           <option value="FT">FT</option>
+          <option value="FI">FI</option>
           <option value="ET">ET</option>
           <option value="XT">XT</option>
           <option value="PI">PI</option>
-          <option value="ICT">ICT</option>
-        </select>
+        </datalist>        
       </div>
     </div>
   </form>
@@ -62,9 +60,10 @@
         <thead>
           <tr>
             <th>Date/Time</th>
-            <th>Location</th>
+            <th>Test Type</th>
+            <th>Revision</th>
             <th>CLNT</th>
-            <th>Test Environment</th>
+            <th>Test id</th>
             <th>Open Log</th>
           </tr>
         </thead>
