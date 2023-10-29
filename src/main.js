@@ -16,14 +16,15 @@ async function execute_search() {
   const productnumber = document.getElementById('productnumber').value;
   const serialnumber = document.getElementById('serialnumber').value;
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
-  const testenv = document.getElementById("test_env").value;
+  const test_type = document.getElementById('test_type').value;
   
   var jsondata = await invoke('parse_frontend_search_data', {
       productnumber: productnumber,
       serialnumber: serialnumber,
       dateyyyyww: date_yyyyww,
-      testenv: testenv,
+      testtype: test_type,
   });
+  console.log(test_type);
 
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
@@ -34,9 +35,10 @@ async function execute_search() {
       const logLocation = jsondata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
       row.innerHTML = `
         <td>${jsondata.datetime[i]}</td>
-        <td>${jsondata.location[i]}</td>
+        <td>${jsondata.testtype[i]}</td>
+        <td>${jsondata.revision[i]}</td>
         <td>${jsondata.clnt[i]}</td>
-        <td>${jsondata.testenv[i]}</td>
+        <td>${jsondata.id[i]}</td>
         <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
         </tr>`;
       tableBody.appendChild(row);

@@ -69,31 +69,38 @@ Used for confirming whether the returned path is actually correctly pulled from 
 */
 
 
-pub fn get_test_env_string(log_path: &str) -> String {
+pub fn extract_info_from_log(log_path: &str) -> Option<(String, u32, String)> {
     // Open the file for reading
-    let file = File::open(log_path).unwrap();
+    if let Ok(file) = File::open(log_path) {
+        // Create a regular expression pattern to match the desired text
+        let re = Regex::new(r"- Operation configuration: (\w+) \(id: (\d+); Release (\w+) \(Latest\)\)").unwrap();
 
-    // Create a regular expression pattern to match the desired text
-    let re = Regex::new(r"- Operation configuration: (\w+)").unwrap();
-
-    for line in io::BufReader::new(file).lines() {
-        if let Ok(line) = line {
-            if let Some(captures) = re.captures(&line) {
-                // Extract the captured text
-                if let Some(operation) = captures.get(1) {
-                    // println!("{}", operation.as_str());
-                    return operation.as_str().to_string();
+        for line in io::BufReader::new(file).lines() {
+            if let Ok(line) = line {
+                if let Some(captures) = re.captures(&line) {
+                    if let (Some(testtype), Some(id), Some(release)) = (
+                        captures.get(1),
+                        captures.get(2),
+                        captures.get(3),
+                    ) {
+                        return Some((
+                            testtype.as_str().to_string(),
+                            id.as_str().parse().unwrap(),
+                            release.as_str().to_string(),
+                        ));
+                    }
                 }
             }
         }
+
+        eprintln!("Text not found in the file.");
+    } else {
+        eprintln!("Failed to open the file.");
     }
 
-    eprintln!("{}","Text not found in the file.".bold().red());
-    //This is super lazy, but if we don't match anything we just return an empty string...
-    //TODO: actually add programatic error
-    let failed_to_match = "failed to find test_env string".to_string();
-    failed_to_match
+    None
 }
+
 
 
 /*
@@ -102,7 +109,7 @@ Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
 Used for confirming whether the returned path is actually correctly pulled from source directory.
 
 */
-pub fn get_clnt_string(log_path: &str) -> String {
+pub fn extract_clnt_string(log_path: &str) -> String {
     let re = Regex::new(r"CLNT\d+").unwrap();
     let regex_captures = re.captures(log_path);
 
@@ -141,14 +148,14 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     let date_yyyyww: &String = &search_info.dateyyyyww;
     let drive_letter: &String = &search_info.drive_letter;
     let folder_location: &String = &search_info.folder_location;
-    let test_env: &String = &search_info.test_env;
+    let test_suite: &String = &search_info.test_suite;
 
     //Parse user input data to uppercase. Not for folderlocation because its doesn't follow a standard.
     let product_number: String = product_number.to_uppercase();
     let serial_number: String = serial_number.to_uppercase();
     let date_yyyyww: String = date_yyyyww.to_uppercase();
     let drive_letter: String = drive_letter.to_uppercase();
-    let test_env: String = test_env.to_uppercase();
+    let test_suite: String = test_suite.to_uppercase();
 
     // Create the folder path to search.
     let folder_path = format!("{}\\{}\\{}", drive_letter, folder_location, product_number);
@@ -170,7 +177,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
                 // Check if the file is in the date range.
                 is_in_date_range(&entry, &date_yyyyww) &&
                 // Check if the file is in the test environment.
-                is_in_test_env(&entry, &test_env)
+                is_in_test_suite(&entry, &test_suite)
             {
                 // Set the found_match flag to true.
                 found_match = true;
@@ -216,7 +223,7 @@ fn is_in_date_range(entry: &DirEntry, date: &String) -> bool {
         .any(|comp| comp.as_os_str().to_str().unwrap().contains(date))
 }
 
-fn is_in_test_env(entry: &DirEntry, test_env: &String) -> bool {
+fn is_in_test_suite(entry: &DirEntry, test_env: &String) -> bool {
     // If the test environment string is empty, return true.
     if test_env.is_empty() {
         return true;
