@@ -816,7 +816,7 @@ dependencies = [
 
 [[package]]
 name = "find_testlog_tauri"
-version = "3.0.0"
+version = "3.0.1"
 dependencies = [
  "chrono",
  "clap",
