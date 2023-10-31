@@ -72,7 +72,7 @@ pub fn extract_info_from_log(log_path: &str) -> Option<(String, u32, String)> {
     // Open the file for reading
     if let Ok(file) = File::open(log_path) {
         // Create a regular expression pattern to match the desired text
-        let re = Regex::new(r"- Operation configuration: (\w+) \(id: (\d+); Release (\w+) \(Latest\)\)").unwrap();
+        let re = Regex::new(r"- Operation configuration: (\w+) \(id: (\d+); Release (\w+)").unwrap();
 
         for line in io::BufReader::new(file).lines() {
             if let Ok(line) = line {
