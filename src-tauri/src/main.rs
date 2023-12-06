@@ -6,9 +6,9 @@ use colored::*;
 use serde_json::{json, Value};
 
 mod cli;
-mod functions;
-mod structs;
 mod extractors;
+mod search;
+mod structs;
 mod windows_helpers;
 
 /*
@@ -30,10 +30,20 @@ fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
 
     if std::env::args_os().count() > 1 {
-        eprintln!("{}", "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0".red().bold());
+        eprintln!(
+            "{}",
+            "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0"
+                .red()
+                .bold()
+        );
         let search_info = cli::parse_cli_args(commandlinearguments);
         cli::execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
-        eprintln!("{}", "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0".red().bold());
+        eprintln!(
+            "{}",
+            "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0"
+                .red()
+                .bold()
+        );
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
@@ -49,7 +59,6 @@ fn main() {
             .expect("error while running tauri application")
     }
 }
-
 
 /*
 
@@ -68,10 +77,10 @@ async fn parse_frontend_search_data(
 ) -> Value {
     let mut search_info = structs::AppConfig::default_values();
 
-    search_info.serialnumber = serialnumber.unwrap();
-    search_info.productnumber = productnumber.unwrap();
-    search_info.dateyyyyww = dateyyyyww.unwrap();
-    search_info.test_type = testtype.unwrap();
+    search_info.serialnumber = serialnumber.expect("serial number must be provided");
+    search_info.productnumber = productnumber.expect("product number must be provided");
+    search_info.dateyyyyww = dateyyyyww.expect("dateyyyyww must be provided");
+    search_info.test_type = testtype.expect("test type must be provided");
 
     /*We instanciate a JSON var so we can return an empty JSON on fail */
     let mut results_from_search_json: Value = json!({
@@ -90,7 +99,7 @@ async fn parse_frontend_search_data(
         eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
 
-    let log_file_path = functions::search_for_log(&search_info);
+    let log_file_path = search::search_for_log(&search_info);
     // dbg!(&log_file_path);
     match log_file_path {
         Ok(paths) => {
@@ -103,7 +112,8 @@ async fn parse_frontend_search_data(
             } else {
                 for path in paths {
                     // dbg!(&path);
-                    let (extracted_datetime, extracted_clnt) = extractors::extract_datetime_clnt_from_logpath(&path);
+                    let (extracted_datetime, extracted_clnt) =
+                        extractors::extract_datetime_clnt_from_logpath(&path);
                     let log_info = extractors::extract_info_from_log(&path);
                     if let Some((testtype, id, release)) = log_info {
                         // Handle the case when information is successfully extracted
@@ -115,34 +125,38 @@ async fn parse_frontend_search_data(
                             "clnt": extracted_clnt,
                             "location": path.to_string(),
                         });
-                    
+
                         // Push values to arrays in the JSON object
                         results_from_search_json["datetime"]
                             .as_array_mut()
-                            .unwrap()
+                            .expect("Unable to parse datetime")
                             .push(_json_data["datetime"].take());
                         results_from_search_json["testtype"]
                             .as_array_mut()
-                            .unwrap()
+                            .expect("Unable to parse testtype")
                             .push(_json_data["testtype"].take());
                         results_from_search_json["revision"]
                             .as_array_mut()
-                            .unwrap()
+                            .expect("Unable to parse revision")
                             .push(_json_data["revision"].take());
                         results_from_search_json["id"]
                             .as_array_mut()
-                            .unwrap()
+                            .expect("Unable to parse id")
                             .push(_json_data["id"].take());
                         results_from_search_json["clnt"]
                             .as_array_mut()
-                            .unwrap()
+                            .expect("Unable to parse clnt")
                             .push(_json_data["clnt"].take());
                         results_from_search_json["location"]
                             .as_array_mut()
-                            .unwrap()
+                            .expect("Unable to parse location")
                             .push(_json_data["location"].take());
                     } else {
-                        eprintln!("{} {:?}", "Failed to serialize to JSON".red().bold(), search_info)
+                        eprintln!(
+                            "{} {:?}",
+                            "Failed to serialize to JSON".red().bold(),
+                            search_info
+                        )
                     }
                 }
             }

@@ -1,9 +1,8 @@
 use regex::Regex;
-use std::path::Path;
 use std::io;
+use std::path::Path;
 use std::path::PathBuf;
 use walkdir::{DirEntry, WalkDir};
-
 
 /*
 
@@ -32,8 +31,8 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
 
     // Create the folder path to search.
     let folder_path: PathBuf = [&drive_letter, &folder_location, &product_number]
-    .iter()
-    .collect::<PathBuf>();
+        .iter()
+        .collect::<PathBuf>();
 
     dbg!(&folder_path);
     // Create a regular expression to match the log file names.
@@ -42,7 +41,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     // Create a vector to store the log file paths.
     let mut log_file_paths: Vec<String> = Vec::new();
     let mut found_match = false;
-    let log_re = Regex::new(&log_pattern).unwrap();
+    let log_re = Regex::new(&log_pattern).expect("Regex did not match on log path");
 
     // Iterate over all of the files and directories in the folder path.
     for entry in WalkDir::new(folder_path).into_iter().filter_map(|e| e.ok()) {
@@ -94,9 +93,12 @@ fn is_in_date_range(entry: &DirEntry, date: &String) -> bool {
     any check if any of the components contains the date string.
 
      */
-    components
-        .iter()
-        .any(|comp| comp.as_os_str().to_str().unwrap().contains(date))
+    components.iter().any(|comp| {
+        comp.as_os_str()
+            .to_str()
+            .expect("String did not contain date range")
+            .contains(date)
+    })
 }
 
 fn is_in_test_suite(entry: &DirEntry, test_env: &String) -> bool {
@@ -112,7 +114,10 @@ fn is_in_test_suite(entry: &DirEntry, test_env: &String) -> bool {
     let components: Vec<_> = path.components().collect();
 
     // Check if any of the path components contain the test environment string.
-    components
-        .iter()
-        .any(|comp| comp.as_os_str().to_str().unwrap().contains(test_env))
+    components.iter().any(|comp| {
+        comp.as_os_str()
+            .to_str()
+            .expect("String did not contain test suite")
+            .contains(test_env)
+    })
 }
