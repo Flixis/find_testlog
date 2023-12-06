@@ -9,6 +9,7 @@ use std::process::exit;
 mod cli;
 mod functions;
 mod structs;
+mod extractors;
 
 /*
 (C) Tariq Dinmohamed
@@ -102,9 +103,9 @@ async fn parse_frontend_search_data(
             } else {
                 for path in paths {
                     // dbg!(&path);
-                    let extracted_datetime = functions::extract_datetime(&path);
-                    let extracted_clnt = functions::extract_clnt_string(&path);
-                    let log_info = functions::extract_info_from_log(&path);
+                    let extracted_datetime = extractors::extract_datetime(&path);
+                    let extracted_clnt = extractors::extract_clnt_string(&path);
+                    let log_info = extractors::extract_info_from_log(&path);
                     if let Some((testtype, id, release)) = log_info {
                         // Handle the case when information is successfully extracted
                         let mut _json_data: Value = json!({
