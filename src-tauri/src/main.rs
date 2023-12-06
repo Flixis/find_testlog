@@ -4,7 +4,6 @@
 use clap::Parser;
 use colored::*;
 use serde_json::{json, Value};
-use std::process::exit;
 
 mod cli;
 mod functions;
@@ -176,7 +175,7 @@ fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
         }
         Err(err) => {
             eprintln!("Failed to get configuration file path: {}", err);
-            exit(1)
+            return std::path::PathBuf::new();
         }
     };
 }
