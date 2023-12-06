@@ -16,18 +16,13 @@ Err() -> error message
 */
 
 pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<String>, io::Error> {
-    let product_number: &String = &search_info.productnumber;
-    let serial_number: &String = &search_info.serialnumber;
-    let date_yyyyww: &String = &search_info.dateyyyyww;
+    //Parse user input data to uppercase. Not for folderlocation because its doesn't follow a standard.
+    let product_number: &String = &search_info.productnumber.clone().to_uppercase();
+    let serial_number: &String = &search_info.serialnumber.clone().to_ascii_uppercase();
+    let date_yyyyww: &String = &search_info.dateyyyyww.clone().to_uppercase();
     let drive_letter: &String = &search_info.drive_letter;
     let folder_location: &String = &search_info.folder_location;
-    let test_suite: &String = &search_info.test_suite;
-
-    //Parse user input data to uppercase. Not for folderlocation because its doesn't follow a standard.
-    let product_number: String = product_number.to_uppercase();
-    let serial_number: String = serial_number.to_uppercase();
-    let date_yyyyww: String = date_yyyyww.to_uppercase();
-    let test_suite: String = test_suite.to_uppercase();
+    let test_suite: &String = &search_info.test_suite.clone().to_ascii_uppercase(); 
 
     // Create the folder path to search.
     let folder_path: PathBuf = [&drive_letter, &folder_location, &product_number]
