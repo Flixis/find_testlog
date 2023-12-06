@@ -1,27 +1,25 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use regex::Regex;
-use std::path::Path;
 use std::io;
 use std::fs::File;
 use std::io::BufRead;
-use walkdir::{DirEntry, WalkDir};
 
 /*
 
-Regex pattern matches on date and time.
-then gets converted to string.
-
-time and date required to build valid date time string.
+Regex pattern matches on date and time, which is required to build a valid date-time string. Additionally, it checks for the presence of '\test_env' | \PTF\ | \AET\ in the string to confirm whether the returned path is correctly pulled from the source directory.
 
 */
-pub fn extract_datetime(log_path: &str) -> String {
-    let re = Regex::new(r"(\d{8}).(\d{6})").unwrap();
+pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
+    let re = Regex::new(r"(\d{8}).(\d{6}).(CLNT\d+)").unwrap();
     let regex_captures = re.captures(log_path);
+    dbg!(&regex_captures);
     // dbg!(&regex_captures);
     match regex_captures {
         Some(captures) => {
             let date_str = captures[1].to_string();
             let time_str = captures[2].to_string();
+            let clnt = captures[3].to_string();
+
 
             // Parse date and time strings into chrono objects
             let date = NaiveDate::parse_from_str(&date_str, "%Y%m%d").unwrap();
@@ -35,43 +33,15 @@ pub fn extract_datetime(log_path: &str) -> String {
             let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
 
             dbg!(&formatted_datetime);
-            formatted_datetime
+            (formatted_datetime, clnt)
         }
         None => {
             // Handle the case where the regex does not match.
-            log::error!("Could not extract datetime from log path: {}", log_path);
-            String::new()
+            log::error!("Could not extract datetime or CLNT from from log path: {}", log_path);
+            (String::new(), String::new())
         }
     }
 }
-
-/*
-
-Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
-Used for confirming whether the returned path is actually correctly pulled from source directory.
-
-*/
-pub fn extract_clnt_string(log_path: &str) -> String {
-    let re = Regex::new(r"CLNT\d+").unwrap();
-    let regex_captures = re.captures(log_path);
-
-    match regex_captures {
-        Some(captures) => {
-            let clnt = captures[0].to_string();
-            // Return the test environment string.
-            clnt
-        }
-        None => {
-            // Handle the case where the regex does not match.
-            log::error!(
-                "Could not find CLNT string in test environment string: {}",
-                log_path
-            );
-            "Could not find CLNT string".to_string()
-        }
-    }
-}
-
 
 /*
 

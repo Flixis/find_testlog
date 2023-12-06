@@ -1,29 +1,8 @@
-use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use regex::Regex;
 use std::path::Path;
 use std::io;
-use std::fs::File;
-use std::io::BufRead;
 use std::path::PathBuf;
 use walkdir::{DirEntry, WalkDir};
-
-
-
-/*
-required to removed windows console when launching GUI.
-Tauri by default does not support this feature.
-
-*/
-#[cfg(target_os = "windows")]
-pub fn hide_windows_console(switch: bool) {
-    unsafe {
-        if switch {
-            windows_sys::Win32::System::Console::FreeConsole();
-        } else {
-            windows_sys::Win32::System::Console::AllocConsole();
-        }
-    }
-}
 
 
 /*
@@ -52,11 +31,9 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     let test_suite: String = test_suite.to_uppercase();
 
     // Create the folder path to search.
-    // let folder_path = format!("{}\\{}\\{}", drive_letter, folder_location, product_number);
-    let mut folder_path = PathBuf::new();
-    folder_path.push(drive_letter);
-    folder_path.push(folder_location);
-    folder_path.push(product_number);
+    let folder_path: PathBuf = [&drive_letter, &folder_location, &product_number]
+    .iter()
+    .collect::<PathBuf>();
 
     dbg!(&folder_path);
     // Create a regular expression to match the log file names.

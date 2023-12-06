@@ -10,6 +10,7 @@ mod cli;
 mod functions;
 mod structs;
 mod extractors;
+mod windows_helpers;
 
 /*
 (C) Tariq Dinmohamed
@@ -103,8 +104,7 @@ async fn parse_frontend_search_data(
             } else {
                 for path in paths {
                     // dbg!(&path);
-                    let extracted_datetime = extractors::extract_datetime(&path);
-                    let extracted_clnt = extractors::extract_clnt_string(&path);
+                    let (extracted_datetime, extracted_clnt) = extractors::extract_datetime_clnt_from_logpath(&path);
                     let log_info = extractors::extract_info_from_log(&path);
                     if let Some((testtype, id, release)) = log_info {
                         // Handle the case when information is successfully extracted
@@ -203,6 +203,6 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     .resizable(true)
     .build()?;
     #[cfg(all(not(debug_assertions), windows))]
-    functions::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
+    windows_helpers::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     Ok(())
 }
