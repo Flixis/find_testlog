@@ -25,28 +25,28 @@ async function execute_search() {
       testtype: test_type,
   });
 
-  console.log(searchdata);
-
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
 
-  // Loop through the data and create a row for each entry
-  for (let i = 0; i < Object.keys(searchdata).length; i++) {
-    // Only print when it matches the following cases, or when it matches the test type
-    if (test_type === "" || test_type.toUpperCase() === "ALL" || searchdata.testtype[i] === test_type.toUpperCase()) {
-        const row = document.createElement('tr');
-        // const logLocation = searchdata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
-        row.innerHTML = `
-          <td>${searchdata[i].datetime}</td>
-          <td>${searchdata[i].testtype}</td>
-          <td>${searchdata[i].release}</td>
-          <td>${searchdata[i].clnt}</td>
-          <td>${searchdata[i].id}</td>
-          <td><button onclick='openLog("${searchdata[i].location}")'>Open Log</button></td>
-          </tr>`;
-        tableBody.appendChild(row);
-    }
+// Loop through the data and create a row for each entry
+for (let i = 0; i < Object.keys(searchdata).length; i++) {
+  // Only print when it matches the following cases, or when it matches the test type
+  if (test_type === "" || test_type.toUpperCase() === "ALL" || (searchdata[i].testtype || searchdata[i].name) === test_type.toUpperCase()) {
+      const row = document.createElement('tr');
+      const testtype = searchdata[i].testtype || searchdata[i].Name; // Use 'testtype' if available, otherwise use 'Name'
+      const logLocation = searchdata[i].location.replace(/\\/g, '/'); // Replace backslashes with forward slashes
+      row.innerHTML = `
+        <td>${searchdata[i].datetime}</td>
+        <td>${testtype}</td>
+        <td>${searchdata[i].release}</td>
+        <td>${searchdata[i].clnt}</td>
+        <td>${searchdata[i].id}</td>
+        <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
+        </tr>`;
+      tableBody.appendChild(row);
+  }
 }
+
 
   // Update the results count
   const resultsCount = document.getElementById("results-count");
