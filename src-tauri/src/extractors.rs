@@ -26,10 +26,8 @@ pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
             // Create a combined datetime object
             let datetime = NaiveDateTime::new(date, time);
 
-
             // Format the datetime object into the desired format
             let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
-
 
             (formatted_datetime, clnt)
         }
@@ -88,28 +86,28 @@ pub fn extract_info_from_log(log_path_file: &str) -> Option<IndexMap<String, Str
             }
         }
 
-       //regex for operation configuration splitting
+        //regex for operation configuration splitting
         let re = Regex::new(r"(\w+(?: \w+)*).*?id: (\d+); Release (\w+)")
             .expect("Unable to parse the operation configuration from the log file");
 
-            if let Some(config_text) = data.get("configuration") {
-                if let Some(captures) = re.captures(config_text) {
-                    if let (Some(testtype), Some(id), Some(release)) =
-                        (captures.get(1), captures.get(2), captures.get(3))
-                    {
-                        let testtype_str = testtype.as_str().to_string();
-                        let id_str = id.as_str().to_string();
-                        let release_str = release.as_str().to_string();
-            
-                        data.insert("testtype".to_string(), testtype_str);
-                        data.insert("id".to_string(), id_str);
-                        data.insert("release".to_string(), release_str);
-                    }
+        if let Some(config_text) = data.get("configuration") {
+            if let Some(captures) = re.captures(config_text) {
+                if let (Some(testtype), Some(id), Some(release)) =
+                    (captures.get(1), captures.get(2), captures.get(3))
+                {
+                    let testtype_str = testtype.as_str().to_string();
+                    let id_str = id.as_str().to_string();
+                    let release_str = release.as_str().to_string();
+
+                    data.insert("testtype".to_string(), testtype_str);
+                    data.insert("id".to_string(), id_str);
+                    data.insert("release".to_string(), release_str);
                 }
-            } else {
-                eprintln!("Text not found in the file.");
             }
-            
+        } else {
+            eprintln!("Text not found in the file.");
+        }
+
         //return some() because we might return nothing
         Some(data)
     } else {

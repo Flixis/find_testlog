@@ -13,10 +13,10 @@ async function execute_search() {
   }, 250); // Adjust the interval as needed
   
   //grab the important elements
-  const productnumber = document.getElementById('productnumber').value;
-  const serialnumber = document.getElementById('serialnumber').value;
+  const productnumber = document.getElementById('productnumber').value.trim();
+  const serialnumber = document.getElementById('serialnumber').value.trim();
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
-  const test_type = document.getElementById('test_type').value;
+  const test_type = document.getElementById('test_type').value.trim();
   
   var jsondata = await invoke('parse_frontend_search_data', {
       productnumber: productnumber,
