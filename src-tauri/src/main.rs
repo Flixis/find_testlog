@@ -114,17 +114,27 @@ async fn parse_frontend_search_data(
                     // dbg!(&path);
                     let (extracted_datetime, extracted_clnt) =
                         extractors::extract_datetime_clnt_from_logpath(&path);
-                    let log_info = extractors::extract_info_from_log(&path);
-                    if let Some((testtype, id, release)) = log_info {
-                        // Handle the case when information is successfully extracted
-                        let mut _json_data: Value = json!({
-                            "datetime": extracted_datetime,
-                            "testtype": testtype,
-                            "revision": release,
-                            "id": id,
-                            "clnt": extracted_clnt,
-                            "location": path.to_string(),
-                        });
+                        let log_info = extractors::extract_info_from_log(&path);
+                        if let Some(data) = log_info {
+                            // Extract the values from the IndexMap
+                            dbg!(&data);
+                            let mut testtype = data.get("testtype");
+                            if testtype.is_none() {
+                                //fallback to the default
+                                testtype = data.get("Name");
+                            }
+                            let id = data.get("id");
+                            let release = data.get("release");
+                            
+                            // Handle the case when information is successfully extracted
+                            let mut _json_data: Value = json!({
+                                "datetime": extracted_datetime,
+                                "testtype": testtype,
+                                "revision": release,
+                                "id": id,
+                                "clnt": extracted_clnt,
+                                "location": path.to_string(),
+                            });
 
                         // Push values to arrays in the JSON object
                         results_from_search_json["datetime"]

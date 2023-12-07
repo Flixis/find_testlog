@@ -1,4 +1,5 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use indexmap::IndexMap;
 use regex::Regex;
 use std::fs::File;
 use std::io;
@@ -12,8 +13,6 @@ Regex pattern matches on date and time, which is required to build a valid date-
 pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
     let re = Regex::new(r"(\d{8}).(\d{6}).(CLNT\d+)").expect("Failed to parse log path");
     let regex_captures = re.captures(log_path);
-    dbg!(&regex_captures);
-    // dbg!(&regex_captures);
     match regex_captures {
         Some(captures) => {
             let date_str = captures[1].to_string();
@@ -26,12 +25,12 @@ pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
 
             // Create a combined datetime object
             let datetime = NaiveDateTime::new(date, time);
-            dbg!(&datetime);
+
 
             // Format the datetime object into the desired format
             let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
 
-            dbg!(&formatted_datetime);
+
             (formatted_datetime, clnt)
         }
         None => {
@@ -51,38 +50,60 @@ Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
 Used for confirming whether the returned path is actually correctly pulled from source directory.
 
 */
-pub fn extract_info_from_log(log_path_file: &str) -> Option<(String, u32, String)> {
-    // Open the file for reading
+pub fn extract_info_from_log(log_path_file: &str) -> Option<IndexMap<String, String>> {
     if let Ok(file) = File::open(log_path_file) {
-        // Create a regular expression pattern to match the desired text
-        let re = Regex::new(r"Operation configuration: (\w+(?: \w+)*).*?id: (\d+); Release (\w+)")
-            .expect("Unable to parse the operation configuration from the log file");
+        let reader = io::BufReader::new(file);
 
-        for line in io::BufReader::new(file).lines() {
+        // Initialize an IndexMap(sorted hashmap)
+        let mut data = IndexMap::new();
+
+        // Set the maximum number of lines to read
+        let max_lines_to_read = 9;
+
+        // Read the file line by line
+        let mut line_counter = 0;
+        for line in reader.lines() {
             if let Ok(line) = line {
-                if let Some(captures) = re.captures(&line) {
-                    if let (Some(testtype), Some(id), Some(release)) =
-                        (captures.get(1), captures.get(2), captures.get(3))
-                    {
-                        return Some((
-                            testtype.as_str().to_string(),
-                            id.as_str().parse().expect("unable to id as string"),
-                            release.as_str().to_string(),
-                        ));
-                    }
+                // Check if the line contains a section header
+                if let Some(caps) = regex::Regex::new(r"(\w+):\s*(.+)").unwrap().captures(&line) {
+                    let key = caps[1].to_string();
+                    let value = caps[2].to_string();
+                    data.insert(key.clone(), value);
+                }
+
+                line_counter += 1;
+                if line_counter >= max_lines_to_read {
+                    break;
                 }
             }
         }
 
-        eprintln!("Text not found in the file.");
+       //regex for operation configuration splitting
+        let re = Regex::new(r"(\w+(?: \w+)*).*?id: (\d+); Release (\w+)")
+            .expect("Unable to parse the operation configuration from the log file");
+
+            if let Some(config_text) = data.get("configuration") {
+                if let Some(captures) = re.captures(config_text) {
+                    if let (Some(testtype), Some(id), Some(release)) =
+                        (captures.get(1), captures.get(2), captures.get(3))
+                    {
+                        let testtype_str = testtype.as_str().to_string();
+                        let id_str = id.as_str().to_string();
+                        let release_str = release.as_str().to_string();
+            
+                        data.insert("testtype".to_string(), testtype_str);
+                        data.insert("id".to_string(), id_str);
+                        data.insert("release".to_string(), release_str);
+                    }
+                }
+            } else {
+                eprintln!("Text not found in the file.");
+            }
+            
+        //return some() because we might return nothing
+        Some(data)
     } else {
         eprintln!("Failed to open the file.");
+        None
     }
-
-    // Return a default value when no matches are found
-    Some((
-        "Couldn't determine testtype".to_string(),
-        0, // no match so return default 0
-        "Couldn't determine release".to_string(),
-    ))
 }

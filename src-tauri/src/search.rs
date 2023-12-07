@@ -22,7 +22,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     let date_yyyyww: &String = &search_info.dateyyyyww.clone().to_uppercase();
     let drive_letter: &String = &search_info.drive_letter;
     let folder_location: &String = &search_info.folder_location;
-    let test_suite: &String = &search_info.test_suite.clone().to_ascii_uppercase(); 
+    let test_suite: &String = &search_info.test_suite.clone().to_ascii_uppercase();
 
     // Create the folder path to search.
     let folder_path: PathBuf = [&drive_letter, &folder_location, &product_number]
