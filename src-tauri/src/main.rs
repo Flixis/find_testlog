@@ -3,7 +3,7 @@
 
 use clap::Parser;
 use colored::*;
-use serde_json::{json, Value};
+use indexmap::IndexMap;
 
 mod cli;
 mod extractors;
@@ -67,14 +67,13 @@ The search logic for the GUI part of the app is done here.
 
 
 */
-
 #[tauri::command]
 async fn parse_frontend_search_data(
     productnumber: Option<String>,
     serialnumber: Option<String>,
     dateyyyyww: Option<String>,
     testtype: Option<String>,
-) -> Value {
+) -> Vec<IndexMap<String, String>> {
     let mut search_info = structs::AppConfig::default_values();
 
     search_info.serialnumber = serialnumber.expect("serial number must be provided");
@@ -82,19 +81,11 @@ async fn parse_frontend_search_data(
     search_info.dateyyyyww = dateyyyyww.expect("dateyyyyww must be provided");
     search_info.test_type = testtype.expect("test type must be provided");
 
-    /*We instanciate a JSON var so we can return an empty JSON on fail */
-    let mut results_from_search_json: Value = json!({
-        "datetime": [],
-        "testtype": [],
-        "revision": [],
-        "id": [],
-        "clnt": [],
-        "location": [],
-    });
+    let mut result_data = Vec::new(); // Create an empty Vec to store multiple items
 
     dbg!(&search_info);
 
-    //Make sure to save after we've written new data
+    // Make sure to save after we've written new data
     if let Err(err) = search_info.save() {
         eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
@@ -114,53 +105,15 @@ async fn parse_frontend_search_data(
                     // dbg!(&path);
                     let (extracted_datetime, extracted_clnt) =
                         extractors::extract_datetime_clnt_from_logpath(&path);
+                    let mut data = IndexMap::new();
+                    data.insert("datetime".to_string(), extracted_datetime.to_string());
+                    data.insert("clnt".to_string(), extracted_clnt.to_string());
+                    data.insert("location".to_string(), path.to_string());
                     let log_info = extractors::extract_info_from_log(&path);
-                    if let Some(data) = log_info {
-                        // Extract the values from the IndexMap
-                        dbg!(&data);
-                        let mut testtype = data.get("testtype");
-                        if testtype.is_none() {
-                            //fallback to the default
-                            testtype = data.get("Name");
-                        }
-                        let id = data.get("id");
-                        let release = data.get("release");
-
-                        // Handle the case when information is successfully extracted
-                        let mut _json_data: Value = json!({
-                            "datetime": extracted_datetime,
-                            "testtype": testtype,
-                            "revision": release,
-                            "id": id,
-                            "clnt": extracted_clnt,
-                            "location": path.to_string(),
-                        });
-
-                        // Push values to arrays in the JSON object
-                        results_from_search_json["datetime"]
-                            .as_array_mut()
-                            .expect("Unable to parse datetime")
-                            .push(_json_data["datetime"].take());
-                        results_from_search_json["testtype"]
-                            .as_array_mut()
-                            .expect("Unable to parse testtype")
-                            .push(_json_data["testtype"].take());
-                        results_from_search_json["revision"]
-                            .as_array_mut()
-                            .expect("Unable to parse revision")
-                            .push(_json_data["revision"].take());
-                        results_from_search_json["id"]
-                            .as_array_mut()
-                            .expect("Unable to parse id")
-                            .push(_json_data["id"].take());
-                        results_from_search_json["clnt"]
-                            .as_array_mut()
-                            .expect("Unable to parse clnt")
-                            .push(_json_data["clnt"].take());
-                        results_from_search_json["location"]
-                            .as_array_mut()
-                            .expect("Unable to parse location")
-                            .push(_json_data["location"].take());
+                    if let Some(log_data) = log_info {
+                        // Merge the log_data into the data IndexMap
+                        data.extend(log_data);
+                        result_data.push(data); // Add the data for this item to the result
                     } else {
                         eprintln!(
                             "{} {:?}",
@@ -174,9 +127,9 @@ async fn parse_frontend_search_data(
         _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
 
-    //dbg!(&results_from_search_json);
-    results_from_search_json
+    result_data // Return the Vec of data
 }
+
 
 /*
 

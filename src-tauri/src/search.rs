@@ -29,7 +29,6 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
         .iter()
         .collect::<PathBuf>();
 
-    dbg!(&folder_path);
     // Create a regular expression to match the log file names.
     let log_pattern = format!(".*{}.*", serial_number);
 
