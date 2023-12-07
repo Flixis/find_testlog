@@ -27,17 +27,6 @@
   --box-shadow: 0 2rem 3rem var(--color-light);
 }
 
-
-/* currently unsupported */
-.dark-mode-variables{
-  --color-background: #181a1e;
-  --color-white: #202528;
-  --color-dark: #edeffd;
-  --color-dark-variant: #a3bdcc;
-  --color-light: rgba(0, 0, 0, 0.4);
-  --box-shadow: 0 2rem 3rem var(--color-light);
-}
-
 /* Reset some default margin and padding */
 body, h1, h2, p, ul {
   margin: 0;
@@ -65,7 +54,6 @@ body, h1, h2, p, ul {
   height: 100%;
   background-color: var(--color-success);
 }
-
 
 /* Style the header */
 header {

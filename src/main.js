@@ -113,3 +113,4 @@ async function updateProgressBar(updateamount) {
       loadingBar.style.width = '100%';
   }
 }
+
