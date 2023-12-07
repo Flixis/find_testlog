@@ -851,7 +851,6 @@ dependencies = [
  "open 5.0.1",
  "regex",
  "serde",
- "serde_json",
  "tauri",
  "tauri-build",
  "walkdir",
