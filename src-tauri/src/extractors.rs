@@ -46,8 +46,18 @@ pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
 
 /*
 
-Regex pattern matches on the '\test_env\' | \PTF\ | \AET\ in string.
-Used for confirming whether the returned path is actually correctly pulled from source directory.
+Regex pattern matches on and returns something like:
+
+    "Name": "Q's Test Framework",
+    "Version": "v3.7.8-HQHEI",
+    "Machine": "CLNT5849",
+    "Mode": "Development",
+    "PN": "9999-1111-2222",
+    "Operation": "Functional test",
+    "configuration": "FT (id: 628938; Release R497 (Latest))",
+    "testtype": "FT",
+    "id": "628938",
+    "release": "R497",
 
 */
 pub fn extract_info_from_log(log_path_file: &str) -> Option<IndexMap<String, String>> {
