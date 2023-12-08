@@ -854,6 +854,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "walkdir",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
