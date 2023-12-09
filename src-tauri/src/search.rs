@@ -35,7 +35,17 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
     // Create a vector to store the log file paths.
     let mut log_file_paths: Vec<String> = Vec::new();
     let mut found_match = false;
-    let log_re = Regex::new(&log_pattern).expect("Regex did not match on log path");
+
+    let log_re = match Regex::new(&log_pattern) {
+        Ok(regex) => regex,
+        Err(_) => {
+            log::error!("Invalid Regex: {}", log_pattern);
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "Invalid Regex",
+            ));
+        }
+    };
 
     // Iterate over all of the files and directories in the folder path.
     for entry in WalkDir::new(folder_path).into_iter().filter_map(|e| e.ok()) {
@@ -61,57 +71,71 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
         log_file_paths.reverse(); //Send the log file paths in descending order.
         Ok(log_file_paths)
     } else {
+        log::error!("Could not find log file");
         return Err(io::Error::new(
             io::ErrorKind::Other,
-            "Could not find log file.",
+            "Could not find log file",
         ));
     }
 }
 
 fn is_in_date_range(entry: &DirEntry, date: &String) -> bool {
-    // If the date string is empty, return true.
     if date.is_empty() {
         return true;
     }
 
-    // Get the path to the file or directory.
-    let path: &Path = entry.path();
-
     // Split the path into components.
+    let path: &Path = entry.path();
     let components: Vec<_> = path.components().collect();
 
-    // Check if any of the path components contain the date string.
     /*
+    Check if any of the path components contain the date string.
 
     components splits string up into parts, so /path/to/file.txt is split into ["path", "to", "file.txt]
     any check if any of the components contains the date string.
 
      */
-    components.iter().any(|comp| {
-        comp.as_os_str()
-            .to_str()
-            .expect("String did not contain date range")
-            .contains(date)
-    })
+    for comp in components {
+        match comp.as_os_str().to_str() {
+            Some(s) if s.contains(date) => return true,
+            None => {
+                log::error!("Unable to check for date range: {}", date);
+                return false;
+            },
+            _ => (),
+        }
+    }
+    
+    false
 }
 
+
 fn is_in_test_suite(entry: &DirEntry, test_env: &String) -> bool {
-    // If the test environment string is empty, return true.
     if test_env.is_empty() {
         return true;
     }
 
-    // Get the path to the file or directory.
-    let path: &Path = entry.path();
-
     // Split the path into components.
+    let path: &Path = entry.path();
     let components: Vec<_> = path.components().collect();
 
-    // Check if any of the path components contain the test environment string.
-    components.iter().any(|comp| {
-        comp.as_os_str()
-            .to_str()
-            .expect("String did not contain test suite")
-            .contains(test_env)
-    })
+    /*
+    Check if any of the path components contain the date string.
+
+    components splits string up into parts, so /path/to/file.txt is split into ["path", "to", "file.txt]
+    any check if any of the components contains the date string.
+
+     */
+    for comp in components {
+        match comp.as_os_str().to_str() {
+            Some(s) if s.contains(test_env) => return true,
+            None => {
+                log::error!("Unable to check for test suite; {}", test_env);
+                return false;
+            },
+            _ => (),
+        }
+    }
+    
+    false
 }
