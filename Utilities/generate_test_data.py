@@ -62,7 +62,7 @@ def generate_random_sn():
   for i in range(3):
     sn += random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
   
-  #sn = "11-11-AAA-BBB" #overwrite for testing
+  sn = "11-11-AAA-BBB" #overwrite for testing
   return sn
 
 def generate_random_file_string(year, week):
@@ -146,7 +146,7 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
   # Return the path to the log file.
   return log_file_path
 
-drive = "/home/tariq/"
+drive = "F:"
 folder = "TestLogs"
 pn_min = 999911112222
 pn_max = 999911112222
