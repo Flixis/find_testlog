@@ -5,6 +5,9 @@ let updateInterval;
 let loadingfinished = false;
 
 async function execute_search() {
+
+  const startTime = performance.now();
+
   //reset the progress bar
   loadingbarprogress = 0;
   let loadingfinished = false;
@@ -24,7 +27,7 @@ async function execute_search() {
       dateyyyyww: date_yyyyww,
       testtype: test_type,
   });
-  console.log(searchdata);
+
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
 
@@ -63,6 +66,11 @@ for (let i = 0; i < Object.keys(searchdata).length; i++) {
   const loadingBar = document.querySelector('.loading-bar-inner');
   loadingBar.style.width = '100%';
 
+  const endTime = performance.now();
+  const executionTime = endTime - startTime;
+  const seconds = Math.floor(executionTime / 1000);
+  const milliseconds = executionTime % 1000;
+  document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
 }
 
 $('#search-button').click(execute_search);
