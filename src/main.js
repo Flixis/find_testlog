@@ -56,7 +56,7 @@ for (let i = 0; i < Object.keys(searchdata).length; i++) {
       if (passFailStatus === "PASS" || passFailStatus === "PASSED") {
         row.style.backgroundColor = "#1B9C85";
       } else if (passFailStatus === "FAIL" || passFailStatus === "FAILED") {
-        row.style.backgroundColor = "#FF5733";
+        row.style.backgroundColor = "#CC6852";
       }
 
       tableBody.appendChild(row);
