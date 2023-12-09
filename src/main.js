@@ -5,6 +5,10 @@ let updateInterval;
 let loadingfinished = false;
 
 async function execute_search() {
+
+  //start counting time for execution
+  const startTime = performance.now();
+
   //reset the progress bar
   loadingbarprogress = 0;
   let loadingfinished = false;
@@ -13,38 +17,52 @@ async function execute_search() {
   }, 250); // Adjust the interval as needed
   
   //grab the important elements
-  const productnumber = document.getElementById('productnumber').value;
-  const serialnumber = document.getElementById('serialnumber').value;
+  const productnumber = document.getElementById('productnumber').value.trim();
+  const serialnumber = document.getElementById('serialnumber').value.trim();
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
-  const test_type = document.getElementById('test_type').value;
+  const test_type = document.getElementById('test_type').value.trim();
   
-  var jsondata = await invoke('parse_frontend_search_data', {
+  var searchdata = await invoke('parse_frontend_search_data', {
       productnumber: productnumber,
       serialnumber: serialnumber,
       dateyyyyww: date_yyyyww,
       testtype: test_type,
   });
 
+  console.log(searchdata);
+
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
 
-  // Loop through the data and create a row for each entry
-  for (let i = 0; i < jsondata.datetime.length; i++) {
-    // Only print when it matches the following cases, or when it matches the test type
-    if (test_type === "" || test_type.toUpperCase() === "ALL" || jsondata.testtype[i] === test_type.toUpperCase()) {
-        const row = document.createElement('tr');
-        const logLocation = jsondata.location[i].replace(/\\/g, '/'); // Replace backslashes with forward slashes
-        row.innerHTML = `
-          <td>${jsondata.datetime[i]}</td>
-          <td>${jsondata.testtype[i]}</td>
-          <td>${jsondata.revision[i]}</td>
-          <td>${jsondata.clnt[i]}</td>
-          <td>${jsondata.id[i]}</td>
-          <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
-          </tr>`;
-        tableBody.appendChild(row);
-    }
+// Loop through the data and create a row for each entry
+for (let i = 0; i < Object.keys(searchdata).length; i++) {
+  // Only print when it matches the following cases, or when it matches the test type
+  if (test_type === "" || test_type.toUpperCase() === "ALL" || (searchdata[i].testtype || searchdata[i].name) === test_type.toUpperCase()) {
+      const row = document.createElement('tr');
+      const datetime = searchdata[i].datetime || searchdata[i].DateTime; // Use 'datetime' if available, otherwise use 'DateTime'
+      const testtype = searchdata[i].testtype || searchdata[i].Name; // Use 'testtype' if available, otherwise use 'Name'
+      const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
+      const passFailStatus = searchdata[i].PASS_FAIL_STATUS; // Assuming you have a property named PASS_FAIL_STATUS
+
+      row.innerHTML = `
+        <td>${datetime}</td>
+        <td>${testtype}</td>
+        <td>${searchdata[i].release}</td>
+        <td>${clnt}</td>
+        <td>${searchdata[i].id}</td>
+        <td><button onclick='openLog("${searchdata[i].location}")'>Open Log</button></td>
+        </tr>`;
+
+      if (passFailStatus === "PASS" || passFailStatus === "PASSED") {
+        row.style.backgroundColor = "#1B9C85";
+      } else if (passFailStatus === "FAIL" || passFailStatus === "FAILED") {
+        row.style.backgroundColor = "#CC6852";
+      }
+
+      tableBody.appendChild(row);
+  }
 }
+
 
   // Update the results count
   const resultsCount = document.getElementById("results-count");
@@ -61,6 +79,12 @@ async function execute_search() {
   const loadingBar = document.querySelector('.loading-bar-inner');
   loadingBar.style.width = '100%';
 
+  // calculate the total time for execution
+  const endTime = performance.now();
+  const executionTime = endTime - startTime;
+  const seconds = Math.floor(executionTime / 1000);
+  const milliseconds = executionTime % 1000;
+  document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
 }
 
 $('#search-button').click(execute_search);
@@ -113,3 +137,4 @@ async function updateProgressBar(updateamount) {
       loadingBar.style.width = '100%';
   }
 }
+

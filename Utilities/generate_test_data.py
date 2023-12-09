@@ -146,7 +146,7 @@ def generate_random_folder_structure(drive, folder, pn_min, pn_max, year_min, ye
   # Return the path to the log file.
   return log_file_path
 
-drive = "D:"
+drive = "/home/tariq/"
 folder = "TestLogs"
 pn_min = 999911112222
 pn_max = 999911112222

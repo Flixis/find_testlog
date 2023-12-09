@@ -3,12 +3,14 @@
 
 use clap::Parser;
 use colored::*;
-use serde_json::{json, Value};
-use std::process::exit;
+use indexmap::IndexMap;
 
 mod cli;
-mod functions;
+mod extractors;
+mod logging_settings;
+mod search;
 mod structs;
+mod windows_helpers;
 
 /*
 (C) Tariq Dinmohamed
@@ -16,23 +18,16 @@ mod structs;
 I hated searching for logfiles, So I challenged myself to make something to help with that.
 Documentation and code comes as is.
 */
-
-/*
-
-Yes, the main call of the app is not clean.
-But hey... it works...
-
-I may fix this later. But for now it serves its purpose.
-
-*/
 fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
 
+    logging_settings::setup_loggers();
+
     if std::env::args_os().count() > 1 {
-        eprintln!("{}", "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0".red().bold());
+        log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
         let search_info = cli::parse_cli_args(commandlinearguments);
         cli::execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
-        eprintln!("{}", "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0".red().bold());
+        log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
@@ -49,109 +44,75 @@ fn main() {
     }
 }
 
-
 /*
 
 Parsing data from frontend.
 The search logic for the GUI part of the app is done here.
 
-
 */
-
 #[tauri::command]
 async fn parse_frontend_search_data(
     productnumber: Option<String>,
     serialnumber: Option<String>,
     dateyyyyww: Option<String>,
     testtype: Option<String>,
-) -> Value {
+) -> Vec<IndexMap<String, String>> {
     let mut search_info = structs::AppConfig::default_values();
 
-    search_info.serialnumber = serialnumber.unwrap();
-    search_info.productnumber = productnumber.unwrap();
-    search_info.dateyyyyww = dateyyyyww.unwrap();
-    search_info.test_type = testtype.unwrap();
+    search_info.serialnumber = serialnumber.expect("serial number must be provided");
+    search_info.productnumber = productnumber.expect("product number must be provided");
+    search_info.dateyyyyww = dateyyyyww.expect("dateyyyyww must be provided");
+    search_info.test_type = testtype.expect("test type must be provided");
 
-    /*We instanciate a JSON var so we can return an empty JSON on fail */
-    let mut results_from_search_json: Value = json!({
-        "datetime": [],
-        "testtype": [],
-        "revision": [],
-        "id": [],
-        "clnt": [],
-        "location": [],
-    });
+    let mut result_data = Vec::new(); // Create an empty Vec to store multiple items
 
     dbg!(&search_info);
 
-    //Make sure to save after we've written new data
+    // Make sure to save after we've written new data
     if let Err(err) = search_info.save() {
-        eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
+        log::error!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
 
-    let log_file_path = functions::search_for_log(&search_info);
+    let log_file_path = search::search_for_log(&search_info);
     // dbg!(&log_file_path);
     match log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
-                eprintln!(
+                log::error!(
                     "{} {:?}",
                     "Path could not be matched".red().bold(),
                     search_info
                 );
             } else {
                 for path in paths {
-                    // dbg!(&path);
-                    let extracted_datetime = functions::extract_datetime(&path);
-                    let extracted_clnt = functions::extract_clnt_string(&path);
-                    let log_info = functions::extract_info_from_log(&path);
-                    if let Some((testtype, id, release)) = log_info {
-                        // Handle the case when information is successfully extracted
-                        let mut _json_data: Value = json!({
-                            "datetime": extracted_datetime,
-                            "testtype": testtype,
-                            "revision": release,
-                            "id": id,
-                            "clnt": extracted_clnt,
-                            "location": path.to_string(),
-                        });
-                    
-                        // Push values to arrays in the JSON object
-                        results_from_search_json["datetime"]
-                            .as_array_mut()
-                            .unwrap()
-                            .push(_json_data["datetime"].take());
-                        results_from_search_json["testtype"]
-                            .as_array_mut()
-                            .unwrap()
-                            .push(_json_data["testtype"].take());
-                        results_from_search_json["revision"]
-                            .as_array_mut()
-                            .unwrap()
-                            .push(_json_data["revision"].take());
-                        results_from_search_json["id"]
-                            .as_array_mut()
-                            .unwrap()
-                            .push(_json_data["id"].take());
-                        results_from_search_json["clnt"]
-                            .as_array_mut()
-                            .unwrap()
-                            .push(_json_data["clnt"].take());
-                        results_from_search_json["location"]
-                            .as_array_mut()
-                            .unwrap()
-                            .push(_json_data["location"].take());
-                    } else {
-                        eprintln!("{} {:?}", "Failed to serialize to JSON".red().bold(), search_info)
+                    let (extracted_datetime, extracted_clnt) =
+                        extractors::extract_datetime_clnt_from_logpath(&path);
+                    let mut data = IndexMap::new();
+                    data.insert("datetime".to_string(), extracted_datetime.to_string());
+                    data.insert("clnt".to_string(), extracted_clnt.to_string());
+                    data.insert("location".to_string(), path.to_string());
+
+                    match extractors::extract_info_from_log(&path, 10) {
+                        Ok(Some(log_data)) => {
+                            for (key, value) in &log_data {
+                                data.insert(key.clone(), value.clone());
+                            }
+                            result_data.push(data);
+                        }
+                        Ok(None) => {
+                            log::error!("No data found in the 'configuration' field.");
+                        }
+                        Err(err) => {
+                            log::error!("Error: {}", err);
+                        }
                     }
                 }
             }
         }
-        _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
+        _ => log::error!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
 
-    //dbg!(&results_from_search_json);
-    results_from_search_json
+    result_data // Return the Vec of data
 }
 
 /*
@@ -166,7 +127,7 @@ TODO: Fix this.
 fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
     match confy::get_configuration_file_path(&confy_config_name, None) {
         Ok(file) => {
-            println!(
+            log::info!(
                 "{} {:#?}",
                 "Configuration file is located at:".green().bold(),
                 file
@@ -174,8 +135,8 @@ fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
             return file;
         }
         Err(err) => {
-            eprintln!("Failed to get configuration file path: {}", err);
-            exit(1)
+            log::error!("Failed to get configuration file path: {}", err);
+            return std::path::PathBuf::new();
         }
     };
 }
@@ -202,6 +163,6 @@ fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
     .resizable(true)
     .build()?;
     #[cfg(all(not(debug_assertions), windows))]
-    functions::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
+    windows_helpers::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
     Ok(())
 }

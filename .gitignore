@@ -25,3 +25,7 @@ act.exe
 *.njsproj
 *.sln
 *.sw?
+
+#app related
+find_testlog_logs
+bigfile.txt

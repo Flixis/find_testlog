@@ -1,6 +1,30 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [V4.0.0] - 2023-12-09
+
+### New GUI features
+- GUI now has colour for PASS or FAIL status.
+- GUI now has "Time to results:" at top of page.
+- GUI now trims leading and trailing spaces.
+- Datepicker can now be cleared using backspace/delete.
+
+### NEW App logging
+- Added crate 'simplelog'.
+- Application now logs messages to logfile.
+
+### Refactor
+- Code is now split into multiple files with distinguishable names.
+- Rewrote 'parse_frontend_search_data'.
+- Rewrote 'extract_info_from_log'.
+- Unwrap calls removed in favor of error handling.
+- Windows dependencies now only build with Windows.
+
+
+## [V3.0.2] - 2023-10-31
+
+### Fix again...
+- #40
 
 ## [V3.0.0] - 2023-10-29
 
