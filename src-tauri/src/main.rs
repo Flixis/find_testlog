@@ -10,6 +10,7 @@ mod extractors;
 mod search;
 mod structs;
 mod windows_helpers;
+mod logging_settings;
 
 /*
 (C) Tariq Dinmohamed
@@ -17,33 +18,16 @@ mod windows_helpers;
 I hated searching for logfiles, So I challenged myself to make something to help with that.
 Documentation and code comes as is.
 */
-
-/*
-
-Yes, the main call of the app is not clean.
-But hey... it works...
-
-I may fix this later. But for now it serves its purpose.
-
-*/
 fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
 
+    logging_settings::setup_loggers();
+
     if std::env::args_os().count() > 1 {
-        eprintln!(
-            "{}",
-            "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0"
-                .red()
-                .bold()
-        );
+        log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
         let search_info = cli::parse_cli_args(commandlinearguments);
         cli::execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
-        eprintln!(
-            "{}",
-            "WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0"
-                .red()
-                .bold()
-        );
+        log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
@@ -64,7 +48,6 @@ fn main() {
 
 Parsing data from frontend.
 The search logic for the GUI part of the app is done here.
-
 
 */
 #[tauri::command]
@@ -87,7 +70,7 @@ async fn parse_frontend_search_data(
 
     // Make sure to save after we've written new data
     if let Err(err) = search_info.save() {
-        eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
+        log::error!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
 
     let log_file_path = search::search_for_log(&search_info);
@@ -95,7 +78,7 @@ async fn parse_frontend_search_data(
     match log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
-                eprintln!(
+                log::error!(
                     "{} {:?}",
                     "Path could not be matched".red().bold(),
                     search_info
@@ -114,7 +97,7 @@ async fn parse_frontend_search_data(
                         data.extend(log_data);
                         result_data.push(data); // Add the data for this item to the result
                     } else {
-                        eprintln!(
+                        log::error!(
                             "{} {:?}",
                             "Failed to serialize to JSON".red().bold(),
                             search_info
@@ -123,12 +106,11 @@ async fn parse_frontend_search_data(
                 }
             }
         }
-        _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
+        _ => log::error!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
 
     result_data // Return the Vec of data
 }
-
 
 /*
 
@@ -142,7 +124,7 @@ TODO: Fix this.
 fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
     match confy::get_configuration_file_path(&confy_config_name, None) {
         Ok(file) => {
-            println!(
+            log::info!(
                 "{} {:#?}",
                 "Configuration file is located at:".green().bold(),
                 file
@@ -150,7 +132,7 @@ fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
             return file;
         }
         Err(err) => {
-            eprintln!("Failed to get configuration file path: {}", err);
+            log::error!("Failed to get configuration file path: {}", err);
             return std::path::PathBuf::new();
         }
     };

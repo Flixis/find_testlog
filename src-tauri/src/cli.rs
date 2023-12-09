@@ -87,7 +87,7 @@ pub fn parse_cli_args(commandlinearguments: CliCommands) -> crate::structs::AppC
 
     //Make sure to save after we've written new data
     if let Err(err) = search_info.save() {
-        eprintln!("{} {}", "Failed to save configuration:".red().bold(), err);
+        log::error!("{} {}", "Failed to save configuration:".red().bold(), err);
     }
 
     if commandlinearguments.get_config_location {
@@ -115,7 +115,7 @@ pub fn execute_search_results_from_cli(search_info: crate::structs::AppConfig) {
         Ok(paths) => {
             // If no log files were found, print an error message.
             if paths.is_empty() {
-                eprintln!(
+                log::error!(
                     "{} {:?}",
                     "Path could not be matched".red().bold(),
                     search_info
@@ -130,7 +130,7 @@ pub fn execute_search_results_from_cli(search_info: crate::structs::AppConfig) {
             }
         }
 
-        _ => eprintln!("{} {:?}", "No matches found: ".red().bold(), search_info),
+        _ => log::error!("{} {:?}", "No matches found: ".red().bold(), search_info),
     }
 
     // If one or more log file was found, prompt the user to select
@@ -154,7 +154,7 @@ pub fn execute_search_results_from_cli(search_info: crate::structs::AppConfig) {
         let open_file: Option<&String> = match input_to_int {
             Ok(i) => mapped_search_results.get(&i),
             Err(..) => {
-                eprintln!("{}", "Couldn't parse".red().bold());
+                log::error!("{}", "Couldn't parse".red().bold());
                 None
             }
         };
@@ -163,7 +163,7 @@ pub fn execute_search_results_from_cli(search_info: crate::structs::AppConfig) {
         if let Some(path) = open_file {
             open::that(path).expect("Failed to open the file");
         } else {
-            eprintln!("{}", "Invalid file path".red().bold());
+            log::error!("{}", "Invalid file path".red().bold());
         }
     } else {
         // if key_counter is 0 then just exit.
