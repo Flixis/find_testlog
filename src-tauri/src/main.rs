@@ -7,10 +7,10 @@ use indexmap::IndexMap;
 
 mod cli;
 mod extractors;
+mod logging_settings;
 mod search;
 mod structs;
 mod windows_helpers;
-mod logging_settings;
 
 /*
 (C) Tariq Dinmohamed
@@ -91,17 +91,20 @@ async fn parse_frontend_search_data(
                     data.insert("datetime".to_string(), extracted_datetime.to_string());
                     data.insert("clnt".to_string(), extracted_clnt.to_string());
                     data.insert("location".to_string(), path.to_string());
-                    let log_info = extractors::extract_info_from_log(&path);
-                    if let Some(log_data) = log_info {
-                        // Merge the log_data into the data IndexMap
-                        data.extend(log_data);
-                        result_data.push(data); // Add the data for this item to the result
-                    } else {
-                        log::error!(
-                            "{} {:?}",
-                            "Failed to serialize to JSON".red().bold(),
-                            search_info
-                        )
+
+                    match extractors::extract_info_from_log(&path, 10) {
+                        Ok(Some(log_data)) => {
+                            for (key, value) in &log_data {
+                                data.insert(key.clone(), value.clone());
+                            }
+                            result_data.push(data);
+                        }
+                        Ok(None) => {
+                            log::error!("No data found in the 'configuration' field.");
+                        }
+                        Err(err) => {
+                            log::error!("Error: {}", err);
+                        }
                     }
                 }
             }

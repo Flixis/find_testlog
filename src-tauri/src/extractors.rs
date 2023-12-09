@@ -1,6 +1,7 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use indexmap::IndexMap;
 use regex::Regex;
+use std::collections::VecDeque;
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
@@ -38,8 +39,9 @@ pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
                 log_path
             );
             (
-                "Could not determine datetime".to_string(),
-                "Could not determine CLNT".to_string(),
+                //Returns a new string, the 'extract_info_from_log' function allows us to recoup this data.
+                String::new(),
+                String::new(),
             )
         }
     }
@@ -61,65 +63,84 @@ Regex pattern matches on and returns something like:
     "release": "R497",
 
 */
-pub fn extract_info_from_log(log_path_file: &str) -> Option<IndexMap<String, String>> {
-    if let Ok(file) = File::open(log_path_file) {
-        let reader = io::BufReader::new(file);
 
-        // Initialize an IndexMap(sorted hashmap)
-        let mut data = IndexMap::new();
+pub fn extract_info_from_log(
+    filename: &str,
+    text_keep_amount: i16,
+) -> Result<Option<IndexMap<String, String>>, io::Error> {
+    let file = File::open(filename)?;
+    let reader = io::BufReader::new(file);
 
-        // Set the maximum number of lines to read
-        let max_lines_to_read = 12;
+    let x = text_keep_amount as usize; // Convert text_keep_amount to usize.
 
-        // Read the file line by line
-        let mut line_counter = 0;
-        for line in reader.lines() {
-            if let Ok(line) = line {
-                // Check if the line contains a section header
-                if let Some(caps) = regex::Regex::new(r"(\w+):\s*(.+)").unwrap().captures(&line) {
-                    let key = caps[1].to_string();
-                    let value = caps[2].to_string();
-                    if data.contains_key(&key) {
-                        let duplicatekey = format!("{}{}", key.clone(), line_counter);
-                        data.insert(duplicatekey, value.clone());
-                    } else {
-                        data.insert(key.clone(), value);
-                    }
-                }
+    let mut first_lines = Vec::new();
+    let mut last_lines = VecDeque::new();
 
-                line_counter += 1;
-                if line_counter >= max_lines_to_read {
-                    break;
-                }
-            }
+    for (index, line) in reader.lines().enumerate() {
+        let line = line?;
+        if index < x {
+            first_lines.push(line.clone());
         }
+        last_lines.push_back(line.clone());
 
-        //regex for operation configuration splitting
-        let re = Regex::new(r"(\w+(?: \w+)*).*?id: (\d+); Release (\w+)")
-            .expect("Unable to parse the operation configuration from the log file");
-
-        if let Some(config_text) = data.get("configuration") {
-            if let Some(captures) = re.captures(config_text) {
-                if let (Some(testtype), Some(id), Some(release)) =
-                    (captures.get(1), captures.get(2), captures.get(3))
-                {
-                    let testtype_str = testtype.as_str().to_string();
-                    let id_str = id.as_str().to_string();
-                    let release_str = release.as_str().to_string();
-
-                    data.insert("testtype".to_string(), testtype_str);
-                    data.insert("id".to_string(), id_str);
-                    data.insert("release".to_string(), release_str);
-                }
-            }
-        } else {
-            log::error!("Failed to open match regex: {}", log_path_file)
+        // Keep only the last x lines in the last_lines queue.
+        while last_lines.len() > x {
+            last_lines.pop_front();
         }
-
-        //return some() because we might return nothing
-        Some(data)
-    } else {
-        log::error!("Failed to open the file: {}", log_path_file);
-        None
     }
+
+    let mut data: IndexMap<String, String> = IndexMap::new();
+    let re_first = Regex::new(r"(\w+):\s*(.+)").unwrap();
+    let re_last = Regex::new(r"\b(PASS(?:ED)?|FAIL(?:ED)?)\b").unwrap();
+
+    for line in first_lines {
+        if let Some(caps) = re_first.captures(&line) {
+            let key = caps[1].to_string();
+            let value = caps[2].to_string();
+            if data.contains_key(&key) {
+                let duplicatekey = format!("{}{}", key.clone(), "_duplicate");
+                data.insert(duplicatekey, value.clone());
+            } else {
+                data.insert(key.clone(), value);
+            }
+        }
+    }
+
+    for line in last_lines {
+        if let Some(caps) = re_last.captures(&line) {
+            let key = "PASS_FAIL_STATUS".to_string();
+            let value = caps[1].to_string();
+            if data.contains_key(&key) {
+                let duplicatekey = format!("{}{}", key.clone(), "_duplicate");
+                data.insert(duplicatekey, value.clone());
+            } else {
+                data.insert(key.clone(), value);
+            }
+        }
+    }
+
+    // Regex for operation configuration splitting
+    let config_re = Regex::new(r"(\w+(?: \w+)*).*?id: (\d+); Release (\w+)")
+        .expect("Unable to parse the operation configuration from the log file");
+
+    if let Some(config_text) = data.get("configuration") {
+        if let Some(captures) = config_re.captures(config_text) {
+            if let (Some(testtype), Some(id), Some(release)) =
+                (captures.get(1), captures.get(2), captures.get(3))
+            {
+                let testtype_str = testtype.as_str().to_string();
+                let id_str = id.as_str().to_string();
+                let release_str = release.as_str().to_string();
+
+                data.insert("testtype".to_string(), testtype_str);
+                data.insert("id".to_string(), id_str);
+                data.insert("release".to_string(), release_str);
+            }
+        }
+    } else {
+        log::error!("Failed to find 'configuration' field in the log.");
+        return Ok(Some(data));
+    }
+
+    Ok(Some(data))
 }

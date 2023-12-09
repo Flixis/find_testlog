@@ -40,10 +40,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
         Ok(regex) => regex,
         Err(_) => {
             log::error!("Invalid Regex: {}", log_pattern);
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidInput,
-                "Invalid Regex",
-            ));
+            return Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid Regex"));
         }
     };
 
@@ -101,14 +98,13 @@ fn is_in_date_range(entry: &DirEntry, date: &String) -> bool {
             None => {
                 log::error!("Unable to check for date range: {}", date);
                 return false;
-            },
+            }
             _ => (),
         }
     }
-    
+
     false
 }
-
 
 fn is_in_test_suite(entry: &DirEntry, test_env: &String) -> bool {
     if test_env.is_empty() {
@@ -132,10 +128,10 @@ fn is_in_test_suite(entry: &DirEntry, test_env: &String) -> bool {
             None => {
                 log::error!("Unable to check for test suite; {}", test_env);
                 return false;
-            },
+            }
             _ => (),
         }
     }
-    
+
     false
 }
