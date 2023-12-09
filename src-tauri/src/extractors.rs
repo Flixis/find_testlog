@@ -66,25 +66,36 @@ Regex pattern matches on and returns something like:
 
 pub fn extract_info_from_log(
     filename: &str,
-    text_keep_amount: i16,
+    text_keep_amount: usize,
 ) -> Result<Option<IndexMap<String, String>>, io::Error> {
-    let file = File::open(filename)?;
+    let file = match File::open(filename) {
+        Ok(file) => file,
+        Err(err) => {
+            log::error!("Failed to open file: {}", err);
+            return Err(err.into());
+        }
+    };
     let reader = io::BufReader::new(file);
-
-    let x = text_keep_amount as usize; // Convert text_keep_amount to usize.
 
     let mut first_lines = Vec::new();
     let mut last_lines = VecDeque::new();
 
-    for (index, line) in reader.lines().enumerate() {
-        let line = line?;
-        if index < x {
+    for (index, line_result) in reader.lines().enumerate() {
+        let line = match line_result {
+            Ok(line) => line,
+            Err(err) => {
+                log::error!("Error reading line {}: {}", index, err);
+                continue; // Skip this line and continue with the next one
+            }
+        };
+
+        if index < text_keep_amount {
             first_lines.push(line.clone());
         }
         last_lines.push_back(line.clone());
 
         // Keep only the last x lines in the last_lines queue.
-        while last_lines.len() > x {
+        while last_lines.len() > text_keep_amount {
             last_lines.pop_front();
         }
     }
