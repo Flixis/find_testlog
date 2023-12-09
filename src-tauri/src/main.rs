@@ -66,7 +66,8 @@ async fn parse_frontend_search_data(
 
     let mut result_data = Vec::new(); // Create an empty Vec to store multiple items
 
-    dbg!(&search_info);
+    log::info!("Search info: {:?}", search_info);
+
 
     // Make sure to save after we've written new data
     if let Err(err) = search_info.save() {

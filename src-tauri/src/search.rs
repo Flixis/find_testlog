@@ -66,6 +66,7 @@ pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<Str
 
     if found_match {
         log_file_paths.reverse(); //Send the log file paths in descending order.
+        log::info!("log file paths: {:?}", log_file_paths);
         Ok(log_file_paths)
     } else {
         log::error!("Could not find log file");

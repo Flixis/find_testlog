@@ -30,6 +30,7 @@ pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
             // Format the datetime object into the desired format
             let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
 
+            log::debug!("extract_datetime_clnt_from_logpath: {}{}",formatted_datetime, clnt);
             (formatted_datetime, clnt)
         }
         None => {
@@ -152,6 +153,6 @@ pub fn extract_info_from_log(
         log::error!("Failed to find 'configuration' field in the log.");
         return Ok(Some(data));
     }
-
+    log::info!("extract_info_from_log: {:?}",data);
     Ok(Some(data))
 }
