@@ -6,6 +6,7 @@ let loadingfinished = false;
 
 async function execute_search() {
 
+  //start counting time for execution
   const startTime = performance.now();
 
   //reset the progress bar
@@ -66,6 +67,7 @@ for (let i = 0; i < Object.keys(searchdata).length; i++) {
   const loadingBar = document.querySelector('.loading-bar-inner');
   loadingBar.style.width = '100%';
 
+  // calculate the total time for execution
   const endTime = performance.now();
   const executionTime = endTime - startTime;
   const seconds = Math.floor(executionTime / 1000);
