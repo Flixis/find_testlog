@@ -29,6 +29,8 @@ async function execute_search() {
       testtype: test_type,
   });
 
+  console.log(searchdata);
+
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
 
@@ -39,14 +41,24 @@ for (let i = 0; i < Object.keys(searchdata).length; i++) {
       const row = document.createElement('tr');
       const datetime = searchdata[i].datetime || searchdata[i].DateTime; // Use 'datetime' if available, otherwise use 'DateTime'
       const testtype = searchdata[i].testtype || searchdata[i].Name; // Use 'testtype' if available, otherwise use 'Name'
+      const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
+      const passFailStatus = searchdata[i].PASS_FAIL_STATUS; // Assuming you have a property named PASS_FAIL_STATUS
+
       row.innerHTML = `
         <td>${datetime}</td>
         <td>${testtype}</td>
         <td>${searchdata[i].release}</td>
-        <td>${searchdata[i].clnt}</td>
+        <td>${clnt}</td>
         <td>${searchdata[i].id}</td>
         <td><button onclick='openLog("${searchdata[i].location}")'>Open Log</button></td>
         </tr>`;
+
+      if (passFailStatus === "PASS" || passFailStatus === "PASSED") {
+        row.style.backgroundColor = "#1B9C85";
+      } else if (passFailStatus === "FAIL" || passFailStatus === "FAILED") {
+        row.style.backgroundColor = "#FF5733";
+      }
+
       tableBody.appendChild(row);
   }
 }
