@@ -43,6 +43,7 @@ for (let i = 0; i < Object.keys(searchdata).length; i++) {
       const testtype = searchdata[i].testtype || searchdata[i].Name; // Use 'testtype' if available, otherwise use 'Name'
       const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
       const passFailStatus = searchdata[i].PASS_FAIL_STATUS; // Assuming you have a property named PASS_FAIL_STATUS
+      const logLocation = searchdata[i].location.replace(/\\/g, '/'); // Replace backslashes with forward slashes
 
       row.innerHTML = `
         <td>${datetime}</td>
@@ -50,7 +51,7 @@ for (let i = 0; i < Object.keys(searchdata).length; i++) {
         <td>${searchdata[i].release}</td>
         <td>${clnt}</td>
         <td>${searchdata[i].id}</td>
-        <td><button onclick='openLog("${searchdata[i].location}")'>Open Log</button></td>
+        <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
         </tr>`;
 
       if (passFailStatus === "PASS" || passFailStatus === "PASSED") {

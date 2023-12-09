@@ -1,6 +1,12 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [V4.0.1] - 2023-12-09
+
+### Fix
+- Openlog button not working in windows.
+- logger not working as intended.
+
 ## [V4.0.0] - 2023-12-09
 
 ### New GUI features

@@ -7,7 +7,7 @@ use whoami;
 
 pub fn setup_loggers() {
     fs::create_dir_all("find_testlog_logs").expect("unable to create logging directory");
-    let utc = Utc::now().format("%d-%m-%Y_%H:%M");
+    let utc = Utc::now().format("%d-%m-%Y_%H_%M");
     let filename_string_creation = format!(
         "find_testlog_logs/{}_{}_{}_{}",
         utc,
