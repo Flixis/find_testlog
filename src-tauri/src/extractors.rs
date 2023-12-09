@@ -37,7 +37,7 @@ pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
                 "Could not extract datetime or CLNT from from log path: {}",
                 log_path
             );
-            (String::new(), String::new())
+            ("Could not determine datetime".to_string(), "Could not determine CLNT".to_string())
         }
     }
 }
@@ -66,7 +66,7 @@ pub fn extract_info_from_log(log_path_file: &str) -> Option<IndexMap<String, Str
         let mut data = IndexMap::new();
 
         // Set the maximum number of lines to read
-        let max_lines_to_read = 9;
+        let max_lines_to_read = 12;
 
         // Read the file line by line
         let mut line_counter = 0;
@@ -76,7 +76,14 @@ pub fn extract_info_from_log(log_path_file: &str) -> Option<IndexMap<String, Str
                 if let Some(caps) = regex::Regex::new(r"(\w+):\s*(.+)").unwrap().captures(&line) {
                     let key = caps[1].to_string();
                     let value = caps[2].to_string();
-                    data.insert(key.clone(), value);
+                    dbg!(&caps);    
+                    if data.contains_key(&key) {
+                        let duplicatekey = format!("{}{}", key.clone(), line_counter);
+                        data.insert(duplicatekey, value.clone());
+                    } else {
+                        data.insert(key.clone(), value);
+                    }
+                    dbg!(&data);
                 }
 
                 line_counter += 1;
@@ -105,13 +112,19 @@ pub fn extract_info_from_log(log_path_file: &str) -> Option<IndexMap<String, Str
                 }
             }
         } else {
-            eprintln!("Text not found in the file.");
+            log::error!(
+                "Failed to open match regex: {}",
+                log_path_file
+            )
         }
 
         //return some() because we might return nothing
         Some(data)
     } else {
-        eprintln!("Failed to open the file.");
+        log::error!(
+            "Failed to open the file: {}",
+            log_path_file
+        );
         None
     }
 }

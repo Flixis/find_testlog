@@ -102,7 +102,6 @@ async fn parse_frontend_search_data(
                 );
             } else {
                 for path in paths {
-                    // dbg!(&path);
                     let (extracted_datetime, extracted_clnt) =
                         extractors::extract_datetime_clnt_from_logpath(&path);
                     let mut data = IndexMap::new();
