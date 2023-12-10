@@ -45,6 +45,9 @@ def generate_log_file_inner(version, clnt, mode, pn, test_type_full, test_type):
     for key, value in test_info.items():
         text += f"- {key}: {value}\n"
 
+    pass_or_fail = random.choice(["PASSED", "FAILED", "PASS", "FAIL"])
+    text += f"{pass_or_fail}\n"
+    
     return text
 
 
@@ -57,11 +60,11 @@ def generate_random_sn(year, week):
   sn = f"{year_str}-{week_str}-"
 
   for _ in range(3):
-      sn += random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+      sn += random.choice("A0")
   sn += "-"
   
   for _ in range(3):
-      sn += random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+      sn += random.choice("B9")
       
   #sn = "11-11-AAA-BBB" #overwrite for testing
   return sn
@@ -151,10 +154,10 @@ drive = "/home/tariq"
 folder = "TestLogs"
 pn_min = 999911112222
 pn_max = 999911112222
-year_min = 1998
+year_min = 2022
 year_max = 2023
 week_min = 0 #0=1 
-week_max = 51 #51=52
+week_max = 3 #51=52
 test_suite_list = ["PTF", "FT", "ET", "XT", "PI","AET", "ICT"]
 test_type_list = ["FT", "ST", "FI", "ET", "DT","FT01", "XT01", "MAI"]
 test_type_list_full = ["Functional test", "Safety test", "Functional inspection test", "Endurance test", "Development test", "Functional test", "Extra test", "MAI test"]
