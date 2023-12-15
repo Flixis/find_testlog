@@ -89,12 +89,6 @@ input#productnumber:invalid, input#serialnumber:invalid {
   box-shadow: 0 0 .25rem var(--color-danger);
 }
 
-/* #testenv[disabled]{
-  background-color: var(--color-light);
-  color: var(--color-dark-variant);
-  cursor: not-allowed;
-} */
-
 select { /*dropdown menu bar */
   width: calc(100% + 20px); /* for some reason if you just specify 100% it doesn't align */
   padding: 0.5rem;
@@ -116,48 +110,6 @@ thead th {
   text-align: center;
   padding: 0.25rem;
 }
-
-/* start of lib css https://github.com/tofsjonas/sortable/blob/main/sortable-base.css */
-.sortable thead th:not(.no-sort) {
-  cursor: pointer;
-}
-.sortable thead th:not(.no-sort)::after, .sortable thead th:not(.no-sort)::before {
-  transition: color 0.1s ease-in-out;
-  color: transparent;
-}
-.sortable thead th:not(.no-sort)::after {
-  content: "▸";
-}
-.sortable thead th:not(.no-sort):hover::after {
-  color: inherit;
-}
-.sortable thead th:not(.no-sort)[aria-sort=descending]::after {
-  color: inherit;
-  content: "▾";
-}
-.sortable thead th:not(.no-sort)[aria-sort=ascending]::after {
-  color: inherit;
-  content: "▴";
-}
-.sortable thead th:not(.no-sort).indicator-left::after {
-  content: "";
-}
-.sortable thead th:not(.no-sort).indicator-left::before {
-  margin-right: 3px;
-  content: "▸";
-}
-.sortable thead th:not(.no-sort).indicator-left:hover::before {
-  color: inherit;
-}
-.sortable thead th:not(.no-sort).indicator-left[aria-sort=descending]::before {
-  color: inherit;
-  content: "▾";
-}
-.sortable thead th:not(.no-sort).indicator-left[aria-sort=ascending]::before {
-  color: inherit;
-  content: "▴";
-}
-/* end of lib CSS*/
 
 /* Style table rows */
 tbody tr:nth-child(even) {
@@ -217,3 +169,4 @@ footer {
   bottom: 0;
   width: 100%; 
 }
+

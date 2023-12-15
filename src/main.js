@@ -63,8 +63,8 @@ async function execute_search() {
               } else if (passFailStatus === "FAIL" || passFailStatus === "FAILED") {
                   row.style.backgroundColor = "#CC6852";
               }
-          } else {
-              row.style.backgroundColor = "#CC6818"
+          } else if (mode === 'service') {
+              row.style.backgroundColor = "#CC6918bd"
           }
 
           tableBody.appendChild(row);
