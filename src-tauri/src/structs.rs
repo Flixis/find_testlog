@@ -10,6 +10,7 @@ pub struct AppConfig {
     pub drive_letter: String,
     pub folder_location: String,
     pub test_suite: String,
+    pub mode_key: String,
 }
 
 // Default values for AppConfig
@@ -23,6 +24,7 @@ impl Default for AppConfig {
             drive_letter: String::from("Q:"),
             folder_location: String::from("TestLogs"),
             test_suite: String::from(""),
+            mode_key: String::from(""),
         }
     }
 }

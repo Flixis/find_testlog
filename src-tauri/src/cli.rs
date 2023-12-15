@@ -34,6 +34,10 @@ pub struct CliCommands {
     #[clap(short, long)]
     ///If passed, Returns config location
     pub get_config_location: bool,
+
+    #[clap(short, long)]
+    ///If passed, Returns config location
+    pub mode_key: Option<String>,
 }
 
 pub fn parse_cli_args(commandlinearguments: CliCommands) -> crate::structs::AppConfig {
@@ -81,6 +85,13 @@ pub fn parse_cli_args(commandlinearguments: CliCommands) -> crate::structs::AppC
     if commandlinearguments.drive_letter.is_some() {
         search_info.drive_letter = commandlinearguments
             .drive_letter
+            .unwrap_or_default()
+            .to_string();
+    }
+
+    if commandlinearguments.mode_key.is_some() {
+        search_info.mode_key = commandlinearguments
+            .mode_key
             .unwrap_or_default()
             .to_string();
     }

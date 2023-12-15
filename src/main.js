@@ -1,4 +1,6 @@
-const { invoke } = window.__TAURI__.tauri;
+const {
+  invoke
+} = window.__TAURI__.tauri;
 
 let loadingbarprogress = 0;
 let updateInterval;
@@ -13,15 +15,15 @@ async function execute_search() {
   loadingbarprogress = 0;
   let loadingfinished = false;
   updateInterval = setInterval(() => {
-    updateProgressBar(1); // Update amount of progress
+      updateProgressBar(1); // Update amount of progress
   }, 250); // Adjust the interval as needed
-  
+
   //grab the important elements
   const productnumber = document.getElementById('productnumber').value.trim();
   const serialnumber = document.getElementById('serialnumber').value.trim();
   const date_yyyyww = FormatDateToYYYYWW('datepicker');
   const test_type = document.getElementById('test_type').value.trim();
-  
+
   var searchdata = await invoke('parse_frontend_search_data', {
       productnumber: productnumber,
       serialnumber: serialnumber,
@@ -34,35 +36,40 @@ async function execute_search() {
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
 
-// Loop through the data and create a row for each entry
-for (let i = 0; i < Object.keys(searchdata).length; i++) {
-  // Only print when it matches the following cases, or when it matches the test type
-  if (test_type === "" || test_type.toUpperCase() === "ALL" || (searchdata[i].testtype || searchdata[i].name) === test_type.toUpperCase()) {
-      const row = document.createElement('tr');
-      const datetime = searchdata[i].datetime || searchdata[i].DateTime; // Use 'datetime' if available, otherwise use 'DateTime'
-      const testtype = searchdata[i].testtype || searchdata[i].Name; // Use 'testtype' if available, otherwise use 'Name'
-      const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
-      const passFailStatus = searchdata[i].PASS_FAIL_STATUS; // Assuming you have a property named PASS_FAIL_STATUS
-      const logLocation = searchdata[i].location.replace(/\\/g, '/'); // Replace backslashes with forward slashes
+  // Loop through the data and create a row for each entry
+  for (let i = 0; i < Object.keys(searchdata).length; i++) {
+      // Only print when it matches the following cases, or when it matches the test type
+      if (test_type === "" || test_type.toUpperCase() === "ALL" || (searchdata[i].testtype || searchdata[i].name) === test_type.toUpperCase()) {
+          const row = document.createElement('tr');
+          const datetime = searchdata[i].datetime || searchdata[i].DateTime; // Use 'datetime' if available, otherwise use 'DateTime'
+          const testtype = searchdata[i].testtype || searchdata[i].Name; // Use 'testtype' if available, otherwise use 'Name'
+          const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
+          const passFailStatus = searchdata[i].PASS_FAIL_STATUS;
+          const logLocation = searchdata[i].location.replace(/\\/g, '/'); // Replace backslashes with forward slashes
+          const mode = searchdata[i].Mode.trim().toLowerCase();
+       
+          row.innerHTML = `
+      <td>${datetime}</td>
+      <td>${testtype}</td>
+      <td>${searchdata[i].release}</td>
+      <td>${clnt}</td>
+      <td>${searchdata[i].id}</td>
+      <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
+      </tr>`;
 
-      row.innerHTML = `
-        <td>${datetime}</td>
-        <td>${testtype}</td>
-        <td>${searchdata[i].release}</td>
-        <td>${clnt}</td>
-        <td>${searchdata[i].id}</td>
-        <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
-        </tr>`;
+          if (mode === 'production') {
+              if (passFailStatus === "PASS" || passFailStatus === "PASSED") {
+                  row.style.backgroundColor = "#1B9C85";
+              } else if (passFailStatus === "FAIL" || passFailStatus === "FAILED") {
+                  row.style.backgroundColor = "#CC6852";
+              }
+          } else {
+              row.style.backgroundColor = "#CC6818"
+          }
 
-      if (passFailStatus === "PASS" || passFailStatus === "PASSED") {
-        row.style.backgroundColor = "#1B9C85";
-      } else if (passFailStatus === "FAIL" || passFailStatus === "FAILED") {
-        row.style.backgroundColor = "#CC6852";
+          tableBody.appendChild(row);
       }
-
-      tableBody.appendChild(row);
   }
-}
 
 
   // Update the results count
@@ -126,16 +133,15 @@ async function updateProgressBar(updateamount) {
   const loadingBar = document.querySelector('.loading-bar-inner');
   if (loadingbarprogress + updateamount <= 100) {
       if (!loadingfinished && loadingbarprogress > 65) {
-        updateamount = 0.25;
-        if(loadingbarprogress > 80){
-          updateamount = 0.05;
-        }
+          updateamount = 0.25;
+          if (loadingbarprogress > 80) {
+              updateamount = 0.05;
+          }
       }
       loadingbarprogress += updateamount;
       loadingBar.style.width = loadingbarprogress + '%';
-    } else {
+  } else {
       loadingbarprogress = 100;
       loadingBar.style.width = '100%';
   }
 }
-
