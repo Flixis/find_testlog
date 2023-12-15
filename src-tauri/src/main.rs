@@ -1,6 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::process::exit;
+use std::env;
+use dotenv::dotenv;
+
 use clap::Parser;
 use colored::*;
 use indexmap::IndexMap;
@@ -19,20 +23,51 @@ I hated searching for logfiles, So I challenged myself to make something to help
 Documentation and code comes as is.
 */
 fn main() {
+    dotenv().ok();
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
+    let search_info = structs::AppConfig::default_values();
 
     logging_settings::setup_loggers();
 
     if std::env::args_os().count() > 1 {
         log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
         let search_info = cli::parse_cli_args(commandlinearguments);
-        cli::execute_search_results_from_cli(search_info); //<-- this should be called seperatly in the main thread.... but for simplicity its here.
+        cli::execute_search_results_from_cli(search_info);
         log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
             .setup(|app| {
-                cli_gui(app.handle())?;
+                let handle = app.handle();
+                tauri::async_runtime::spawn(async move {
+                    match tauri::updater::builder(handle.clone()).check().await {
+                        Ok(update) => {
+                            let mode_key_pass = match env::var("mode_key_pass") {
+                                Ok(value) => value,
+                                Err(e) => {
+                                    log::error!("Error reading 'mode_key_pass' environment variable: {}", e);
+                                    String::new() //return empty string
+                                }
+                            };
+                            //if we cannot pull update version from server, then something is wrong and we should exit immediately for security purposes.
+                            log::info!("Version from server: {}", update.latest_version());
+                            if search_info.mode_key != mode_key_pass || search_info.mode_key == "" {
+                                if update.latest_version() == "0.0.0" || update.latest_version() == "9.9.9"{
+                                    log::info!("Something went horribly wrong with the updater");
+                                    exit(-1);
+                                }
+                            }else {
+                                log::warn!("Bypassed updater!, continuing with: {}" , update.current_version())
+                            }
+                        }
+                        Err(e) => {
+                            log::info!("failed to get update information: {}", e);
+                            exit(-1);
+                        }
+                    }
+                });
+    
+                cli_gui(app.handle())?; // You can also run your GUI setup here
                 Ok(())
             })
             .invoke_handler(tauri::generate_handler![
@@ -42,6 +77,7 @@ fn main() {
             .run(tauri::generate_context!())
             .expect("error while running tauri application")
     }
+    
 }
 
 /*
@@ -75,7 +111,6 @@ async fn parse_frontend_search_data(
     }
 
     let log_file_path = search::search_for_log(&search_info);
-    // dbg!(&log_file_path);
     match log_file_path {
         Ok(paths) => {
             if paths.is_empty() {
