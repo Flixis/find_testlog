@@ -1,172 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-
-
 /* setup fluff */
 :root{
-  --color-primary: #6C9BCF;
-  --color-danger: #FF0060;
-  --color-success: #1B9C85;
-  --color-warning: #F7D060;
-  --color-white: #fff;
-  --color-info-dark: #7d8da1;
-  --color-dark: #363949;
-  --color-light: rgba(132, 139, 200, 0.18);
-  --color-dark-variant: #677483;
-  --color-background: #f6f6f9;
-
-  --color-button-default: #007db3;
-  --color-hover: #0056b3;
-
-  --card-border-radius: 2rem;
-  --border-radius-1: 0.4rem;
-  --border-radius-2: 1.2rem;
-
-  --card-padding: 1.8rem;
-  --padding-1: 1.2rem;
-
-  --box-shadow: 0 2rem 3rem var(--color-light);
-}
-
-/* Reset some default margin and padding */
-body, h1, h2, p, ul {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.88rem;
-  user-select: none;
-  overflow-x: hidden;
-  color: var(--color-dark);
-  background-color: var(--color-background);
-}
-
-
-.loading-bar {
-  position: relative;
-  width: 100%;
-  height: .5rem;
-  background-color: #ccc;
-}
-
-.loading-bar-inner {
-  width: 0%;
-  height: 100%;
-  background-color: var(--color-success);
-}
-
-/* Style the header */
-header {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  padding: 10px;
-  text-align: center;
-}
-
-/* style the big heading "find testlog" */
-#logo {
-  font-size: 24px;
-}
-
-/* Style the main input container */
-#input-container {
-  margin-right: 1rem;
-  padding: 1rem;
-  display: grid;
-  grid-template-columns: repeat(2, 2fr);
-  column-gap: 2rem;
-}
-
-/* different inputs type styles */
-input[type="text"], input[type="checkbox"], input[type="date"] {
-  width: 100%;
-  padding: 0.5rem;
-  margin: 0rem;
-}
-
-input#productnumber:invalid, input#serialnumber:invalid {
-  border-color: var(--color-danger);
-  box-shadow: 0 0 .25rem var(--color-danger);
-}
-
-select { /*dropdown menu bar */
-  width: calc(100% + 20px); /* for some reason if you just specify 100% it doesn't align */
-  padding: 0.5rem;
-  text-align: center;
-}
-
-
-/* Style the table */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px none;
-}
-
-/* Style table headers */
-thead th {
-  background-color: var(--color-dark);
-  color: var(--color-white);
-  text-align: center;
-  padding: 0.25rem;
-}
-
-/* Style table rows */
-tbody tr:nth-child(even) {
-  background-color: var(--color-light);
-}
-
-/* Style table data cells */
-th, td {
-  text-align: center;
-  overflow: hidden;
-  border: 1px solid var(--color-white);
-  padding: 0.5rem;
-  max-width: 1rem;
-}
-
-/* Style the open button */
-button {
-  background-color: var(--color-button-default);
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 14px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-#results-count{
-  color: var(--color-success);
-  padding-left: 0.25rem;
-}
-
-/* Style the search button container */
-#search-button {
-  margin-right: 0.1rem;
-  float: right; /* Float the button to the right */
-}
-
-button:hover {
-  background-color: var(--color-hover);
-}
-
-#search-button[disabled] {
-  background-color: var(--color-light);
-  color: var(--color-dark-variant);
-  cursor: not-allowed;
-}
-
-/* Style the footer */
-footer {
-  background-color: var(--color-primary);
-  color: #fff;
-  padding: .3rem;
-  text-align: center;
-  position: -webkit-sticky;
-  position: sticky;
-  bottom: 0;
-  width: 100%; 
-}
-
+    --color-primary: #6C9BCF;
+    --color-danger: #FF0060;
+    --color-success: #1B9C85;
+    --color-warning: #F7D060;
+    --color-white: #fff;
+    --color-info-dark: #7d8da1;
+    --color-dark: #363949;
+    --color-light: rgba(132, 139, 200, 0.18);
+    --color-dark-variant: #677483;
+    --color-background: #f6f6f9;
+  
+    --color-button-default: #007db3;
+    --color-hover: #0056b3;
+  
+    --card-border-radius: 2rem;
+    --border-radius-1: 0.4rem;
+    --border-radius-2: 1.2rem;
+  
+    --card-padding: 1.8rem;
+    --padding-1: 1.2rem;
+  
+    --box-shadow: 0 2rem 3rem var(--color-light);
+  }
+  
+  /* Reset some default margin and padding */
+  body, h1, h2, p, ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    user-select: none;
+    overflow-x: hidden;
+    color: var(--color-dark);
+    background-color: var(--color-background);
+  }

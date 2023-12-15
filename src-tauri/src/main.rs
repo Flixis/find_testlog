@@ -15,6 +15,7 @@ mod logging_settings;
 mod search;
 mod structs;
 mod windows_helpers;
+mod error_dialog;
 
 /*
 (C) Tariq Dinmohamed
@@ -67,7 +68,8 @@ fn main() {
                     }
                 });
     
-                cli_gui(app.handle())?; // You can also run your GUI setup here
+                error_dialog::generic_error_dialog(app.handle())?;
+                cli_gui(app.handle())?;
                 Ok(())
             })
             .invoke_handler(tauri::generate_handler![

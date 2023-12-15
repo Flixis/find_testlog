@@ -1,0 +1,11 @@
+/* Style the footer */
+footer {
+    background-color: var(--color-primary);
+    color: #fff;
+    padding: .3rem;
+    text-align: center;
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 0;
+    width: 100%; 
+  }
