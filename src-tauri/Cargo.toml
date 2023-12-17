@@ -1,6 +1,6 @@
 [package]
 name = "find_testlog_tauri"
-version = "4.0.1"
+version = "4.1.0"
 description = "Find Testlog"
 authors = ["Tariq Dinmohamed <github.com/flixis>"]
 repository = "https://github.com/Flixis/find_testlog"
@@ -12,7 +12,7 @@ edition = "2021"
 tauri-build = { version = "1.5.0", features = [] }
 
 [dependencies]
-tauri = { version = "1.5.0", features = [ "updater", "os-all", "shell-open"] }
+tauri = { version = "1.5.3", features = [ "updater", "os-all", "shell-open"] }
 serde = { version = "1.0.193", features = ["derive"] }
 
 confy = "0.5.1"
@@ -29,6 +29,7 @@ whoami = "1.4.1"
 
 #[cfg(target_os = "windows")]
 windows-sys = "0.52.0"
+dotenv = "0.15.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
