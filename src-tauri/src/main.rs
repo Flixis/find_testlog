@@ -6,14 +6,14 @@ use clap::Parser;
 use colored::*;
 use indexmap::IndexMap;
 
+mod check_updates;
 mod cli;
-mod gui;
 mod extractors;
+mod gui;
 mod logging_settings;
 mod search;
 mod structs;
 mod windows_helpers;
-mod check_updates;
 
 /*
 (C) Tariq Dinmohamed
@@ -38,13 +38,14 @@ fn main() {
             .setup(|app| {
                 let handle = app.handle();
                 tauri::async_runtime::spawn(async move {
-                    let check_update = check_updates::check_for_updates(handle.clone(), search_info.clone()).await;
+                    let check_update =
+                        check_updates::check_for_updates(handle.clone(), search_info.clone()).await;
                     match check_update {
                         Ok(()) => {
                             let _ = gui::main_window(handle);
                         }
                         Err(err) => {
-                            let _ =  gui::error_dialog(handle);
+                            let _ = gui::error_dialog(handle);
                             log::error!("ERROR: {}", err);
                         }
                     }
@@ -60,7 +61,6 @@ fn main() {
             .expect("error while running tauri application")
     }
 }
-
 
 /// Takes values from frontend and parses through search algorithm.
 /// Returns a Vec of values.
@@ -128,7 +128,6 @@ async fn parse_frontend_search_data(
     result_data // Return the Vec of data
 }
 
-
 ///Gets the path to the configuration file.
 #[tauri::command]
 fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
@@ -148,9 +147,8 @@ fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
     };
 }
 
-
 /// Kills the app, used in error-dialog.
 #[tauri::command]
-fn kill_app(){
+fn kill_app() {
     exit(-1)
 }
