@@ -6,8 +6,11 @@ use std::path::Path;
 use whoami;
 
 /// App logging is setup with the following configuration:
+/// 
 /// Terminal logger -> Filter:Warn, Config:Default, TerminalMode: Mixed, ColorChoice: Auto
+/// 
 /// Write Logger -> Filter:Info, Config:Default, File: Create(filename)
+/// 
 /// filename -> find_testlog_logs/{day-month-year_hour_minute}_{username}_{hostname}_{find_testlog}.log
 pub fn setup_loggers() {
     fs::create_dir_all("find_testlog_logs").expect("unable to create logging directory");

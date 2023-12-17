@@ -63,6 +63,7 @@ fn main() {
 }
 
 /// Takes values from frontend and parses through search algorithm.
+/// 
 /// Returns a Vec of values.
 #[tauri::command]
 async fn parse_frontend_search_data(

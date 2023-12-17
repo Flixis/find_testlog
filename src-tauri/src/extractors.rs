@@ -70,8 +70,11 @@ Regex pattern matches on and returns something like:
 
 */
 /// Extracts information from log file using regex patterns:
+/// 
 /// (\w+):\s*(.+)
+/// 
 /// (\w+(?: \w+)*).*?id: (\d+); Release (\w+)
+/// 
 /// b(PASS(?:ED)?|FAIL(?:ED)?)\b
 pub fn extract_info_from_log(
     filename: &str,

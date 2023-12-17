@@ -5,8 +5,11 @@ use std::env;
 const VERSION: &str = env!("CARGO_PKG_VERSION"); //<-- read from cargo.toml
 
 /// Returns err if it cannot find mode_key_pass env string
+/// 
 /// Returns err if versioning from server is 0.0.0 or 9.9.9
+/// 
 /// Returns err if cannot check versioning from server
+/// 
 /// Bypassable with mode_key_pass env string by matching it app config
 pub async fn check_for_updates(
     app: tauri::AppHandle,

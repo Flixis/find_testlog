@@ -5,9 +5,13 @@ use std::path::PathBuf;
 use walkdir::{DirEntry, WalkDir};
 
 /// input: crate::struct::Appconfig
+/// 
 /// output:
+/// 
 /// OK() -> folderpath to file ->
-///     D\:TestLogs\6107-2100-6501\2002-W27\PI\20231006_194703_CLNT7942_group_0_39-69-G0E-4QA.log
+/// 
+/// D\:TestLogs\6107-2100-6501\2002-W27\PI\20231006_194703_CLNT7942_group_0_39-69-G0E-4QA.log
+/// 
 /// Err() -> error message
 pub fn search_for_log(search_info: &crate::structs::AppConfig) -> Result<Vec<String>, io::Error> {
     //Parse user input data to uppercase. Not for folderlocation because its doesn't follow a standard.

@@ -1,8 +1,11 @@
 use colored::*;
 
 /// Setup for the main app window.
+/// 
 /// Can be resized.
+/// 
 /// Uses 'index.html'.
+/// 
 /// Note: Windows as per usual requires extra settings, so thats done here aswell.
 pub fn main_window(app: tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     println!(
@@ -26,7 +29,9 @@ pub fn main_window(app: tauri::AppHandle) -> Result<(), Box<dyn std::error::Erro
 }
 
 /// Error dialog setup.
+/// 
 /// Cannot be resized.
+/// 
 /// Uses 'error_dialog.html'.
 pub fn error_dialog(app: tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     tauri::WindowBuilder::new(

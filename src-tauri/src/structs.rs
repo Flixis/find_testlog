@@ -1,7 +1,9 @@
 use confy::ConfyError;
 
 /// App configuration struct
+/// 
 /// These values are W/R values for the entire app
+/// 
 /// User can change these with config file
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct AppConfig {
