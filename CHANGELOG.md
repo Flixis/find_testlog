@@ -1,6 +1,22 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [V4.1.0] - 2023-12-17
+
+### Add
+- GUI colours have been adjusted.
+- Legenda for colours.
+- GUI new error dialog.
+- Version checking has been updated.
+- DOC strings have been updated.
+
+### Refactor
+- More code refactors in the background.
+
+### Misc.
+- Dependencies bump.
+
 ## [V4.0.1] - 2023-12-09
 
 ### Fix
