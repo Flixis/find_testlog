@@ -3,7 +3,6 @@
 /// Tauri by default does not support this feature.
 #[cfg(target_os = "windows")]
 pub fn hide_windows_console(switch: bool) {
-    use crate::windows_helpers;
     unsafe {
         if switch {
             windows_sys::Win32::System::Console::FreeConsole();
