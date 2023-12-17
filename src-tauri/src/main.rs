@@ -1,21 +1,19 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
 use std::process::exit;
-use std::env;
-use dotenv::dotenv;
 
 use clap::Parser;
 use colored::*;
 use indexmap::IndexMap;
 
 mod cli;
+mod gui;
 mod extractors;
 mod logging_settings;
 mod search;
 mod structs;
 mod windows_helpers;
-mod error_dialog;
+mod check_updates;
 
 /*
 (C) Tariq Dinmohamed
@@ -24,7 +22,6 @@ I hated searching for logfiles, So I challenged myself to make something to help
 Documentation and code comes as is.
 */
 fn main() {
-    dotenv().ok();
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
     let search_info = structs::AppConfig::default_values();
 
@@ -41,53 +38,32 @@ fn main() {
             .setup(|app| {
                 let handle = app.handle();
                 tauri::async_runtime::spawn(async move {
-                    match tauri::updater::builder(handle.clone()).check().await {
-                        Ok(update) => {
-                            let mode_key_pass = match env::var("mode_key_pass") {
-                                Ok(value) => value,
-                                Err(e) => {
-                                    log::error!("Error reading 'mode_key_pass' environment variable: {}", e);
-                                    String::new() //return empty string
-                                }
-                            };
-                            //if we cannot pull update version from server, then something is wrong and we should exit immediately for security purposes.
-                            log::info!("Version from server: {}", update.latest_version());
-                            if search_info.mode_key != mode_key_pass || search_info.mode_key == "" {
-                                if update.latest_version() == "0.0.0" || update.latest_version() == "9.9.9"{
-                                    log::info!("Something went horribly wrong with the updater");
-                                    exit(-1);
-                                }
-                            }else {
-                                log::warn!("Bypassed updater!, continuing with: {}" , update.current_version())
-                            }
+                    let check_update = check_updates::check_for_updates(handle.clone(), search_info.clone()).await;
+                    match check_update {
+                        Ok(()) => {
+                            let _ = gui::main_window(handle);
                         }
-                        Err(e) => {
-                            log::info!("failed to get update information: {}", e);
-                            exit(-1);
+                        Err(err) => {
+                            let _ =  gui::error_dialog(handle);
+                            log::error!("ERROR: {}", err);
                         }
                     }
                 });
-    
-                error_dialog::generic_error_dialog(app.handle())?;
-                cli_gui(app.handle())?;
                 Ok(())
             })
             .invoke_handler(tauri::generate_handler![
                 parse_frontend_search_data,
-                get_configuration_file_path
+                get_configuration_file_path,
+                kill_app
             ])
             .run(tauri::generate_context!())
             .expect("error while running tauri application")
     }
-    
 }
 
-/*
 
-Parsing data from frontend.
-The search logic for the GUI part of the app is done here.
-
-*/
+/// Takes values from frontend and parses through search algorithm.
+/// Returns a Vec of values.
 #[tauri::command]
 async fn parse_frontend_search_data(
     productnumber: Option<String>,
@@ -105,7 +81,6 @@ async fn parse_frontend_search_data(
     let mut result_data = Vec::new(); // Create an empty Vec to store multiple items
 
     log::info!("Search info: {:?}", search_info);
-
 
     // Make sure to save after we've written new data
     if let Err(err) = search_info.save() {
@@ -153,14 +128,8 @@ async fn parse_frontend_search_data(
     result_data // Return the Vec of data
 }
 
-/*
 
-Gets the path to the configuration file.
-Why is this here and not in functions.rs?
-Because the #[tauri::command] complains, and I cba to figure it out now.
-TODO: Fix this.
-
-*/
+///Gets the path to the configuration file.
 #[tauri::command]
 fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
     match confy::get_configuration_file_path(&confy_config_name, None) {
@@ -179,28 +148,9 @@ fn get_configuration_file_path(confy_config_name: &str) -> std::path::PathBuf {
     };
 }
 
-/*
 
-Create a GUI with following options.
-
-*/
-fn cli_gui(app: tauri::AppHandle) -> Result<(), tauri::Error> {
-    println!(
-        "{}",
-        "Starting Test Log Finder! Tariq Dinmohamed (C)"
-            .green()
-            .bold()
-    );
-    tauri::WindowBuilder::new(
-        &app,
-        "FindTestlog",
-        tauri::WindowUrl::App("index.html".into()),
-    )
-    .title("Find Testlog")
-    .inner_size(800., 480.)
-    .resizable(true)
-    .build()?;
-    #[cfg(all(not(debug_assertions), windows))]
-    windows_helpers::hide_windows_console(true); //<--- this function should be take a bool, I want the user to be able to see the CLI if they desire.
-    Ok(())
+/// Kills the app, used in error-dialog.
+#[tauri::command]
+fn kill_app(){
+    exit(-1)
 }
