@@ -1,4 +1,3 @@
-
 /// required to removed windows console when launching GUI.
 /// 
 /// Tauri by default does not support this feature.
