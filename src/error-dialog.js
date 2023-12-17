@@ -1,8 +1,9 @@
 const {
-    exit
-  } = window.__TAURI__.process;
+  invoke
+} = window.__TAURI__.tauri;
 
 async function error_ok(){
-    await exit(-1);
+  console.log("here");
+  await invoke('kill_app'); //if the err dialog pops we should kill the app after user acknowledgement.
 }
-$('#error-button').click(error_ok);
+$('#error-button-ok').click(error_ok);
