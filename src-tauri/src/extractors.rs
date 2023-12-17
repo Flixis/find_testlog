@@ -11,6 +11,7 @@ use std::io::BufRead;
 Regex pattern matches on date and time, which is required to build a valid date-time string. Additionally, it checks for the presence of '\test_env' | \PTF\ | \AET\ in the string to confirm whether the returned path is correctly pulled from the source directory.
 
 */
+/// Extracts date and time from filepath and parses it as chrono:naivedate
 pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
     let re = Regex::new(r"(\d{8}).(\d{6}).(CLNT\d+)").expect("Failed to parse log path");
     let regex_captures = re.captures(log_path);
@@ -68,7 +69,10 @@ Regex pattern matches on and returns something like:
     "release": "R497",
 
 */
-
+/// Extracts information from log file using regex patterns:
+/// (\w+):\s*(.+)
+/// (\w+(?: \w+)*).*?id: (\d+); Release (\w+)
+/// b(PASS(?:ED)?|FAIL(?:ED)?)\b
 pub fn extract_info_from_log(
     filename: &str,
     text_keep_amount: usize,

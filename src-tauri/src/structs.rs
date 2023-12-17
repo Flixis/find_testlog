@@ -1,6 +1,8 @@
 use confy::ConfyError;
 
-// Struct for application configuration
+/// App configuration struct
+/// These values are W/R values for the entire app
+/// User can change these with config file
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct AppConfig {
     pub productnumber: String,
@@ -13,7 +15,7 @@ pub struct AppConfig {
     pub mode_key: String,
 }
 
-// Default values for AppConfig
+/// Default values for AppConfig
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
@@ -29,7 +31,7 @@ impl Default for AppConfig {
     }
 }
 
-// Methods for AppConfig
+/// Methods for AppConfig
 impl AppConfig {
     // Load configuration from file
     pub fn load() -> Result<Self, ConfyError> {
