@@ -20,7 +20,7 @@ pub async fn check_for_updates(
     // Initialize the updater
     let updater = tauri::updater::builder(app.clone());
 
-    let mode_key_pass = match env::var("mode_key_pass") {
+    let mode_key_pass = match env::var("MODE_KEY_PASS") {
         Ok(value) => value,
         Err(e) => {
             log::error!("Error reading 'mode_key_pass' environment variable: {}", e);
