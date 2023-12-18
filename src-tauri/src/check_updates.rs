@@ -1,5 +1,5 @@
 use crate::structs;
-use dotenv::dotenv;
+// use dotenv::dotenv;
 use std::env;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION"); //<-- read from cargo.toml
@@ -15,7 +15,7 @@ pub async fn check_for_updates(
     app: tauri::AppHandle,
     search_info: structs::AppConfig,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    dotenv().ok();
+    // dotenv().ok();
 
     // Initialize the updater
     let updater = tauri::updater::builder(app.clone());

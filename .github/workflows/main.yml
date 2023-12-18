@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - release
+      - env_fix
 
 jobs:
   publish-tauri:
