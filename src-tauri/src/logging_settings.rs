@@ -1,7 +1,6 @@
 use chrono::prelude::*;
 use simplelog::*;
-use std::fs;
-use std::fs::File;
+use std::fs::{self, OpenOptions};
 use std::path::Path;
 use whoami;
 
@@ -24,7 +23,13 @@ pub fn setup_loggers() {
     );
     let filename = Path::new(&filename_string_creation);
 
-    //initialize loggers with settings
+    let file = OpenOptions::new()
+        .create(true)   // This will create the file if it does not exist
+        .write(true)    // Open the file in write mode
+        .append(true)   // Set the file to append mode
+        .open(filename)
+        .expect("failed to open or create log file");
+
     CombinedLogger::init(vec![
         TermLogger::new(
             LevelFilter::Warn,
@@ -35,7 +40,7 @@ pub fn setup_loggers() {
         WriteLogger::new(
             LevelFilter::Info,
             Config::default(),
-            File::create(filename).expect("failed to create log file"),
+            file,
         ),
     ])
     .expect("Couldn't initialize loggers");

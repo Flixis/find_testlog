@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V4.2.0] - 2024-01-20
+
+### Fix
+- App logs no longer overwritten if exsiting.
+
+### Change
+- `extract_info_from_log` no longer reads last line equal to `text_keep_amount` instead its fixed to 4 lines.
+- Updated readme image to reflect changes.
+
+### Removed
+- `.dotenv` Removed as dependency.
+
 ## [V4.1.0] - 2023-12-17
 
 ### Add
