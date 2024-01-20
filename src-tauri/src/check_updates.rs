@@ -1,6 +1,6 @@
 use crate::structs;
-// use dotenv::dotenv;
 use std::env;
+use sha2::{Digest, Sha256};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION"); //<-- read from cargo.toml
 
@@ -15,21 +15,22 @@ pub async fn check_for_updates(
     app: tauri::AppHandle,
     search_info: structs::AppConfig,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // dotenv().ok();
 
     // Initialize the updater
     let updater = tauri::updater::builder(app.clone());
 
-    let mode_key_pass = match env::var("MODE_KEY_PASS") {
-        Ok(value) => value,
-        Err(e) => {
-            log::error!("Error reading 'mode_key_pass' environment variable: {}", e);
-            String::new() //return empty string
-        }
-    };
-
-    if search_info.mode_key != mode_key_pass {
-        // Perform the update check
+    //create new hasher to hash the string from config
+    let mut hasher = Sha256::new();
+    hasher.update(&search_info.mode_key);
+    let result_hash = hasher.finalize();
+    
+    // Convert both hashes to the same format for comparison
+    let mode_key_pass = b"3fdf315d52676639a137ab505dd9b7eb86d456360a96f4c7ccacf1c300176f20";
+    let mode_key_pass = hex::decode(mode_key_pass).expect("Invalid hex string");
+    
+    // Compare both hashes to confirm modekeypass is correct
+    if result_hash[..] != mode_key_pass[..] {
+        // Perform the update check within an async context
         let update = match updater.check().await {
             Ok(update) => update,
             Err(err) => {
