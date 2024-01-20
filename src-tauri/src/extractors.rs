@@ -106,8 +106,8 @@ pub fn extract_info_from_log(
         }
         last_lines.push_back(line.clone());
 
-        // Keep only the last x lines in the last_lines queue.
-        while last_lines.len() > text_keep_amount {
+        // Keep only the last 4 lines in the last_lines queue.
+        while last_lines.len() > 4 {
             last_lines.pop_front();
         }
     }
