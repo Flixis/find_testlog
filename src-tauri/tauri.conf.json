@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "find_testlog_tauri",
-    "version": "4.2.0"
+    "version": "4.2.1"
   },
   "tauri": {
     "allowlist": {
@@ -21,6 +21,42 @@
         "execute": false,
         "open": "^.*\\.log|.*\\.toml$",
         "sidecar": false
+      },
+      "window": {
+        "all": false,
+        "center": false,
+        "close": true,
+        "create": true,
+        "hide": false,
+        "maximize": false,
+        "minimize": false,
+        "print": false,
+        "requestUserAttention": false,
+        "setAlwaysOnTop": false,
+        "setClosable": false,
+        "setContentProtected": false,
+        "setCursorGrab": false,
+        "setCursorIcon": false,
+        "setCursorPosition": false,
+        "setCursorVisible": false,
+        "setDecorations": false,
+        "setFocus": false,
+        "setFullscreen": false,
+        "setIcon": false,
+        "setIgnoreCursorEvents": false,
+        "setMaxSize": false,
+        "setMaximizable": false,
+        "setMinSize": false,
+        "setMinimizable": false,
+        "setPosition": false,
+        "setResizable": false,
+        "setSize": false,
+        "setSkipTaskbar": false,
+        "setTitle": true,
+        "show": true,
+        "startDragging": false,
+        "unmaximize": false,
+        "unminimize": false
       }
     },
     "bundle": {

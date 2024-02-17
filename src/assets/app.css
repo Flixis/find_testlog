@@ -117,3 +117,6 @@ button:hover {
   cursor: not-allowed;
 }
 
+#scanner-info{
+  margin-top: .2rem;
+}

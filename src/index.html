@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Find TestLogs</title>
   <script type="module" src="/main.js" defer></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="jquery-3.7.1.min.js"></script>
   <script src="sortable.min.js"></script>
 </head>
 <body>
@@ -23,6 +23,9 @@
     <text id="results-box-time">Time to results:</text>
     <div class="settings-header">
       <button type="button" id="get_config_location" onclick="openconfig()">Open Config file</button>
+    </div>
+    <div class="scanner-info">
+      <button type="button" id="scanner-info" onclick="create_window()">&#x2757;How to enable barcode scanner&#x2757;</button>
     </div>
   </header>
   <form id="search-form">
@@ -93,7 +96,10 @@
   const { invoke } = window.__TAURI__.tauri;
   const { convertFileSrc } = window.__TAURI__.tauri;
   const { getVersion } = window.__TAURI__.app
+  const { WebviewWindow } = window.__TAURI__.window
+
   
+
 $(document).ready(function() {
   // Enable the search button when both product number and serial number fields are not empty.
   $("#productnumber, #serialnumber").on("keyup change", function() {
@@ -143,6 +149,18 @@ $(document).ready(function() {
     document.getElementById("footer-content").innerHTML = "&copy; Find_testlog " + app_semver;
   }
   get_application_version();
+
+
+  //Readme for barcode scanning
+  async function create_window(){
+      const webview = new WebviewWindow('HowToEnableBarcodeScanner', {
+          url: '/barcode_scanner.html'
+        });
+        webview.once('tauri://created', function () {
+        // webview window successfully created
+        });
+  }
+
 
 </script>
 

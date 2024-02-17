@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V4.2.1] - 2024-02-17
+
+### Add
+- `pn` and `sn` inputs now automatically add `-` to the string. 
+- Added tutorial button for barcode scanning.
+
+### Fix
+- #61 (package jquery with app)
+- #62 (automatically add "-" when typing sn or pn)
+- #63 (Reduce app size)
+
 ## [V4.2.0] - 2024-01-20
 
 ### Fix

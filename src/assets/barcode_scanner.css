@@ -1,0 +1,63 @@
+
+.readme-container {
+    max-width: 800px;
+    margin: auto;
+    padding: var(--padding-1);
+}
+
+h1 {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: var(--padding-1);
+}
+
+p, li {
+    color: var(--color-info-dark);
+}
+
+code {
+    background-color: var(--color-light);
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--border-radius-1);
+    font-family: monospace;
+}
+
+ol {
+    margin-top: var(--padding-1);
+    padding-left: 20px;
+}
+
+.image-container {
+    margin-top: var(--padding-1);
+}
+
+.tutorial-image {
+    width: 100%;
+    max-width: 800px;
+    border-radius: var(--border-radius-2);
+    box-shadow: var(--box-shadow);
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-background);
+}
+
+.readme-container {
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 800px) {
+    .readme-container {
+        padding: 1rem;
+    }
+}
+
