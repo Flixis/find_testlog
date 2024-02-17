@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V4.2.1] - 2024-02-17
+
+### Add
+- `pn` and `sn` inputs now automatically add `-` to the string. 
+- Added tutorial button for barcode scanning.
+
+### Fix
+- #61
+- #62
+- #63
+
 ## [V4.2.0] - 2024-01-20
 
 ### Fix
