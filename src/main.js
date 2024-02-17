@@ -143,3 +143,47 @@ async function updateProgressBar(updateamount) {
       loadingBar.style.width = '100%';
   }
 }
+
+function formatNumber(input, type) {
+    // Remove all non-alphanumeric characters for a clean slate
+    let cleanedInput = input.replace(/[^a-zA-Z0-9]/gi, '').toUpperCase();
+
+    // Determine the pattern based on the input type
+    let pattern;
+    if (type === 'PN') { // Product Number: Insert dashes after every 4 digits
+        pattern = [4, 4, 4]; // Example: 9999-1234-5678
+    } else if (type === 'SN') { // Serial Number: XX-XX-YYY-000 pattern
+        pattern = [2, 2, 3, 3];
+    } else {
+        return cleanedInput; // No formatting if type is unknown
+    }
+
+    let formatted = '';
+    let index = 0;
+
+    for (let i = 0; i < pattern.length; i++) {
+        if (index >= cleanedInput.length) break;
+
+        /* 
+        Adds a dash before each new segment (except the first)
+        and appends the segment of cleanedInput defined by the current pattern element,
+        then updates the index to the next segment start position.
+        */
+        if (i > 0) formatted += '-';
+        formatted += cleanedInput.substring(index, index + pattern[i]);
+        index += pattern[i];
+    }
+
+    return formatted;
+}
+
+// Event listeners for input fields
+document.getElementById('productnumber').addEventListener('input', function() {
+    this.value = formatNumber(this.value, 'PN'); // Format as Product Number
+    document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
+});
+
+document.getElementById('serialnumber').addEventListener('input', function() {
+    this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
+    document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
+});
