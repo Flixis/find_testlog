@@ -12,7 +12,7 @@ edition = "2021"
 tauri-build = { version = "1.5.1", features = [] }
 
 [dependencies]
-tauri = { version = "1.5.4", features = [ "updater", "os-all", "shell-open"] }
+tauri = { version = "1.5.4", features = [ "window-set-title", "window-show", "window-close", "window-create", "updater", "os-all", "shell-open"] }
 serde = { version = "1.0.196", features = ["derive"] }
 
 confy = "0.6.0"

@@ -126,7 +126,6 @@ function FormatDateToYYYYWW(datepicker_id) {
   return formattedDate; // Output: YYYY-WW
 }
 
-//I call this function many times to update the progressbar, for some reason I can't get the async to well... Async.
 async function updateProgressBar(updateamount) {
   const loadingBar = document.querySelector('.loading-bar-inner');
   if (loadingbarprogress + updateamount <= 100) {
