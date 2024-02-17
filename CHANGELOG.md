@@ -9,9 +9,9 @@ All notable changes to this project will be documented in this file.
 - Added tutorial button for barcode scanning.
 
 ### Fix
-- #61
-- #62
-- #63
+- #61 (package jquery with app)
+- #62 (automatically add "-" when typing sn or pn)
+- #63 (Reduce app size)
 
 ## [V4.2.0] - 2024-01-20
 
