@@ -25,7 +25,11 @@ fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
     let search_info = structs::AppConfig::default_values();
 
-    logging_settings::setup_loggers();
+
+    if let Err(e) = logging_settings::setup_loggers() {
+        eprintln!("{} {}", "Logger setup failed!:".red().bold(),e);
+        log::error!("Logger setup failed: {}", e);
+    }
 
     if std::env::args_os().count() > 1 {
         log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
