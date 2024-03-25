@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V4.2.2] - 2024-02-17
+
+### Fix
+- #66 (Standalone does not work)
+
 ## [V4.2.1] - 2024-02-17
 
 ### Add
