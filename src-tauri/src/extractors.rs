@@ -89,8 +89,8 @@ Regex pattern matches on and returns something like:
 /// b(PASS(?:ED)?|FAIL(?:ED)?)\b
 pub fn extract_info_from_log(
     filename: &str,
-    _text_keep_amount: usize,
-) -> Result<String, io::Error> {
+    bytes_to_read: i64,
+) -> Result<IndexMap<String, String>, io::Error> {
     let file = match File::open(filename) {
         Ok(file) => file,
         Err(err) => {
@@ -102,8 +102,8 @@ pub fn extract_info_from_log(
     println!("{:?}", &file);
 
     //500 bytes is just a random number I picked, it could be moved higher if the need is there
-    let mut first_part = read_file_till_bytes(&file, 500);
-    let mut second_part = read_file_till_bytes(&file, -500);
+    let mut first_part = read_file_till_bytes(&file, bytes_to_read);
+    let mut second_part = read_file_till_bytes(&file, -bytes_to_read);
     first_part = clean_up_string(&first_part);
     second_part = clean_up_string(&second_part);
 
@@ -113,16 +113,9 @@ pub fn extract_info_from_log(
     let cleaned_operation_status = create_status_hashmap_from_status_string(&second_part);
 
     
-    // dbg!(&first_part);
-    // dbg!(&cleaned_operation_headers);
-    // dbg!(&second_part);
-    // dbg!(&cleaned_operation_status);
-    
+  
     cleaned_operation_headers.extend(cleaned_operation_status);
-    dbg!(&cleaned_operation_headers);
-
-
-    Ok(String::new())
+    Ok(cleaned_operation_headers)
 
 }
 

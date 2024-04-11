@@ -30,6 +30,7 @@ async function execute_search() {
       dateyyyyww: date_yyyyww,
       testtype: test_type,
   });
+  console.log(searchdata);
 
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = ''; // Clear existing table data
@@ -44,7 +45,7 @@ async function execute_search() {
           const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
           const passFailStatus = searchdata[i].PASS_FAIL_STATUS;
           const logLocation = searchdata[i].location.replace(/\\/g, '/'); // Replace backslashes with forward slashes
-          const mode = searchdata[i].Mode.trim().toLowerCase();
+          const mode = searchdata[i].mode.trim().toLowerCase();
        
           row.innerHTML = `
       <td>${datetime}</td>
