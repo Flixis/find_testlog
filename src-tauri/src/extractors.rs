@@ -1,10 +1,6 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
-use indexmap::IndexMap;
-use regex::Regex;
-use std::collections::VecDeque;
 use std::fs::File;
-use std::io;
-use std::io::BufRead;
+use std::io::{self, Read, Seek, SeekFrom};
 
 /*
 
@@ -92,8 +88,8 @@ Regex pattern matches on and returns something like:
 /// b(PASS(?:ED)?|FAIL(?:ED)?)\b
 pub fn extract_info_from_log(
     filename: &str,
-    text_keep_amount: usize,
-) -> Result<Option<IndexMap<String, String>>, io::Error> {
+    _text_keep_amount: usize,
+) -> Result<String, io::Error> {
     let file = match File::open(filename) {
         Ok(file) => file,
         Err(err) => {
@@ -101,83 +97,40 @@ pub fn extract_info_from_log(
             return Err(err.into());
         }
     };
-    let reader = io::BufReader::new(file);
+    let mut first_part = read_file_till_bytes(&file, 500);
+    let mut second_part = read_file_till_bytes(&file, -500);
+    
+    first_part = clean_up_string(&first_part);
+    second_part = clean_up_string(&second_part);
 
-    let mut first_lines = Vec::new();
-    let mut last_lines = VecDeque::new();
+    
+    // dbg!(&first_part);
+    println!("{}", &first_part);
+    // dbg!(&second_part);
+    println!("{}", &second_part);
+    
+    Ok(String::new())
 
-    for (index, line_result) in reader.lines().enumerate() {
-        let line = match line_result {
-            Ok(line) => line,
-            Err(err) => {
-                log::error!("Error reading line {}: {}", index, err);
-                continue; // Skip this line and continue with the next one
-            }
-        };
+}
 
-        if index < text_keep_amount {
-            first_lines.push(line.clone());
-        }
-        last_lines.push_back(line.clone());
-
-        // Keep only the last 4 lines in the last_lines queue.
-        while last_lines.len() > 4 {
-            last_lines.pop_front();
-        }
+fn read_file_till_bytes(mut file: &File, bytes_to_read: i64) -> String{
+    
+    if bytes_to_read < 0 {
+        file.seek(SeekFrom::End(bytes_to_read)).unwrap();
     }
+    let mut buffer = vec![0; bytes_to_read.abs() as usize];
+    let n = file.read(&mut buffer).unwrap();
+    
+    // Convert the buffer to a String, handling potential errors.
+    let text = String::from_utf8(buffer[..n].to_vec()).unwrap();
+    text
 
-    let mut data: IndexMap<String, String> = IndexMap::new();
-    let re_first = Regex::new(r"(\w+):\s*(.+)").unwrap();
-    let re_last = Regex::new(r"\b(PASS(?:ED)?|FAIL(?:ED)?)\b").unwrap();
+}
 
-    for line in first_lines {
-        if let Some(caps) = re_first.captures(&line) {
-            let key = caps[1].to_string();
-            let value = caps[2].to_string();
-            if data.contains_key(&key) {
-                let duplicatekey = format!("{}{}", key.clone(), "_duplicate");
-                data.insert(duplicatekey, value.clone());
-            } else {
-                data.insert(key.clone(), value);
-            }
-        }
-    }
-
-    for line in last_lines {
-        if let Some(caps) = re_last.captures(&line) {
-            let key = "PASS_FAIL_STATUS".to_string();
-            let value = caps[1].to_string();
-            if data.contains_key(&key) {
-                let duplicatekey = format!("{}{}", key.clone(), "_duplicate");
-                data.insert(duplicatekey, value.clone());
-            } else {
-                data.insert(key.clone(), value);
-            }
-        }
-    }
-
-    // Regex for operation configuration splitting
-    let config_re = Regex::new(r"(\w+(?: \w+)*).*?id: (\d+); Release (\w+)")
-        .expect("Unable to parse the operation configuration from the log file");
-
-    if let Some(config_text) = data.get("configuration") {
-        if let Some(captures) = config_re.captures(config_text) {
-            if let (Some(testtype), Some(id), Some(release)) =
-                (captures.get(1), captures.get(2), captures.get(3))
-            {
-                let testtype_str = testtype.as_str().to_string();
-                let id_str = id.as_str().to_string();
-                let release_str = release.as_str().to_string();
-
-                data.insert("testtype".to_string(), testtype_str);
-                data.insert("id".to_string(), id_str);
-                data.insert("release".to_string(), release_str);
-            }
-        }
-    } else {
-        log::error!("Failed to find 'configuration' field in the log.");
-        return Ok(Some(data));
-    }
-    log::info!("extract_info_from_log: {:?}", data);
-    Ok(Some(data))
+fn clean_up_string(input: &str) -> String {
+    input
+        // Remove the Unicode BOM
+        .replace("\u{feff}", "")
+        // Convert Windows line endings to Unix line endings
+        .replace("\r\n", "\n")
 }
