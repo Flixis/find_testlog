@@ -1,6 +1,5 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use indexmap::IndexMap;
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, Read, Seek, SeekFrom};
 
@@ -100,6 +99,8 @@ pub fn extract_info_from_log(
         }
     };
 
+    println!("{:?}", &file);
+
     //500 bytes is just a random number I picked, it could be moved higher if the need is there
     let mut first_part = read_file_till_bytes(&file, 500);
     let mut second_part = read_file_till_bytes(&file, -500);
@@ -108,15 +109,19 @@ pub fn extract_info_from_log(
 
 
 
-    let cleaned_operation_headers = create_header_hashmap_from_headers_string(&first_part);
-    let cleaned_operation_status = create_header_hashmap_from_headers_string(&second_part);
+    let mut cleaned_operation_headers = create_header_hashmap_from_headers_string(&first_part);
+    let cleaned_operation_status = create_status_hashmap_from_status_string(&second_part);
 
     
     // dbg!(&first_part);
-    dbg!(&cleaned_operation_headers);
+    // dbg!(&cleaned_operation_headers);
     // dbg!(&second_part);
-    println!("{}", &second_part);
+    // dbg!(&cleaned_operation_status);
     
+    cleaned_operation_headers.extend(cleaned_operation_status);
+    dbg!(&cleaned_operation_headers);
+
+
     Ok(String::new())
 
 }
@@ -154,7 +159,6 @@ fn create_header_hashmap_from_headers_string(data: &String) -> IndexMap<String, 
             if key == "operation configuration" {
                 // Handle special formatting for "Operation configuration"
                 let parts: Vec<&str> = value.split_whitespace().collect();
-                dbg!(&parts);
                 if !parts.is_empty() {
                     hashmap.insert("operation_configuration".to_string(), parts[0].to_string());
 
@@ -178,4 +182,33 @@ fn create_header_hashmap_from_headers_string(data: &String) -> IndexMap<String, 
     }
 
     hashmap
+}
+
+fn create_status_hashmap_from_status_string(input: &str) -> IndexMap<String, String>{
+    let mut results = IndexMap::new();
+
+    // Find the start of the "Test Results" section
+    if let Some(start) = input.find("Test Results:") {
+        // Extract everything from "Test Results:" to the end of the string
+        let results_section = &input[start..];
+
+        // Iterate over each line in the "Test Results" section
+        for line in results_section.lines() {
+            // Check if the line contains a serial number (SN) and result (PASS/FAIL)
+            if line.contains("SN:") && (line.contains("PASS") || line.contains("FAIL")) {
+                // Extract the serial number and result
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                let sn_index = parts.iter().position(|&r| r == "SN:").unwrap() + 1;
+                let result_index = parts.len() - 1; // Assuming the result is always the last part
+
+                let serial_number = parts[sn_index].trim_end_matches('-').to_string();
+                let result = parts[result_index].to_string();
+
+                // Insert the serial number and result into the HashMap
+                results.insert(serial_number, result);
+            }
+        }
+    }
+
+    results
 }
