@@ -1,4 +1,6 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use indexmap::IndexMap;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, Read, Seek, SeekFrom};
 
@@ -97,15 +99,21 @@ pub fn extract_info_from_log(
             return Err(err.into());
         }
     };
+
+    //500 bytes is just a random number I picked, it could be moved higher if the need is there
     let mut first_part = read_file_till_bytes(&file, 500);
     let mut second_part = read_file_till_bytes(&file, -500);
-    
     first_part = clean_up_string(&first_part);
     second_part = clean_up_string(&second_part);
 
+
+
+    let cleaned_operation_headers = create_header_hashmap_from_headers_string(&first_part);
+    let cleaned_operation_status = create_header_hashmap_from_headers_string(&second_part);
+
     
     // dbg!(&first_part);
-    println!("{}", &first_part);
+    dbg!(&cleaned_operation_headers);
     // dbg!(&second_part);
     println!("{}", &second_part);
     
@@ -133,4 +141,41 @@ fn clean_up_string(input: &str) -> String {
         .replace("\u{feff}", "")
         // Convert Windows line endings to Unix line endings
         .replace("\r\n", "\n")
+}
+
+fn create_header_hashmap_from_headers_string(data: &String) -> IndexMap<String, String> {
+    let mut hashmap = IndexMap::new();
+
+    for line in data.lines() {
+        if let Some((key, value)) = line.split_once(':') {
+            let key = key.trim().replace("-", "").trim().to_lowercase(); // Format key
+            let value = value.trim().to_string();
+
+            if key == "operation configuration" {
+                // Handle special formatting for "Operation configuration"
+                let parts: Vec<&str> = value.split_whitespace().collect();
+                dbg!(&parts);
+                if !parts.is_empty() {
+                    hashmap.insert("operation_configuration".to_string(), parts[0].to_string());
+
+                    // Further processing for id and Release parts
+                    for part in &parts[1..] {
+                        if part.starts_with("(id:") {
+                            let id = parts[2].to_string();
+                            hashmap.insert("id".to_string(), id);
+                        } else if part.starts_with("Release") {
+                            let release = parts[4..6].concat().to_string();
+                            hashmap.insert("release".to_string(), release);
+                            break; // Assuming rest of the parts belong to Release, stop iterating
+                        }
+                    }
+                }
+            } else {
+                // For all other keys, insert directly
+                hashmap.insert(key, value);
+            }
+        }
+    }
+
+    hashmap
 }
