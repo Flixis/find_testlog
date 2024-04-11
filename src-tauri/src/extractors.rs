@@ -8,48 +8,62 @@ use std::io::BufRead;
 
 /*
 
-Regex pattern matches on date and time, which is required to build a valid date-time string. Additionally, it checks for the presence of '\test_env' | \PTF\ | \AET\ in the string to confirm whether the returned path is correctly pulled from the source directory.
+Pattern matches on datetime and clnt, which is required to build a valid date-time string.
 
 */
 /// Extracts date and time from filepath and parses it as chrono:naivedate
 pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
-    let re = Regex::new(r"(\d{8}).(\d{6}).(CLNT\d+)").expect("Failed to parse log path");
-    let regex_captures = re.captures(log_path);
-    match regex_captures {
-        Some(captures) => {
-            let date_str = captures[1].to_string();
-            let time_str = captures[2].to_string();
-            let clnt = captures[3].to_string();
+    
+    let log_path =  log_path.split('/').last().ok_or_else(|| log::error!("Failed to extract log filename from path")).unwrap();
+    let parts: Vec<&str> = log_path.split('_').collect();
 
-            // Parse date and time strings into chrono objects
-            let date = NaiveDate::parse_from_str(&date_str, "%Y%m%d").expect("Invalid date");
-            let time = NaiveTime::parse_from_str(&time_str, "%H%M%S").expect("Invalid time");
+    // Ensure the parts vector has at least the expected number of elements
+    if parts.len() >= 3 {
+        let date_str = parts[0];
+        let time_str = parts[1];
+        let clnt = parts[2].to_string();
 
-            // Create a combined datetime object
-            let datetime = NaiveDateTime::new(date, time);
+        
+        let default_date = NaiveDate::from_ymd_opt(1, 1, 1).unwrap_or_default();
+        let default_time = NaiveTime::from_hms_opt(1, 1, 1).unwrap_or_default();
 
-            // Format the datetime object into the desired format
-            let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
 
-            log::debug!(
-                "extract_datetime_clnt_from_logpath: {}{}",
-                formatted_datetime,
-                clnt
-            );
-            (formatted_datetime, clnt)
-        }
-        None => {
-            // Handle the case where the regex does not match.
-            log::error!(
-                "Could not extract datetime or CLNT from from log path: {}",
-                log_path
-            );
-            (
-                //Returns a new string, the 'extract_info_from_log' function allows us to recoup this data.
-                String::new(),
-                String::new(),
-            )
-        }
+        // Parse date and time strings into chrono objects
+        let date = match NaiveDate::parse_from_str(date_str, "%Y%m%d") {
+            Ok(date) => date,
+            Err(_) => {
+                log::error!("Invalid date format: {}", date_str);
+                default_date
+            }
+        };
+
+        let time = match NaiveTime::parse_from_str(time_str, "%H%M%S") {
+            Ok(time) => time,
+            Err(_) => {
+                log::error!("Invalid time format: {}", time_str);
+                default_time
+            }
+        };
+
+        // Create a combined datetime object
+        let datetime = NaiveDateTime::new(date, time);
+
+        // Format the datetime object into the desired format
+        let formatted_datetime = datetime.format("%Y/%m/%d %H:%M:%S").to_string();
+
+        log::debug!(
+            "extract_datetime_clnt_from_logpath: {} {}",
+            formatted_datetime,
+            clnt
+        );
+
+        (formatted_datetime, clnt)
+    } else {
+        log::error!(
+            "Could not extract datetime or CLNT from log path: {}",
+            log_path
+        );
+        (String::new(), String::new())
     }
 }
 
