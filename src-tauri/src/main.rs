@@ -110,7 +110,21 @@ async fn parse_frontend_search_data(
                     data.insert("clnt".to_string(), extracted_clnt.to_string());
                     data.insert("location".to_string(), path.to_string());
 
-                    extractors::extract_info_from_log(&path, 10);
+                    match extractors::extract_info_from_log(&path, 500) {
+                        Ok(log_data) => {
+                            dbg!(&log_data);
+                            for (key, value) in &log_data {
+                                data.insert(key.clone(), value.clone());
+                            }
+                            result_data.push(data);
+                        }
+                        // Ok(None) => {
+                        //     log::error!("No data found in the 'configuration' field.");
+                        // }
+                        Err(err) => {
+                            log::error!("Error: {}", err);
+                        }
+                    }
                 }
             }
         }
