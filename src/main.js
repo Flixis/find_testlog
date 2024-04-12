@@ -41,9 +41,8 @@ async function execute_search() {
       if (test_type === "" || test_type.toUpperCase() === "ALL" || (searchdata[i].testtype || searchdata[i].name) === test_type.toUpperCase()) {
           const row = document.createElement('tr');
           const datetime = searchdata[i].datetime || searchdata[i].DateTime; // Use 'datetime' if available, otherwise use 'DateTime'
-          const testtype = searchdata[i].testtype || searchdata[i].Name; // Use 'testtype' if available, otherwise use 'Name'
+          const testtype = searchdata[i].operation_configuration || searchdata[i].operation; // Use 'testtype' if available, otherwise use 'Name'
           const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
-          const passFailStatus = searchdata[i].PASS_FAIL_STATUS;
           const logLocation = searchdata[i].location.replace(/\\/g, '/'); // Replace backslashes with forward slashes
           const mode = searchdata[i].mode.trim().toLowerCase();
        
@@ -56,15 +55,37 @@ async function execute_search() {
       <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
       </tr>`;
 
-          if (mode === 'production') {
-              if (passFailStatus === "PASS" || passFailStatus === "PASSED") {
-                  row.style.backgroundColor = "#1B9C85";
-              } else if (passFailStatus === "FAIL" || passFailStatus === "FAILED") {
-                  row.style.backgroundColor = "#CC6852";
-              }
-          } else if (mode === 'service') {
-              row.style.backgroundColor = "#CC6918bd"
-          }
+      const colors = {  
+        PASS: '#1B9C85',
+        FAIL: '#CC6852',
+        SERVICE: '#CC6918bd' // Assuming 'service' is another status like PASS and FAIL
+    };
+    
+    // Assuming 'i' is the current index in your process, and 'row' is the current row you're styling
+    // Replace 'serialnumber' with the actual serial number you're checking
+    let status = null; // Initialize status
+
+    // Find the status for the given serial number in searchdata
+    for (let item of searchdata) {
+        if (item.hasOwnProperty(serialnumber)) {
+            status = item[serialnumber]; // Get the status (PASS/FAIL)
+            break; // Exit the loop once the serial number is found and status is assigned
+        }
+    }
+
+    // Check if we found a status; if not, and mode is 'service', use SERVICE color
+    if (status) {
+        // Adjust the row color based on the status
+        if (status === "PASS" || status === "PASSED") {
+            row.style.backgroundColor = colors.PASS;
+        } else if (status === "FAIL" || status === "FAILED") {
+            row.style.backgroundColor = colors.FAIL;
+        }
+    } else if (mode === 'service') {
+        // Directly use the 'SERVICE' color from the colors object
+        row.style.backgroundColor = colors.SERVICE;
+    }
+    
 
           tableBody.appendChild(row);
       }
