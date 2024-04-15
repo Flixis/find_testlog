@@ -2,6 +2,7 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use indexmap::IndexMap;
 use std::fs::File;
 use std::io::{self, Read, Seek, SeekFrom};
+use std::path::Path;
 
 /*
 
@@ -11,7 +12,11 @@ Pattern matches on datetime and clnt, which is required to build a valid date-ti
 /// Extracts date and time from filepath and parses it as chrono:naivedate
 pub fn extract_datetime_clnt_from_logpath(log_path: &str) -> (String, String) {
     
-    let log_path =  log_path.split('/').last().ok_or_else(|| log::error!("Failed to extract log filename from path")).unwrap();
+    let path = Path::new(log_path);
+    let log_path = path.file_name().and_then(|f| f.to_str()).ok_or_else(|| {
+        log::error!("Failed to extract log filename from path");
+        "Error: Could not extract log filename"
+    }).unwrap();
     let parts: Vec<&str> = log_path.split('_').collect();
 
     // Ensure the parts vector has at least the expected number of elements
@@ -161,7 +166,7 @@ fn create_header_hashmap_from_headers_string(data: &String) -> IndexMap<String, 
                             let id = parts[2].to_string();
                             hashmap.insert("id".to_string(), id);
                         } else if part.starts_with("Release") {
-                            let release = parts[4..6].concat().to_string();
+                            let release = parts[4..5].concat().to_string();
                             hashmap.insert("release".to_string(), release);
                             break; // Assuming rest of the parts belong to Release, stop iterating
                         }
