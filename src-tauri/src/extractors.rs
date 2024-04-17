@@ -106,7 +106,6 @@ pub fn extract_info_from_log(
         }
     };
 
-    println!("{:?}", &file);
 
     let mut first_part_of_file = match read_file_till_bytes(&file, bytes_to_read) {
         Ok(content) => content,
@@ -124,9 +123,6 @@ pub fn extract_info_from_log(
         }
     };
 
-    // dbg!(&first_part_of_file);
-    dbg!(&second_part_of_file);
-
     first_part_of_file = clean_up_string(&first_part_of_file);
     second_part_of_file = clean_up_string(&second_part_of_file);
 
@@ -143,7 +139,7 @@ fn read_file_till_bytes(mut file: &File, bytes_to_read: i64) -> Result<String, i
         //result unused because it returns cursor position which we dont need
         let _file_seek_result = file
             .seek(SeekFrom::End(bytes_to_read))
-            .or_else(|_| file.seek(SeekFrom::End(bytes_to_read / 2)));
+            .or_else(|_| file.seek(SeekFrom::End(bytes_to_read / 3)));
     }
     let mut buffer = vec![0; bytes_to_read.abs() as usize];
     let bytes_extracted_from_file = file.read(&mut buffer).unwrap();
@@ -223,7 +219,6 @@ fn create_status_hashmap_from_status_string(input: &str) -> IndexMap<String, Str
                 let result = parts[result_index].to_string();
 
                 // Insert the serial number and result into the HashMap
-                dbg!(&parts);
                 results.insert(serial_number, result);
             }
         }
