@@ -25,9 +25,8 @@ fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
     let search_info = structs::AppConfig::default_values();
 
-
     if let Err(e) = logging_settings::setup_loggers() {
-        eprintln!("{} {}", "Logger setup failed!:".red().bold(),e);
+        eprintln!("{} {}", "Logger setup failed!:".red().bold(), e);
         log::error!("Logger setup failed: {}", e);
     }
 
@@ -67,7 +66,7 @@ fn main() {
 }
 
 /// Takes values from frontend and parses through search algorithm.
-/// 
+///
 /// Returns a Vec of values.
 #[tauri::command]
 async fn parse_frontend_search_data(
