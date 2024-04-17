@@ -7,112 +7,129 @@ let updateInterval;
 let loadingfinished = false;
 
 async function execute_search() {
+    const startTime = performance.now();
 
-  //start counting time for execution
-  const startTime = performance.now();
+    initializeProgressBar();
+    const searchData = await fetchSearchData();
+    console.log(searchData);
+    populateTableWithSearchData(searchData);
+    finalizeProgressBar(startTime);
+}
 
-  //reset the progress bar
-  loadingbarprogress = 0;
-  let loadingfinished = false;
-  updateInterval = setInterval(() => {
-      updateProgressBar(1); // Update amount of progress
-  }, 250); // Adjust the interval as needed
+function initializeProgressBar() {
+    loadingbarprogress = 0;
+    let loadingfinished = false;
+    updateInterval = setInterval(() => updateProgressBar(1), 250);
+}
 
-  //grab the important elements
-  const productnumber = document.getElementById('productnumber').value.trim();
-  const serialnumber = document.getElementById('serialnumber').value.trim();
-  const date_yyyyww = FormatDateToYYYYWW('datepicker');
-  const test_type = document.getElementById('test_type').value.trim();
+async function fetchSearchData() {
+    const productNumber = document.getElementById('productnumber').value.trim();
+    const serialNumber = document.getElementById('serialnumber').value.trim();
+    const dateYYYYWW = FormatDateToYYYYWW('datepicker');
+    const testType = document.getElementById('test_type').value.trim();
 
-  var searchdata = await invoke('parse_frontend_search_data', {
-      productnumber: productnumber,
-      serialnumber: serialnumber,
-      dateyyyyww: date_yyyyww,
-      testtype: test_type,
-  });
-  console.log(searchdata);
+    return await invoke('parse_frontend_search_data', {
+        productnumber: productNumber,
+        serialnumber: serialNumber,
+        dateyyyyww: dateYYYYWW,
+        testtype: testType,
+    });
+}
 
-  const tableBody = document.getElementById('table-body');
-  tableBody.innerHTML = ''; // Clear existing table data
+function populateTableWithSearchData(searchData) {
+    const tableBody = document.getElementById('table-body');
+    tableBody.innerHTML = '';
 
-  // Loop through the data and create a row for each entry
-  for (let i = 0; i < Object.keys(searchdata).length; i++) {
-      // Only print when it matches the following cases, or when it matches the test type
-      if (test_type === "" || test_type.toUpperCase() === "ALL" || (searchdata[i].testtype || searchdata[i].name) === test_type.toUpperCase()) {
-          const row = document.createElement('tr');
-          const datetime = searchdata[i].datetime || searchdata[i].DateTime; // Use 'datetime' if available, otherwise use 'DateTime'
-          const testtype = searchdata[i].operation_configuration || searchdata[i].operation; // Use 'testtype' if available, otherwise use 'Name'
-          const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
-          const logLocation = searchdata[i].location.replace(/\\/g, '/'); // Replace backslashes with forward slashes
-          const mode = searchdata[i].mode.trim().toLowerCase();
-       
-          row.innerHTML = `
-      <td>${datetime}</td>
-      <td>${testtype}</td>
-      <td>${searchdata[i].release}</td>
-      <td>${clnt}</td>
-      <td>${searchdata[i].id}</td>
-      <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
-      </tr>`;
+    Object.values(searchData).forEach((data, index) => {
+        if (shouldIncludeRow(data, index)) {
+            const row = createTableRow(data);
+            tableBody.appendChild(row);
+        }
+    });
 
-      const colors = {  
+    updateResultsCount();
+}
+
+function shouldIncludeRow(data, index) {
+    const testType = document.getElementById('test_type').value.trim().toUpperCase();
+    return testType === "" || testType === "ALL" || data.testtype === testType || data.name === testType;
+}
+
+function createTableRow(data) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${data.datetime || data.DateTime}</td>
+        <td>${data.operation_configuration || data.operation}</td>
+        <td>${data.release}</td>
+        <td>${data.clnt || data.Machine}</td>
+        <td>${data.id}</td>
+        <td><button onclick='openLog("${data.location.replace(/\\/g, '/')}")'>Open Log</button></td>
+    `;
+    styleRowBasedOnStatus(row, data);
+    return row;
+}
+
+function styleRowBasedOnStatus(row, data) {
+    const statusColors = {
         PASS: '#1B9C85',
         FAIL: '#CC6852',
-        SERVICE: '#CC6918bd' // Assuming 'service' is another status like PASS and FAIL
+        SERVICE: '#CC6918bd'
     };
-    
-    // Assuming 'i' is the current index in your process, and 'row' is the current row you're styling
-    // Replace 'serialnumber' with the actual serial number you're checking
-    let status = null; // Initialize status
 
-    // Find the status for the given serial number in searchdata
-    for (let item of searchdata) {
-        if (item.hasOwnProperty(serialnumber)) {
-            status = item[serialnumber]; // Get the status (PASS/FAIL)
-            break; // Exit the loop once the serial number is found and status is assigned
-        }
-    }
+    let status = getStatus(data);
 
-    // Check if we found a status; if not, and mode is 'service', use SERVICE color
     if (status) {
-        // Adjust the row color based on the status
-        if (status === "PASS" || status === "PASSED") {
-            row.style.backgroundColor = colors.PASS;
-        } else if (status === "FAIL" || status === "FAILED") {
-            row.style.backgroundColor = colors.FAIL;
-        }
-    } else if (mode === 'service') {
-        // Directly use the 'SERVICE' color from the colors object
-        row.style.backgroundColor = colors.SERVICE;
+        row.style.backgroundColor = statusColors[status] || null;
     }
-    
+}
 
-          tableBody.appendChild(row);
-      }
-  }
+function getStatus(data) {
+    // console.log("Debug: Checking data", data);
+
+    // Explicit check for 'service' mode
+    if (data.hasOwnProperty('mode')) {
+        const mode = data.mode.trim().toUpperCase();
+        if (mode.includes('SERVICE')) {
+             return 'SERVICE';
+        }
+    }
+
+    // Checking for PASS/FAIL status directly mentioned in data
+    if (data.hasOwnProperty('PASS_FAIL_STATUS')) {
+        const passFailStatus = data.PASS_FAIL_STATUS.trim().toUpperCase();
+        if (passFailStatus.includes("PASS")) {
+            return 'PASS';
+        } else if (passFailStatus.includes("FAIL")) {
+            return 'FAIL';
+        }
+    }
+
+    // Check for a status key that matches a specific serial number in the data
+    const statusKey = document.getElementById('serialnumber').value.trim();
+    if (statusKey && data.hasOwnProperty(statusKey)) {
+        return data[statusKey].trim().toUpperCase();
+    }
+
+    // No relevant status found
+    return null;
+}
 
 
-  // Update the results count
-  const resultsCount = document.getElementById("results-count");
-  // Update the results count when the search results are updated.
-  function updateResultsCount() {
-      resultsCount.textContent = document.getElementById("table-body").childElementCount;
-  }
-  // Update the results count when the page loads.
-  updateResultsCount();
 
-  // Stop the interval and finalize the progress bar
-  clearInterval(updateInterval);
-  loadingfinished = true;
-  const loadingBar = document.querySelector('.loading-bar-inner');
-  loadingBar.style.width = '100%';
 
-  // calculate the total time for execution
-  const endTime = performance.now();
-  const executionTime = endTime - startTime;
-  const seconds = Math.floor(executionTime / 1000);
-  const milliseconds = executionTime % 1000;
-  document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
+function updateResultsCount() {
+    const resultsCount = document.getElementById("results-count");
+    resultsCount.textContent = document.getElementById("table-body").childElementCount.toString();
+}
+
+function finalizeProgressBar(startTime) {
+    clearInterval(updateInterval);
+    const endTime = performance.now();
+    const executionTime = endTime - startTime;
+    const seconds = Math.floor(executionTime / 1000);
+    const milliseconds = executionTime % 1000;
+    document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
+    document.querySelector('.loading-bar-inner').style.width = '100%';
 }
 
 $('#search-button').click(execute_search);
