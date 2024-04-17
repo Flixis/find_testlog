@@ -111,15 +111,12 @@ async fn parse_frontend_search_data(
 
                     match extractors::extract_info_from_log(&path, 500) {
                         Ok(log_data) => {
-                            dbg!(&log_data);
+                            // dbg!(&log_data);
                             for (key, value) in &log_data {
                                 data.insert(key.clone(), value.clone());
                             }
                             result_data.push(data);
                         }
-                        // Ok(None) => {
-                        //     log::error!("No data found in the 'configuration' field.");
-                        // }
                         Err(err) => {
                             log::error!("Error: {}", err);
                         }
