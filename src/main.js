@@ -128,7 +128,11 @@ function finalizeProgressBar(startTime) {
     const executionTime = endTime - startTime;
     const seconds = Math.floor(executionTime / 1000);
     const milliseconds = executionTime % 1000;
-    document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
+    if (seconds < 1){
+        document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds 🔥`;
+    }else{
+        document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
+    }
     document.querySelector('.loading-bar-inner').style.width = '100%';
 }
 
