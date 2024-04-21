@@ -87,13 +87,6 @@ Regex pattern matches on and returns something like:
     "release": "R497",
 
 */
-/// Extracts information from log file using regex patterns:
-///
-/// (\w+):\s*(.+)
-///
-/// (\w+(?: \w+)*).*?id: (\d+); Release (\w+)
-///
-/// b(PASS(?:ED)?|FAIL(?:ED)?)\b
 pub fn extract_info_from_log(
     filename: &str,
     bytes_to_read: i64,
@@ -105,7 +98,6 @@ pub fn extract_info_from_log(
             return Err(err.into());
         }
     };
-
 
     let mut first_part_of_file = match read_file_till_bytes(&file, bytes_to_read) {
         Ok(content) => content,
@@ -128,7 +120,8 @@ pub fn extract_info_from_log(
 
     let mut cleaned_operation_headers =
         create_header_hashmap_from_headers_string(&first_part_of_file);
-    let cleaned_operation_status = create_status_hashmap_from_status_string(&second_part_of_file, &filename);
+    let cleaned_operation_status =
+        create_status_hashmap_from_status_string(&second_part_of_file, &filename);
 
     cleaned_operation_headers.extend(cleaned_operation_status);
     Ok(cleaned_operation_headers)
@@ -198,7 +191,10 @@ fn create_header_hashmap_from_headers_string(data: &String) -> IndexMap<String, 
     hashmap
 }
 
-fn create_status_hashmap_from_status_string(input: &str, filename: &str) -> IndexMap<String, String> {
+fn create_status_hashmap_from_status_string(
+    input: &str,
+    filename: &str,
+) -> IndexMap<String, String> {
     let mut results = IndexMap::new();
 
     // Find the start of the "Test Results" section
@@ -209,7 +205,9 @@ fn create_status_hashmap_from_status_string(input: &str, filename: &str) -> Inde
         // Iterate over each line in the "Test Results" section
         for line in results_section.lines() {
             // Check if the line contains a serial number (SN) and result (PASS/FAIL)
-            if line.contains("SN:") && (line.contains("PASS") || line.contains("FAIL") || line.contains("ABORT")) {
+            if line.contains("SN:")
+                && (line.contains("PASS") || line.contains("FAIL") || line.contains("ABORT"))
+            {
                 // Extract the serial number and result
                 let parts: Vec<&str> = line.split_whitespace().collect();
                 let sn_index = parts.iter().position(|&r| r == "SN:").unwrap() + 1;
