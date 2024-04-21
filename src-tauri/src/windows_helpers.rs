@@ -1,5 +1,5 @@
 /// required to removed windows console when launching GUI.
-/// 
+///
 /// Tauri by default does not support this feature.
 #[cfg(target_os = "windows")]
 pub fn hide_windows_console(switch: bool) {
