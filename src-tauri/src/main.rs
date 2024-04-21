@@ -27,14 +27,13 @@ fn main() {
 
     if let Err(e) = logging_settings::setup_loggers() {
         eprintln!("{} {}", "Logger setup failed!:".red().bold(), e);
-        log::error!("Logger setup failed: {}", e);
     }
 
     if std::env::args_os().count() > 1 {
-        log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
+        log::warn!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
         let search_info = cli::parse_cli_args(commandlinearguments);
         cli::execute_search_results_from_cli(search_info);
-        log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
+        log::warn!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
