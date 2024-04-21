@@ -1,8 +1,8 @@
 use chrono::prelude::*;
 use simplelog::*;
+use whoami::fallible;
 use std::fs::{self, OpenOptions};
 use std::path::Path;
-use whoami::{self, fallible};
 
 /// App logging is setup with the following configuration:
 ///
@@ -17,19 +17,25 @@ pub fn setup_loggers() -> Result<(), String> {
 
     let utc = Utc::now().format("%d-%m-%Y_%H_%M").to_string();
     let hostname = match fallible::hostname() {
-        Ok(name) => {
-            name
-        },
+        Ok(name) => name,
         Err(e) => {
             eprintln!("Failed to get hostname: {}", e);
             "Failed to get hostname".to_string()
         }
     };
-    
+
+    let username = match fallible::username() {
+        Ok(name) => name,
+        Err(e) => {
+            eprintln!("Failed to get username: {}", e);
+            "Failed to get username".to_string()
+        }
+    };
+
     let filename_string_creation = format!(
         "find_testlog_logs/{}_{}_{}_{}",
         utc,
-        whoami::username(),
+        username.to_lowercase(),
         hostname.to_lowercase(),
         "find_testlog.log"
     );
