@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V4.3.0] - 2024-04-22
+
+#### 4.3.0 vs 4.2.1 Wow, so much faster!
+![speedup](/4_3_0vs4_2_1.png)
+
+### Change
+- 'ABORT' status is now the orange colour, additionally it shows a '⚠️' next to 'testtype'.
+- 'SERVICE' mode is now displayed as '🔧' next to 'testtype'.
+- Time to results now shows "🔥" when search takes less than 1 second.
+
+### Refactor
+- Rewrite 'extract_info_from_log'.
+- main.js
+
+### Chore
+- Dependency, whoami -> fallible.
+- Removed unreachable code.
+
+### Fix
+- #68 (Fallback should report on which file it was used on)
+- #69 (ABORT status not implemented)
+
 ## [V4.2.2] - 2024-02-17
 
 ### Fix

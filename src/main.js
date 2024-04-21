@@ -7,90 +7,147 @@ let updateInterval;
 let loadingfinished = false;
 
 async function execute_search() {
+    const startTime = performance.now();
 
-  //start counting time for execution
-  const startTime = performance.now();
+    initializeProgressBar();
+    const searchData = await fetchSearchData();
+    populateTableWithSearchData(searchData);
+    finalizeProgressBar(startTime);
+}
 
-  //reset the progress bar
-  loadingbarprogress = 0;
-  let loadingfinished = false;
-  updateInterval = setInterval(() => {
-      updateProgressBar(1); // Update amount of progress
-  }, 250); // Adjust the interval as needed
+function initializeProgressBar() {
+    loadingbarprogress = 0;
+    let loadingfinished = false;
+    updateInterval = setInterval(() => updateProgressBar(1), 250);
+}
 
-  //grab the important elements
-  const productnumber = document.getElementById('productnumber').value.trim();
-  const serialnumber = document.getElementById('serialnumber').value.trim();
-  const date_yyyyww = FormatDateToYYYYWW('datepicker');
-  const test_type = document.getElementById('test_type').value.trim();
+async function fetchSearchData() {
+    const productNumber = document.getElementById('productnumber').value.trim();
+    const serialNumber = document.getElementById('serialnumber').value.trim();
+    const dateYYYYWW = FormatDateToYYYYWW('datepicker');
+    const testType = document.getElementById('test_type').value.trim();
 
-  var searchdata = await invoke('parse_frontend_search_data', {
-      productnumber: productnumber,
-      serialnumber: serialnumber,
-      dateyyyyww: date_yyyyww,
-      testtype: test_type,
-  });
+    return await invoke('parse_frontend_search_data', {
+        productnumber: productNumber,
+        serialnumber: serialNumber,
+        dateyyyyww: dateYYYYWW,
+        testtype: testType,
+    });
+}
 
-  const tableBody = document.getElementById('table-body');
-  tableBody.innerHTML = ''; // Clear existing table data
+function populateTableWithSearchData(searchData) {
+    const tableBody = document.getElementById('table-body');
+    tableBody.innerHTML = '';
 
-  // Loop through the data and create a row for each entry
-  for (let i = 0; i < Object.keys(searchdata).length; i++) {
-      // Only print when it matches the following cases, or when it matches the test type
-      if (test_type === "" || test_type.toUpperCase() === "ALL" || (searchdata[i].testtype || searchdata[i].name) === test_type.toUpperCase()) {
-          const row = document.createElement('tr');
-          const datetime = searchdata[i].datetime || searchdata[i].DateTime; // Use 'datetime' if available, otherwise use 'DateTime'
-          const testtype = searchdata[i].testtype || searchdata[i].Name; // Use 'testtype' if available, otherwise use 'Name'
-          const clnt = searchdata[i].clnt || searchdata[i].Machine; // Use 'testtype' if available, otherwise use 'Name'
-          const passFailStatus = searchdata[i].PASS_FAIL_STATUS;
-          const logLocation = searchdata[i].location.replace(/\\/g, '/'); // Replace backslashes with forward slashes
-          const mode = searchdata[i].Mode.trim().toLowerCase();
-       
-          row.innerHTML = `
-      <td>${datetime}</td>
-      <td>${testtype}</td>
-      <td>${searchdata[i].release}</td>
-      <td>${clnt}</td>
-      <td>${searchdata[i].id}</td>
-      <td><button onclick='openLog("${logLocation}")'>Open Log</button></td>
-      </tr>`;
+    Object.values(searchData).forEach((data, index) => {
+        if (shouldIncludeRow(data, index)) {
+            const row = createTableRow(data);
+            tableBody.appendChild(row);
+        }
+    });
 
-          if (mode === 'production') {
-              if (passFailStatus === "PASS" || passFailStatus === "PASSED") {
-                  row.style.backgroundColor = "#1B9C85";
-              } else if (passFailStatus === "FAIL" || passFailStatus === "FAILED") {
-                  row.style.backgroundColor = "#CC6852";
-              }
-          } else if (mode === 'service') {
-              row.style.backgroundColor = "#CC6918bd"
-          }
+    updateResultsCount();
+}
 
-          tableBody.appendChild(row);
-      }
-  }
+function shouldIncludeRow(data, index) {
+    const testType = document.getElementById('test_type').value.trim().toUpperCase();
+    return testType === "" || testType === "ALL" || data.testtype === testType || data.name === testType;
+}
+
+function createTableRow(data) {
+    const row = document.createElement('tr');
+    let status = getStatus(data);
+
+    let modeValue = data.mode.trim().toUpperCase();
+
+    // Determine the mode symbol based on the mode value or status
+    let modeSymbol;
+    if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
+        modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
+    } else if (modeValue === 'SERVICE') {
+        modeSymbol = '🔧';  // Service symbol
+    } else {
+        modeSymbol = '';  // Default, no symbol
+    }
+
+    row.innerHTML = `
+        <td>${data.datetime || data.DateTime}</td>
+        <td>
+            <span class="alert-indicator" title="Mode: ${data.mode}">
+                ${modeSymbol}
+            </span>
+            ${data.operation_configuration || data.operation}
+        </td>
+        <td>${data.release}</td>
+        <td>${data.clnt || data.Machine}</td>
+        <td>${data.id}</td>
+        <td><button onclick='openLog("${data.location.replace(/\\/g, '/')}")'>Open Log</button></td>
+    `;
+    styleRowBasedOnStatus(row, data); 
+    return row;
+}
 
 
-  // Update the results count
-  const resultsCount = document.getElementById("results-count");
-  // Update the results count when the search results are updated.
-  function updateResultsCount() {
-      resultsCount.textContent = document.getElementById("table-body").childElementCount;
-  }
-  // Update the results count when the page loads.
-  updateResultsCount();
 
-  // Stop the interval and finalize the progress bar
-  clearInterval(updateInterval);
-  loadingfinished = true;
-  const loadingBar = document.querySelector('.loading-bar-inner');
-  loadingBar.style.width = '100%';
+function styleRowBasedOnStatus(row, data) {
+    const statusColors = {
+        PASS: '#1B9C85',
+        FAIL: '#CC6852',
+        ABORT: '#CC6918bd'
+    };
 
-  // calculate the total time for execution
-  const endTime = performance.now();
-  const executionTime = endTime - startTime;
-  const seconds = Math.floor(executionTime / 1000);
-  const milliseconds = executionTime % 1000;
-  document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
+    let status = getStatus(data);
+
+    if (status) {
+        row.style.backgroundColor = statusColors[status] || null;
+    }
+}
+
+function getStatus(data) {
+
+    // Checking for PASS/FAIL status directly mentioned in data
+    if (data.hasOwnProperty('PASS_FAIL_STATUS')) {
+        const passFailStatus = data.PASS_FAIL_STATUS.trim().toUpperCase();
+        if (passFailStatus.includes("PASS")) {
+            return 'PASS';
+        } else if (passFailStatus.includes("FAIL")) {
+            return 'FAIL';
+        }
+        else if (passFailStatus.includes("ABORT")) {
+            return 'ABORT';
+        }
+    }
+
+    // Check for a status key that matches a specific serial number in the data
+    const statusKey = document.getElementById('serialnumber').value.trim();
+    if (statusKey && data.hasOwnProperty(statusKey)) {
+        return data[statusKey].trim().toUpperCase();
+    }
+
+    // No relevant status found
+    return null;
+}
+
+
+
+
+function updateResultsCount() {
+    const resultsCount = document.getElementById("results-count");
+    resultsCount.textContent = document.getElementById("table-body").childElementCount.toString();
+}
+
+function finalizeProgressBar(startTime) {
+    clearInterval(updateInterval);
+    const endTime = performance.now();
+    const executionTime = endTime - startTime;
+    const seconds = Math.floor(executionTime / 1000);
+    const milliseconds = executionTime % 1000;
+    if (seconds < 1){
+        document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds 🔥`;
+    }else{
+        document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
+    }
+    document.querySelector('.loading-bar-inner').style.width = '100%';
 }
 
 $('#search-button').click(execute_search);
@@ -176,13 +233,13 @@ function formatNumber(input, type) {
     return formatted;
 }
 
-// Event listeners for input fields
-document.getElementById('productnumber').addEventListener('input', function() {
-    this.value = formatNumber(this.value, 'PN'); // Format as Product Number
-    document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
-});
+// DEBUG
+// document.getElementById('productnumber').addEventListener('input', function() {
+//     this.value = formatNumber(this.value, 'PN'); // Format as Product Number
+//     document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
+// });
 
-document.getElementById('serialnumber').addEventListener('input', function() {
-    this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
-    document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
-});
+// document.getElementById('serialnumber').addEventListener('input', function() {
+//     this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
+//     document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
+// });

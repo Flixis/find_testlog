@@ -25,17 +25,15 @@ fn main() {
     let commandlinearguments: cli::CliCommands = cli::CliCommands::parse();
     let search_info = structs::AppConfig::default_values();
 
-
     if let Err(e) = logging_settings::setup_loggers() {
-        eprintln!("{} {}", "Logger setup failed!:".red().bold(),e);
-        log::error!("Logger setup failed: {}", e);
+        eprintln!("{} {}", "Logger setup failed!:".red().bold(), e);
     }
 
     if std::env::args_os().count() > 1 {
-        log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
+        log::warn!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
         let search_info = cli::parse_cli_args(commandlinearguments);
         cli::execute_search_results_from_cli(search_info);
-        log::info!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
+        log::warn!("WARNING CLI WILL NOT RECEIVE UPDATES PAST V2.4.0");
     } else {
         // Builds the Tauri connection
         tauri::Builder::default()
@@ -67,7 +65,7 @@ fn main() {
 }
 
 /// Takes values from frontend and parses through search algorithm.
-/// 
+///
 /// Returns a Vec of values.
 #[tauri::command]
 async fn parse_frontend_search_data(
@@ -110,15 +108,13 @@ async fn parse_frontend_search_data(
                     data.insert("clnt".to_string(), extracted_clnt.to_string());
                     data.insert("location".to_string(), path.to_string());
 
-                    match extractors::extract_info_from_log(&path, 10) {
-                        Ok(Some(log_data)) => {
+                    match extractors::extract_info_from_log(&path, 500) {
+                        Ok(log_data) => {
+                            // dbg!(&log_data);
                             for (key, value) in &log_data {
                                 data.insert(key.clone(), value.clone());
                             }
                             result_data.push(data);
-                        }
-                        Ok(None) => {
-                            log::error!("No data found in the 'configuration' field.");
                         }
                         Err(err) => {
                             log::error!("Error: {}", err);
