@@ -128,7 +128,7 @@ pub fn extract_info_from_log(
 
     let mut cleaned_operation_headers =
         create_header_hashmap_from_headers_string(&first_part_of_file);
-    let cleaned_operation_status = create_status_hashmap_from_status_string(&second_part_of_file);
+    let cleaned_operation_status = create_status_hashmap_from_status_string(&second_part_of_file, &filename);
 
     cleaned_operation_headers.extend(cleaned_operation_status);
     Ok(cleaned_operation_headers)
@@ -198,7 +198,7 @@ fn create_header_hashmap_from_headers_string(data: &String) -> IndexMap<String, 
     hashmap
 }
 
-fn create_status_hashmap_from_status_string(input: &str) -> IndexMap<String, String> {
+fn create_status_hashmap_from_status_string(input: &str, filename: &str) -> IndexMap<String, String> {
     let mut results = IndexMap::new();
 
     // Find the start of the "Test Results" section
@@ -209,7 +209,7 @@ fn create_status_hashmap_from_status_string(input: &str) -> IndexMap<String, Str
         // Iterate over each line in the "Test Results" section
         for line in results_section.lines() {
             // Check if the line contains a serial number (SN) and result (PASS/FAIL)
-            if line.contains("SN:") && (line.contains("PASS") || line.contains("FAIL")) {
+            if line.contains("SN:") && (line.contains("PASS") || line.contains("FAIL") || line.contains("ABORT")) {
                 // Extract the serial number and result
                 let parts: Vec<&str> = line.split_whitespace().collect();
                 let sn_index = parts.iter().position(|&r| r == "SN:").unwrap() + 1;
@@ -223,8 +223,8 @@ fn create_status_hashmap_from_status_string(input: &str) -> IndexMap<String, Str
             }
         }
     } else {
-        log::warn!("Failed to parse PASS/FAIL state, using fallback");
-        let pass_or_fail_regex = Regex::new(r"\b(PASS(?:ED)?|FAIL(?:ED)?)\b").unwrap();
+        log::warn!("Failed to parse PASS/FAIL state, using fallback on {filename}");
+        let pass_or_fail_regex = Regex::new(r"\b(PASS(?:ED)?|FAIL(?:ED)?|ABORT(?:ED)?)\b").unwrap();
 
         for line in input.lines() {
             if let Some(caps) = pass_or_fail_regex.captures(&line) {

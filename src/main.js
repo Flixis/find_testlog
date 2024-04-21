@@ -59,21 +59,22 @@ function createTableRow(data) {
     const row = document.createElement('tr');
     row.innerHTML = `
         <td>${data.datetime || data.DateTime}</td>
-        <td>${data.operation_configuration || data.operation}</td>
+        <td><span class="alert-indicator">${data.mode.trim().toUpperCase() === 'SERVICE' ? '🔧' : ''}</span>${data.operation_configuration || data.operation}</td>
         <td>${data.release}</td>
         <td>${data.clnt || data.Machine}</td>
         <td>${data.id}</td>
         <td><button onclick='openLog("${data.location.replace(/\\/g, '/')}")'>Open Log</button></td>
     `;
-    styleRowBasedOnStatus(row, data);
+    styleRowBasedOnStatus(row, data); // Assuming this function styles other aspects based on status or similar
     return row;
 }
+
 
 function styleRowBasedOnStatus(row, data) {
     const statusColors = {
         PASS: '#1B9C85',
         FAIL: '#CC6852',
-        SERVICE: '#CC6918bd'
+        ABORT: '#CC6918bd'
     };
 
     let status = getStatus(data);
@@ -86,13 +87,6 @@ function styleRowBasedOnStatus(row, data) {
 function getStatus(data) {
     // console.log("Debug: Checking data", data);
 
-    // Explicit check for 'service' mode
-    if (data.hasOwnProperty('mode')) {
-        const mode = data.mode.trim().toUpperCase();
-        if (mode.includes('SERVICE')) {
-             return 'SERVICE';
-        }
-    }
 
     // Checking for PASS/FAIL status directly mentioned in data
     if (data.hasOwnProperty('PASS_FAIL_STATUS')) {
@@ -101,6 +95,9 @@ function getStatus(data) {
             return 'PASS';
         } else if (passFailStatus.includes("FAIL")) {
             return 'FAIL';
+        }
+        else if (passFailStatus.includes("ABORT")) {
+            return 'ABORT';
         }
     }
 
