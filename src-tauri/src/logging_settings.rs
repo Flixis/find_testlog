@@ -2,7 +2,7 @@ use chrono::prelude::*;
 use simplelog::*;
 use std::fs::{self, OpenOptions};
 use std::path::Path;
-use whoami;
+use whoami::{self, fallible};
 
 /// App logging is setup with the following configuration:
 ///
@@ -16,11 +16,21 @@ pub fn setup_loggers() -> Result<(), String> {
         .map_err(|e| format!("unable to create logging directory: {}", e))?;
 
     let utc = Utc::now().format("%d-%m-%Y_%H_%M").to_string();
+    let hostname = match fallible::hostname() {
+        Ok(name) => {
+            name
+        },
+        Err(e) => {
+            eprintln!("Failed to get hostname: {}", e);
+            "Failed to get hostname".to_string()
+        }
+    };
+    
     let filename_string_creation = format!(
         "find_testlog_logs/{}_{}_{}_{}",
         utc,
         whoami::username(),
-        whoami::hostname(),
+        hostname.to_lowercase(),
         "find_testlog.log"
     );
     let filename = Path::new(&filename_string_creation);
