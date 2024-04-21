@@ -11,7 +11,6 @@ async function execute_search() {
 
     initializeProgressBar();
     const searchData = await fetchSearchData();
-    console.log(searchData);
     populateTableWithSearchData(searchData);
     finalizeProgressBar(startTime);
 }
@@ -57,17 +56,37 @@ function shouldIncludeRow(data, index) {
 
 function createTableRow(data) {
     const row = document.createElement('tr');
+    let status = getStatus(data);
+
+    let modeValue = data.mode.trim().toUpperCase();
+
+    // Determine the mode symbol based on the mode value or status
+    let modeSymbol;
+    if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
+        modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
+    } else if (modeValue === 'SERVICE') {
+        modeSymbol = '🔧';  // Service symbol
+    } else {
+        modeSymbol = '';  // Default, no symbol
+    }
+
     row.innerHTML = `
         <td>${data.datetime || data.DateTime}</td>
-        <td><span class="alert-indicator">${data.mode.trim().toUpperCase() === 'SERVICE' ? '🔧' : ''}</span>${data.operation_configuration || data.operation}</td>
+        <td>
+            <span class="alert-indicator" title="Mode: ${data.mode}">
+                ${modeSymbol}
+            </span>
+            ${data.operation_configuration || data.operation}
+        </td>
         <td>${data.release}</td>
         <td>${data.clnt || data.Machine}</td>
         <td>${data.id}</td>
         <td><button onclick='openLog("${data.location.replace(/\\/g, '/')}")'>Open Log</button></td>
     `;
-    styleRowBasedOnStatus(row, data); // Assuming this function styles other aspects based on status or similar
+    styleRowBasedOnStatus(row, data); 
     return row;
 }
+
 
 
 function styleRowBasedOnStatus(row, data) {
@@ -85,8 +104,6 @@ function styleRowBasedOnStatus(row, data) {
 }
 
 function getStatus(data) {
-    // console.log("Debug: Checking data", data);
-
 
     // Checking for PASS/FAIL status directly mentioned in data
     if (data.hasOwnProperty('PASS_FAIL_STATUS')) {
@@ -216,13 +233,13 @@ function formatNumber(input, type) {
     return formatted;
 }
 
-// Event listeners for input fields
-document.getElementById('productnumber').addEventListener('input', function() {
-    this.value = formatNumber(this.value, 'PN'); // Format as Product Number
-    document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
-});
+// DEBUG
+// document.getElementById('productnumber').addEventListener('input', function() {
+//     this.value = formatNumber(this.value, 'PN'); // Format as Product Number
+//     document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
+// });
 
-document.getElementById('serialnumber').addEventListener('input', function() {
-    this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
-    document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
-});
+// document.getElementById('serialnumber').addEventListener('input', function() {
+//     this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
+//     document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
+// });
