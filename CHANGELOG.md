@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [V4.3.0] - 2024-04-22
 
+#### 4.3.0 vs 4.2.1 Wow, so much faster!
+![speedup](/4_3_0vs4_2_1.png)
+
 ### Change
 - 'ABORT' status is now the orange colour, additionally it shows a '⚠️' next to 'testtype'.
 - 'SERVICE' mode is now displayed as '🔧' next to 'testtype'.
