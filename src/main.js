@@ -64,8 +64,8 @@ function createTableRow(data) {
     let modeSymbol;
     if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
         modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
-    } else if (modeValue === 'SERVICE') {
-        modeSymbol = '🔧';  // Service symbol
+    } else if (modeValue === 'PARTIAL') {
+        modeSymbol = '🔧';  // Partial test symbol
     } else {
         modeSymbol = '';  // Default, no symbol
     }
@@ -93,7 +93,7 @@ function styleRowBasedOnStatus(row, data) {
     const statusColors = {
         PASS: '#1B9C85',
         FAIL: '#CC6852',
-        ABORT: '#CC6918bd'
+        SERVICE: '#CC6918bd'
     };
 
     let status = getStatus(data);
@@ -104,6 +104,13 @@ function styleRowBasedOnStatus(row, data) {
 }
 
 function getStatus(data) {
+    console.log(data);
+
+    // Check first for service, its more relevant at first than pass or fail
+    const mode = data.mode.toUpperCase();
+    if (mode.includes("SERVICE")) {
+        return 'SERVICE';
+    }
 
     // Checking for PASS/FAIL status directly mentioned in data
     if (data.hasOwnProperty('PASS_FAIL_STATUS')) {
@@ -117,6 +124,8 @@ function getStatus(data) {
             return 'ABORT';
         }
     }
+
+
 
     // Check for a status key that matches a specific serial number in the data
     const statusKey = document.getElementById('serialnumber').value.trim();
