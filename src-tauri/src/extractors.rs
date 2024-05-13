@@ -115,7 +115,7 @@ pub fn extract_info_from_log(
         }
     };
 
-    // dbg!(&first_part_of_file);
+    println!("{}",&first_part_of_file);
 
     if first_part_of_file.contains("Partial Test Run") {
         log::warn!("Found partial test: {}", &filename)
@@ -184,44 +184,39 @@ fn clean_up_string(input: &str) -> String {
         .replace("\r\n", "\n")
 }
 
-fn create_header_hashmap_from_headers_string(data: &String) -> IndexMap<String, String> {
-    let mut hashmap = IndexMap::new();
-
-    for line in data.lines() {
-        if let Some((key, value)) = line.split_once(':') {
-            let key = key.trim().replace("-", "").trim().to_lowercase(); // Format key
-            let value = value.trim().to_string();
-
-            if key == "operation configuration" {
-                // Handle special formatting for "Operation configuration"
-                let parts: Vec<&str> = value.split_whitespace().collect();
-                if !parts.is_empty() {
-                    hashmap.insert("operation_configuration".to_string(), parts[0].to_string());
-
-                    // Further processing for id and Release parts
-                    for part in &parts[1..] {
-                        if part.starts_with("(id:") {
-                            let id = parts[2].to_string();
-                            hashmap.insert(
-                                "id".to_string(),
-                                id.strip_suffix(";").unwrap_or_default().to_string(),
-                            );
-                        } else if part.starts_with("Release") {
-                            let release = parts[4..5].concat().to_string();
-                            hashmap.insert("release".to_string(), release);
-                            break; // Assuming rest of the parts belong to Release, stop iterating
-                        }
-                    }
-                }
-            } else {
-                // For all other keys, insert directly
-                hashmap.insert(key, value);
-            }
+fn create_header_hashmap_from_headers_string(input: &str) -> IndexMap<String, String> {
+    let mut result = IndexMap::new();
+    
+    // Process each line for key-value pairs
+    for line in input.lines() {
+        if let Some((key, value)) = line.split_once(": ") {
+            let key_without_hyphens: String = key.trim().replace("-", "");
+            result.insert(key_without_hyphens.to_lowercase(), value.trim().to_string());
         }
     }
+    
+    let re = Regex::new(r"Operation configuration: (\w+(?: \w+)*).*?id: (\d+); Release (\w+)").unwrap();
+    
+    if let Some(captures) = re.captures(input) {
+        if let (Some(testtype), Some(id), Some(release)) =
+        (captures.get(1), captures.get(2), captures.get(3))
+        {
+            let testtype_str = testtype.as_str().to_string();
+            let id_str = id.as_str().to_string();
+            let release_str = release.as_str().to_string();
 
-    hashmap
+            result.insert("operation_configuration".to_string(), testtype_str);
+            result.insert("id".to_string(), id_str);
+            result.insert("release".to_string(), release_str);
+        }else {
+            log::error!("Failed to find 'configuration' field in the log.");
+            return result;
+        }log::info!("extract_info_from_log: {:?}", result);
+    }
+
+    result
 }
+
 
 fn create_status_hashmap_from_status_string(
     input: &str,

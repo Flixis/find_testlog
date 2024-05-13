@@ -58,7 +58,7 @@ function createTableRow(data) {
     const row = document.createElement('tr');
     let status = getStatus(data);
 
-    let modeValue = data.mode.trim().toUpperCase();
+    let modeValue = data.mode;
 
     // Determine the mode symbol based on the mode value or status
     let modeSymbol;
@@ -77,9 +77,7 @@ function createTableRow(data) {
     row.innerHTML = `
         <td>${data.datetime || data.DateTime}</td>
         <td>
-            <span class="alert-indicator" title="Mode: ${data.mode}">
-                ${modeSymbol}
-            </span>
+
             ${data.operation_configuration || data.operation}
         </td>
         <td>${data.release}</td>
@@ -111,8 +109,9 @@ function getStatus(data) {
     console.log(data);
 
     // Check first for service, its more relevant at first than pass or fail
-    const mode = data.mode.toUpperCase();
-    if (mode.includes("SERVICE")) {
+    const mode = data.mode;
+    console.log(mode);
+    if (mode == "SERVICE") {
         return 'SERVICE';
     }
 
@@ -247,12 +246,12 @@ function formatNumber(input, type) {
 }
 
 // DEBUG
-// document.getElementById('productnumber').addEventListener('input', function() {
-//     this.value = formatNumber(this.value, 'PN'); // Format as Product Number
-//     document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
-// });
+document.getElementById('productnumber').addEventListener('input', function() {
+    this.value = formatNumber(this.value, 'PN'); // Format as Product Number
+    document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
+});
 
-// document.getElementById('serialnumber').addEventListener('input', function() {
-//     this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
-//     document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
-// });
+document.getElementById('serialnumber').addEventListener('input', function() {
+    this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
+    document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
+});
