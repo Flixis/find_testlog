@@ -22,8 +22,8 @@ function initializeProgressBar() {
 }
 
 async function fetchSearchData() {
-    const productNumber = document.getElementById('productnumber').value.trim();
-    const serialNumber = document.getElementById('serialnumber').value.trim();
+    const productNumber = document.getElementById('productnumber').value.trim().toUpperCase();
+    const serialNumber = document.getElementById('serialnumber').value.trim().toUpperCase();
     const dateYYYYWW = FormatDateToYYYYWW('datepicker');
     const testType = document.getElementById('test_type').value.trim();
 
@@ -62,14 +62,18 @@ function createTableRow(data) {
 
     // Determine the mode symbol based on the mode value or status
     let modeSymbol;
-    if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
-        modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
-    } else if (modeValue === 'PARTIAL') {
-        modeSymbol = '🔧';  // Partial test symbol
-    } else {
-        modeSymbol = '';  // Default, no symbol
-    }
+    if(!status){
 
+    }else{
+        if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
+            modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
+        } else if (modeValue === 'PARTIAL') {
+            modeSymbol = '🔧';  // Partial test symbol
+        } else {
+            modeSymbol = '';  // Default, no symbol
+        }
+    }
+        
     row.innerHTML = `
         <td>${data.datetime || data.DateTime}</td>
         <td>
