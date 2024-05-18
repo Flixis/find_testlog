@@ -189,8 +189,8 @@ fn create_header_hashmap_from_headers_string(input: &str) -> IndexMap<String, St
     
     // Process each line for key-value pairs
     for line in input.lines() {
-        if let Some((key, value)) = line.split_once(": ") {
-            let key_without_hyphens: String = key.trim().replace("-", "");
+        if let Some((key, value)) = line.split_once(":") {
+            let key_without_hyphens: String = key.replace("-", "").trim().to_string();
             result.insert(key_without_hyphens.to_lowercase(), value.trim().to_string());
         }
     }
@@ -201,9 +201,9 @@ fn create_header_hashmap_from_headers_string(input: &str) -> IndexMap<String, St
         if let (Some(testtype), Some(id), Some(release)) =
         (captures.get(1), captures.get(2), captures.get(3))
         {
-            let testtype_str = testtype.as_str().to_string();
-            let id_str = id.as_str().to_string();
-            let release_str = release.as_str().to_string();
+            let testtype_str = testtype.as_str().trim().to_string();
+            let id_str = id.as_str().trim().to_string();
+            let release_str = release.as_str().trim().to_string();
 
             result.insert("operation_configuration".to_string(), testtype_str);
             result.insert("id".to_string(), id_str);
