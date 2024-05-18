@@ -156,7 +156,7 @@ function finalizeProgressBar(startTime) {
     const executionTime = endTime - startTime;
     const seconds = Math.floor(executionTime / 1000);
     const milliseconds = executionTime % 1000;
-    if (seconds < 1){
+    if (seconds < 3){
         document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds 🔥`;
     }else{
         document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
