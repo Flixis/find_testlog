@@ -115,12 +115,6 @@ pub fn extract_info_from_log(
         }
     };
 
-    println!("{}",&first_part_of_file);
-
-    if first_part_of_file.contains("Partial Test Run") {
-        log::warn!("Found partial test: {}", &filename)
-    }
-
     let mut second_part_of_file = match read_file_till_bytes(&file, -bytes_to_read) {
         Ok(content) => content,
         Err(e) => {
@@ -187,11 +181,15 @@ fn clean_up_string(input: &str) -> String {
 fn create_header_hashmap_from_headers_string(input: &str) -> IndexMap<String, String> {
     let mut result = IndexMap::new();
     
+    if input.contains("Partial Test Run") {
+        result.insert("partial".to_string(), "true".to_string());
+    }
+
     // Process each line for key-value pairs
     for line in input.lines() {
         if let Some((key, value)) = line.split_once(":") {
             let key_without_hyphens: String = key.replace("-", "").trim().to_string();
-            result.insert(key_without_hyphens.to_lowercase(), value.trim().to_string());
+            result.insert(key_without_hyphens.to_lowercase(), value.trim().to_uppercase().to_string());
         }
     }
     

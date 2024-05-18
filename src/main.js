@@ -55,10 +55,13 @@ function shouldIncludeRow(data, index) {
 }
 
 function createTableRow(data) {
+    console.log(data);
+
     const row = document.createElement('tr');
     let status = getStatus(data);
 
     let modeValue = data.mode;
+    const partial = data.partial;
 
     // Determine the mode symbol based on the mode value or status
     let modeSymbol;
@@ -67,7 +70,8 @@ function createTableRow(data) {
     }else{
         if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
             modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
-        } else if (modeValue === 'PARTIAL') {
+        } else if (partial) {
+            console.log("hi");
             modeSymbol = '🔧';  // Partial test symbol
         } else {
             modeSymbol = '';  // Default, no symbol
@@ -77,7 +81,9 @@ function createTableRow(data) {
     row.innerHTML = `
         <td>${data.datetime || data.DateTime}</td>
         <td>
-
+            <span class="alert-indicator" title="Mode: ${data.mode}">
+                ${modeSymbol}
+            </span>
             ${data.operation_configuration || data.operation}
         </td>
         <td>${data.release}</td>
@@ -106,11 +112,9 @@ function styleRowBasedOnStatus(row, data) {
 }
 
 function getStatus(data) {
-    console.log(data);
 
     // Check first for service, its more relevant at first than pass or fail
     const mode = data.mode;
-    console.log(mode);
     if (mode == "SERVICE") {
         return 'SERVICE';
     }
