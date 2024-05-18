@@ -55,7 +55,6 @@ function shouldIncludeRow(data, index) {
 }
 
 function createTableRow(data) {
-    console.log(data);
 
     const row = document.createElement('tr');
     let status = getStatus(data);
@@ -71,7 +70,6 @@ function createTableRow(data) {
         if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
             modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
         } else if (partial) {
-            console.log("hi");
             modeSymbol = '🔧';  // Partial test symbol
         } else {
             modeSymbol = '';  // Default, no symbol
@@ -249,7 +247,7 @@ function formatNumber(input, type) {
     return formatted;
 }
 
-// DEBUG
+// Automatic hyphenation
 document.getElementById('productnumber').addEventListener('input', function() {
     this.value = formatNumber(this.value, 'PN'); // Format as Product Number
     document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
