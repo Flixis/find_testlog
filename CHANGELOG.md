@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V4.3.1] - 2024-05-20
+
+### Reverted
+- 'ABORT' status is now the displayed with a '⚠️' icon next to 'testtype'.
+- 'SERVICE' mode is now displayed as 'ORANGE' again 
+
+### Changed
+- 'Partial' test are now displayed with a '🔧' next to 'testtype'. #74 (Partial test should have an indicator).
+- Time to results now shows "🔥" when search takes less than 3 second.
+
+### Refactor
+- Rewrite 'create_header_hashmap_from_headers_string'.
+
+### Fix
+- #76 (SN/PN field are case sensitive)
+- #75 (automatic hypening isn't working in 4.3.0)
+
+
 ## [V4.3.0] - 2024-04-22
 
 #### 4.3.0 vs 4.2.1 Wow, so much faster!

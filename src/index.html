@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="assets/main.css" />
   <link rel="stylesheet" href="assets/app.css" />
   <link rel="stylesheet" href="assets/color-box.css" />
+  <link rel="stylesheet" href="assets/icon-box.css" />
   <link rel="stylesheet" href="assets/override_table.css" />
   <link rel="stylesheet" href="assets/footer.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,7 +20,7 @@
   </div>
   <header>
     <div id="logo">Find TestLogs</div>
-    <text id="results-box-time">Time to results:</text>
+    <div id="results-box-time">Time to results:</div>
     <div class="settings-header">
       <button type="button" id="get_config_location" onclick="openconfig()">Open Config file</button>
     </div>
@@ -56,10 +57,14 @@
   </form>
   <div id="results-box">
     <form id="search-button-form">
+      <div class="icon-box">
+        <div class="icon-inner-box" data-color="Partial Test">🔧</div>
+        <div class="icon-inner-box" data-color="Aborted">⚠️</div>
+      </div>
       <div class="color-box">
         <div class="color-inner-box" data-color="Passed" style="background-color: #1B9C85;"></div>
         <div class="color-inner-box" data-color="Failed" style="background-color: #CC6852;"></div> 
-        <div class="color-inner-box" data-color="Abort"  style="background-color: #CC6918bd;"></div>
+        <div class="color-inner-box" data-color="Service"  style="background-color: #CC6918bd;"></div>
         <div class="color-inner-box" data-color="Unknown" style="background-color: #6C9BCF;"></div>
       </div>     
       <button type="button" id="search-button" disabled="true" title="Hit E NTER to search">Search</button>
@@ -160,11 +165,12 @@ $(document).ready(function() {
         });
   }
 
-  // DEBUG
-  //  window.onload = function() {
-  //      document.getElementById('productnumber').value = '9999-1111-2222'; 
-  //      document.getElementById('serialnumber').value = '24-04-A54-4JO'; 
-  //  };
+//DEBUG
+//  window.onload = function() {
+//      document.getElementById('productnumber').value = '9999-1111-2222'; 
+//      document.getElementById('serialnumber').value = '22-38-A2X-80R'; 
+//     //  22-38-A2X-80R
+//  };
   
 
 </script>

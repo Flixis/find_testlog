@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "find_testlog_tauri",
-    "version": "4.3.0"
+    "version": "4.3.1"
   },
   "tauri": {
     "allowlist": {
