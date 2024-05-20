@@ -59,7 +59,6 @@ function createTableRow(data) {
     const row = document.createElement('tr');
     let status = getStatus(data);
 
-    let modeValue = data.Mode;
     const partial = data.partial;
 
     // Determine the mode symbol based on the mode value or status
@@ -67,7 +66,7 @@ function createTableRow(data) {
     if(!status){
 
     }else{
-        if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
+        if (status.includes('ABORT')) {
             modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
         } else if (partial) {
             modeSymbol = '🔧';  // Partial test symbol

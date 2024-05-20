@@ -99,14 +99,7 @@ pub fn extract_info_from_log(
         }
     };
 
-    // let mut first_part_of_file = match read_file_till_bytes(&file, bytes_to_read) {
-    //     Ok(content) => content,
-    //     Err(e) => {
-    //         log::warn!("File read operation failed: {}", e);
-    //         String::new()
-    //     }
-    // };
-    
+  
     let mut first_part_of_file = match read_until_marker(&file, "INFO Started 'Initialize'") {
         Ok(content) => content,
         Err(e) => {
