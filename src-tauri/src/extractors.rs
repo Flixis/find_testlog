@@ -2,7 +2,7 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use indexmap::IndexMap;
 use regex::Regex;
 use std::fs::File;
-use std::io::{self, Read, Seek, SeekFrom};
+use std::io::{self, BufRead, BufReader, Read, Seek, SeekFrom};
 use std::path::Path;
 
 /*
@@ -99,7 +99,8 @@ pub fn extract_info_from_log(
         }
     };
 
-    let mut first_part_of_file = match read_file_till_bytes(&file, bytes_to_read) {
+  
+    let mut first_part_of_file = match read_until_marker(&file, "INFO Started 'Initialize'") {
         Ok(content) => content,
         Err(e) => {
             log::warn!("File read operation failed: {}", e);
@@ -144,6 +145,24 @@ fn read_file_till_bytes(mut file: &File, bytes_to_read: i64) -> Result<String, i
     text
 }
 
+
+fn read_until_marker(file: &File, marker: &str) -> io::Result<String> {
+    let reader = BufReader::new(file);
+
+    let mut content = String::new();
+
+    for line in reader.lines() {
+        let line = line?;
+        if line.contains(marker) {
+            break;
+        }
+        content += &line;
+        content.push('\n');  // Maintain original line breaks
+    }
+
+    Ok(content)
+}
+
 fn clean_up_string(input: &str) -> String {
     input
         // Remove the Unicode BOM
@@ -152,43 +171,44 @@ fn clean_up_string(input: &str) -> String {
         .replace("\r\n", "\n")
 }
 
-fn create_header_hashmap_from_headers_string(data: &String) -> IndexMap<String, String> {
-    let mut hashmap = IndexMap::new();
+fn create_header_hashmap_from_headers_string(input: &str) -> IndexMap<String, String> {
+    
+    let mut result = IndexMap::new();
+    
+    if input.contains("Partial Test Run") {
+        result.insert("partial".to_string(), "true".to_string());
+    }
 
-    for line in data.lines() {
-        if let Some((key, value)) = line.split_once(':') {
-            let key = key.trim().replace("-", "").trim().to_lowercase(); // Format key
-            let value = value.trim().to_string();
-
-            if key == "operation configuration" {
-                // Handle special formatting for "Operation configuration"
-                let parts: Vec<&str> = value.split_whitespace().collect();
-                if !parts.is_empty() {
-                    hashmap.insert("operation_configuration".to_string(), parts[0].to_string());
-
-                    // Further processing for id and Release parts
-                    for part in &parts[1..] {
-                        if part.starts_with("(id:") {
-                            let id = parts[2].to_string();
-                            hashmap.insert(
-                                "id".to_string(),
-                                id.strip_suffix(";").unwrap_or_default().to_string(),
-                            );
-                        } else if part.starts_with("Release") {
-                            let release = parts[4..5].concat().to_string();
-                            hashmap.insert("release".to_string(), release);
-                            break; // Assuming rest of the parts belong to Release, stop iterating
-                        }
-                    }
+    
+    for line in input.lines() {
+        let line = line.trim();
+        if line.starts_with('-') {
+            let entry = line[1..].trim();
+            if entry.contains(':') {
+                let parts: Vec<&str> = entry.splitn(2, ':').collect();
+                let key = parts[0].trim().to_string();
+                let value = parts[1].trim().to_string();
+                
+                if key.ends_with("Operation configuration") {
+                    // Split the string into its components
+                    let components: Vec<&str> = value.split(&['(', ';' ,')'][..]).collect();
+                   
+                    // Extract individual components
+                    let operation_config = components[0].trim();
+                    result.insert("Operation_configuration".to_string(), operation_config.to_string());
+                    let id = components[1].trim().strip_prefix("id: ").unwrap();
+                    result.insert("id".to_string(), id.to_string());
+                    let release = components[2].trim().strip_prefix("Release ").unwrap(); 
+                    result.insert("Release".to_string(), release.to_string());
+                    
+                }else {
+                    result.insert(key, value);
                 }
-            } else {
-                // For all other keys, insert directly
-                hashmap.insert(key, value);
             }
         }
     }
-
-    hashmap
+    
+    result
 }
 
 fn create_status_hashmap_from_status_string(

@@ -22,8 +22,8 @@ function initializeProgressBar() {
 }
 
 async function fetchSearchData() {
-    const productNumber = document.getElementById('productnumber').value.trim();
-    const serialNumber = document.getElementById('serialnumber').value.trim();
+    const productNumber = document.getElementById('productnumber').value.trim().toUpperCase();
+    const serialNumber = document.getElementById('serialnumber').value.trim().toUpperCase();
     const dateYYYYWW = FormatDateToYYYYWW('datepicker');
     const testType = document.getElementById('test_type').value.trim();
 
@@ -58,27 +58,31 @@ function createTableRow(data) {
     const row = document.createElement('tr');
     let status = getStatus(data);
 
-    let modeValue = data.mode.trim().toUpperCase();
+    const partial = data.partial;
 
     // Determine the mode symbol based on the mode value or status
     let modeSymbol;
-    if (modeValue !== 'SERVICE' && status.includes('ABORT')) {
-        modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
-    } else if (modeValue === 'SERVICE') {
-        modeSymbol = '🔧';  // Service symbol
-    } else {
-        modeSymbol = '';  // Default, no symbol
-    }
+    if(!status){
 
+    }else{
+        if (status.includes('ABORT')) {
+            modeSymbol = '⚠️';  // Set symbol if status contains 'ABORT'
+        } else if (partial) {
+            modeSymbol = '🔧';  // Partial test symbol
+        } else {
+            modeSymbol = '';  // Default, no symbol
+        }
+    }
+        
     row.innerHTML = `
         <td>${data.datetime || data.DateTime}</td>
         <td>
-            <span class="alert-indicator" title="Mode: ${data.mode}">
+            <span class="alert-indicator" title="Mode: ${data.Mode}">
                 ${modeSymbol}
             </span>
-            ${data.operation_configuration || data.operation}
+            ${data.Operation_configuration || data.operation}
         </td>
-        <td>${data.release}</td>
+        <td>${data.Release}</td>
         <td>${data.clnt || data.Machine}</td>
         <td>${data.id}</td>
         <td><button onclick='openLog("${data.location.replace(/\\/g, '/')}")'>Open Log</button></td>
@@ -93,7 +97,7 @@ function styleRowBasedOnStatus(row, data) {
     const statusColors = {
         PASS: '#1B9C85',
         FAIL: '#CC6852',
-        ABORT: '#CC6918bd'
+        SERVICE: '#CC6918bd'
     };
 
     let status = getStatus(data);
@@ -104,6 +108,12 @@ function styleRowBasedOnStatus(row, data) {
 }
 
 function getStatus(data) {
+
+    // Check first for service, its more relevant at first than pass or fail
+    const mode = data.Mode;
+    if (mode == "Service") {
+        return 'SERVICE';
+    }
 
     // Checking for PASS/FAIL status directly mentioned in data
     if (data.hasOwnProperty('PASS_FAIL_STATUS')) {
@@ -117,6 +127,8 @@ function getStatus(data) {
             return 'ABORT';
         }
     }
+
+
 
     // Check for a status key that matches a specific serial number in the data
     const statusKey = document.getElementById('serialnumber').value.trim();
@@ -142,7 +154,7 @@ function finalizeProgressBar(startTime) {
     const executionTime = endTime - startTime;
     const seconds = Math.floor(executionTime / 1000);
     const milliseconds = executionTime % 1000;
-    if (seconds < 1){
+    if (seconds < 3){
         document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds 🔥`;
     }else{
         document.getElementById("results-box-time").innerText = `Time to results: ${seconds} seconds and ${milliseconds.toFixed(3)} milliseconds`;
@@ -233,13 +245,13 @@ function formatNumber(input, type) {
     return formatted;
 }
 
-// DEBUG
-// document.getElementById('productnumber').addEventListener('input', function() {
-//     this.value = formatNumber(this.value, 'PN'); // Format as Product Number
-//     document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
-// });
+// Automatic hyphenation
+document.getElementById('productnumber').addEventListener('input', function() {
+    this.value = formatNumber(this.value, 'PN'); // Format as Product Number
+    document.getElementById('formattedPN').textContent = `Formatted PN: ${this.value}`;
+});
 
-// document.getElementById('serialnumber').addEventListener('input', function() {
-//     this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
-//     document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
-// });
+document.getElementById('serialnumber').addEventListener('input', function() {
+    this.value = formatNumber(this.value, 'SN'); // Format as Serial Number
+    document.getElementById('formattedSN').textContent = `Formatted SN: ${this.value}`;
+});
