@@ -55,7 +55,6 @@ function shouldIncludeRow(data, index) {
 }
 
 function createTableRow(data) {
-    console.log(data);
     const row = document.createElement('tr');
     let status = getStatus(data);
 
