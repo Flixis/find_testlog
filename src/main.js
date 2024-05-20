@@ -55,11 +55,11 @@ function shouldIncludeRow(data, index) {
 }
 
 function createTableRow(data) {
-
+    console.log(data);
     const row = document.createElement('tr');
     let status = getStatus(data);
 
-    let modeValue = data.mode;
+    let modeValue = data.Mode;
     const partial = data.partial;
 
     // Determine the mode symbol based on the mode value or status
@@ -79,12 +79,12 @@ function createTableRow(data) {
     row.innerHTML = `
         <td>${data.datetime || data.DateTime}</td>
         <td>
-            <span class="alert-indicator" title="Mode: ${data.mode}">
+            <span class="alert-indicator" title="Mode: ${data.Mode}">
                 ${modeSymbol}
             </span>
-            ${data.operation_configuration || data.operation}
+            ${data.Operation_configuration || data.operation}
         </td>
-        <td>${data.release}</td>
+        <td>${data.Release}</td>
         <td>${data.clnt || data.Machine}</td>
         <td>${data.id}</td>
         <td><button onclick='openLog("${data.location.replace(/\\/g, '/')}")'>Open Log</button></td>
@@ -112,8 +112,8 @@ function styleRowBasedOnStatus(row, data) {
 function getStatus(data) {
 
     // Check first for service, its more relevant at first than pass or fail
-    const mode = data.mode;
-    if (mode == "SERVICE") {
+    const mode = data.Mode;
+    if (mode == "Service") {
         return 'SERVICE';
     }
 

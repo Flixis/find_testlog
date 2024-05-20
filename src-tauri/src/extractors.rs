@@ -179,42 +179,44 @@ fn clean_up_string(input: &str) -> String {
 }
 
 fn create_header_hashmap_from_headers_string(input: &str) -> IndexMap<String, String> {
+    
     let mut result = IndexMap::new();
     
     if input.contains("Partial Test Run") {
         result.insert("partial".to_string(), "true".to_string());
     }
 
-    // Process each line for key-value pairs
+    
     for line in input.lines() {
-        if let Some((key, value)) = line.split_once(":") {
-            let key_without_hyphens: String = key.replace("-", "").trim().to_string();
-            result.insert(key_without_hyphens.to_lowercase(), value.trim().to_uppercase().to_string());
+        let line = line.trim();
+        if line.starts_with('-') {
+            let entry = line[1..].trim();
+            if entry.contains(':') {
+                let parts: Vec<&str> = entry.splitn(2, ':').collect();
+                let key = parts[0].trim().to_string();
+                let value = parts[1].trim().to_string();
+                
+                if key.ends_with("Operation configuration") {
+                    // Split the string into its components
+                    let components: Vec<&str> = value.split(&['(', ';' ,')'][..]).collect();
+                   
+                    // Extract individual components
+                    let operation_config = components[0].trim();
+                    result.insert("Operation_configuration".to_string(), operation_config.to_string());
+                    let id = components[1].trim().strip_prefix("id: ").unwrap();
+                    result.insert("id".to_string(), id.to_string());
+                    let release = components[2].trim().strip_prefix("Release ").unwrap(); 
+                    result.insert("Release".to_string(), release.to_string());
+                    
+                }else {
+                    result.insert(key, value);
+                }
+            }
         }
     }
     
-    let re = Regex::new(r"Operation configuration: (\w+(?: \w+)*).*?id: (\d+); Release (\w+)").unwrap();
-    
-    if let Some(captures) = re.captures(input) {
-        if let (Some(testtype), Some(id), Some(release)) =
-        (captures.get(1), captures.get(2), captures.get(3))
-        {
-            let testtype_str = testtype.as_str().trim().to_string();
-            let id_str = id.as_str().trim().to_string();
-            let release_str = release.as_str().trim().to_string();
-
-            result.insert("operation_configuration".to_string(), testtype_str);
-            result.insert("id".to_string(), id_str);
-            result.insert("release".to_string(), release_str);
-        }else {
-            log::error!("Failed to find 'configuration' field in the log.");
-            return result;
-        }log::info!("extract_info_from_log: {:?}", result);
-    }
-
     result
 }
-
 
 fn create_status_hashmap_from_status_string(
     input: &str,
